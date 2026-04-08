@@ -24,10 +24,12 @@ CREATE INDEX IF NOT EXISTS idx_boat_photos_boat
 
 ALTER TABLE boat_photos ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "boat_photos_operator_owns" ON boat_photos;
 CREATE POLICY "boat_photos_operator_owns"
   ON boat_photos FOR ALL
   USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "boat_photos_public_read" ON boat_photos;
 CREATE POLICY "boat_photos_public_read"
   ON boat_photos FOR SELECT
   USING (

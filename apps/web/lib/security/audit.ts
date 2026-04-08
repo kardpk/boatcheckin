@@ -26,6 +26,8 @@ type AuditAction =
 interface AuditParams {
   action: AuditAction;
   operatorId?: string;
+  actorType: "operator" | "captain" | "guest" | "system";
+  actorIdentifier: string;
   entityType: string;
   entityId: string;
   changes?: Record<string, unknown>;
@@ -41,6 +43,8 @@ export function auditLog(params: AuditParams): void {
       await supabase.from("audit_log").insert({
         action: params.action,
         operator_id: params.operatorId ?? null,
+        actor_type: params.actorType,
+        actor_identifier: params.actorIdentifier,
         entity_type: params.entityType,
         entity_id: params.entityId,
         changes: params.changes ?? {},

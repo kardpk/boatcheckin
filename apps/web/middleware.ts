@@ -126,7 +126,10 @@ export async function middleware(request: NextRequest) {
 
   // ─── 5. Redirect authenticated operators away from auth pages ───────────
   if (user && AUTH_PATHS.includes(pathname)) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    const hasError = request.nextUrl.searchParams.has('error')
+    if (!hasError) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
   }
 
   // ─── 6. Security headers ───────────────────────────────────────────────

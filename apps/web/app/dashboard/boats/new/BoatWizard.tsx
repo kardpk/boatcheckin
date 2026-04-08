@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -34,6 +34,9 @@ const variants = {
   }),
 };
 
+const DRAFT_KEY = "dockpass_boat_wizard_draft";
+const DRAFT_STEP_KEY = "dockpass_boat_wizard_step";
+
 export function BoatWizard() {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
@@ -43,6 +46,39 @@ export function BoatWizard() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [template, setTemplate] = useState<BoatTemplate | null>(null);
   const [templateLoading, setTemplateLoading] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Hydrate draft from LocalStorage
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem(DRAFT_KEY);
+      const savedStep = localStorage.getItem(DRAFT_STEP_KEY);
+      if (savedData) {
+        setData(JSON.parse(savedData));
+      }
+      if (savedStep) {
+        const parsed = parseInt(savedStep, 10);
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= TOTAL_STEPS) {
+          setStep(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to hydrate boat draft:", e);
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // Auto-save draft to LocalStorage
+  useEffect(() => {
+    if (!isHydrated) return; // Prevent overwriting draft with initial render state
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+      localStorage.setItem(DRAFT_STEP_KEY, step.toString());
+    } catch (e) {
+      console.warn("Failed to save boat draft:", e);
+    }
+  }, [data, step, isHydrated]);
 
   const goNext = useCallback(async (newData: Partial<WizardData>) => {
     const merged = { ...data, ...newData };
@@ -94,6 +130,8 @@ export function BoatWizard() {
         });
 
         if (result.success) {
+          localStorage.removeItem(DRAFT_KEY);
+          localStorage.removeItem(DRAFT_STEP_KEY);
           setCompleted(true);
         } else {
           setSaveError(result.error ?? "Failed to save. Please try again.");
@@ -161,13 +199,29 @@ export function BoatWizard() {
       <div className="px-page py-card max-w-[640px] mx-auto">
         <div className="flex items-center justify-between">
           {step > 1 ? (
-            <button
-              onClick={goBack}
-              className="flex items-center gap-micro text-label text-grey-text hover:text-dark-text transition-colors"
-            >
-              <ChevronLeft size={16} />
-              Back
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={goBack}
+                className="flex items-center gap-micro text-label text-grey-text hover:text-dark-text transition-colors"
+              >
+                <ChevronLeft size={16} />
+                Back
+              </button>
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to discard your draft and start over?")) {
+                    localStorage.removeItem(DRAFT_KEY);
+                    localStorage.removeItem(DRAFT_STEP_KEY);
+                    setData(INITIAL_WIZARD_DATA);
+                    setStep(1);
+                    setDirection(-1);
+                  }
+                }}
+                className="text-micro text-error-text opacity-80 hover:opacity-100 transition-opacity"
+              >
+                Discard Draft
+              </button>
+            </div>
           ) : (
             <div />
           )}

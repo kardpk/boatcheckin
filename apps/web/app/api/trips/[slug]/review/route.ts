@@ -142,6 +142,8 @@ export async function POST(
 
   auditLog({
     action: 'review_submitted',
+    actorType: 'guest',
+    actorIdentifier: guestId,
     entityType: 'trip',
     entityId: trip.id,
     changes: { rating, isPublic, guestId },

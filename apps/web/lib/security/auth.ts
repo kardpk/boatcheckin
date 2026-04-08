@@ -3,6 +3,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { createServiceClient } from "@/lib/supabase/service";
 
 /**
  * Require authenticated operator — CRITICAL 1 fix (Next.js 15 async cookies)
@@ -30,6 +31,11 @@ export async function requireOperator() {
           }
         },
       },
+      global: {
+        fetch: (url, options) => {
+          return fetch(url, { ...options, cache: 'no-store' });
+        },
+      },
     }
   );
 
@@ -44,13 +50,45 @@ export async function requireOperator() {
 
   if (error || !user) redirect(loginUrl);
 
-  const { data: operator } = await supabase
+  let { data: operator } = await supabase
     .from("operators")
     .select(
       "id, full_name, email, company_name, subscription_status, subscription_tier, is_active, max_boats, trial_ends_at"
     )
     .eq("id", user.id)
     .single();
+
+  if (!operator) {
+    // Self-heal ghost accounts: auth created, but operator row failed or hasn't created yet
+    const serviceClient = createServiceClient();
+    const { error: healError } = await serviceClient.from("operators").insert({
+      id: user.id,
+      email: user.email!,
+      full_name: user.user_metadata?.full_name || "Operator",
+      company_name: user.user_metadata?.company_name || null,
+      is_active: true,
+      subscription_status: "trial",
+      subscription_tier: "solo",
+      max_boats: 1,
+    });
+    
+    if (healError) {
+      console.error("[AUTH_HEAL_ERROR]", healError);
+      redirect(`/login?error=account_inactive&debug=${encodeURIComponent(healError.message)}`);
+    }
+
+    // Fetch newly created operator
+    const { data: healed, error: fetchError } = await supabase
+      .from("operators")
+      .select("id, full_name, email, company_name, subscription_status, subscription_tier, is_active, max_boats, trial_ends_at")
+      .eq("id", user.id)
+      .single();
+      
+    if (fetchError) {
+       console.error("[AUTH_HEAL_FETCH_ERROR]", fetchError);
+    }
+    operator = healed;
+  }
 
   if (!operator?.is_active) redirect(`/login?error=account_inactive&next=${encodeURIComponent(pathname)}`);
 

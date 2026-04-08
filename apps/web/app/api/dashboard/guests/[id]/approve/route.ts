@@ -46,6 +46,8 @@ export async function PUT(
     action: parsed.data.action === 'approved'
       ? 'approval_granted' : 'approval_denied',
     operatorId: operator.id,
+    actorType: 'operator',
+    actorIdentifier: operator.id,
     entityType: 'guest',
     entityId: id,
     changes: { guestName: data.full_name },

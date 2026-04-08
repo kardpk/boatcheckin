@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { formatTripDate, formatTime, formatDuration } from '@/lib/utils/format'
 import { SnapshotAlerts } from './SnapshotAlerts'
 import { SnapshotGuestList } from './SnapshotGuestList'
@@ -9,7 +9,7 @@ import { StartTripFlow } from './StartTripFlow'
 import { EndTripFlow } from './EndTripFlow'
 import { CaptainChatPanel } from './CaptainChatPanel'
 import { useTripGuests } from '@/hooks/useTripGuests'
-import type { CaptainSnapshotData, TripStatus } from '@/types'
+import type { CaptainSnapshotData, TripStatus, DashboardGuest } from '@/types'
 
 interface CaptainSnapshotViewProps {
   snapshot: CaptainSnapshotData
@@ -28,9 +28,34 @@ export function CaptainSnapshotView({
   const [showStartFlow, setShowStartFlow] = useState(false)
   const [showEndFlow, setShowEndFlow] = useState(false)
   const [liveSnapshot, setLiveSnapshot] = useState(snapshot)
+  // Realtime guest subscription adapter
+  const initialDashboardGuests = useMemo<DashboardGuest[]>(() => 
+    snapshot.guests.map(g => ({
+      id: g.id,
+      fullName: g.fullName,
+      languagePreference: 'en',
+      dietaryRequirements: null,
+      isNonSwimmer: false,
+      isSeaSicknessProne: false,
+      waiverSigned: g.waiverSigned,
+      waiverSignedAt: null,
+      approvalStatus: 'auto_approved',
+      checkedInAt: null,
+      createdAt: '',
+      addonOrders: []
+    })), [snapshot.guests])
 
-  // Realtime guest subscription (for sidebar notification, not display)
-  useTripGuests(snapshot.tripId, [])
+  const { guests: realtimeUpdates } = useTripGuests(snapshot.tripId, initialDashboardGuests)
+
+  const mergedGuests = useMemo(() => {
+    return liveSnapshot.guests.map(guest => {
+      const update = realtimeUpdates.find(r => r.id === guest.id)
+      if (update) {
+        return { ...guest, waiverSigned: update.waiverSigned }
+      }
+      return guest
+    })
+  }, [liveSnapshot.guests, realtimeUpdates])
 
   // Polling fallback — reduced to 5 minutes since realtime is primary
   useEffect(() => {
@@ -161,7 +186,7 @@ export function CaptainSnapshotView({
 
         {/* Guest list */}
         <SnapshotGuestList
-          guests={liveSnapshot.guests}
+          guests={mergedGuests}
           maxGuests={snapshot.guests.length}
         />
 

@@ -4,6 +4,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import { auditLog } from "@/lib/security/audit";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -39,9 +40,14 @@ export async function loginAction(
   auditLog({
     action: "operator_login",
     operatorId: data.user.id,
+    actorType: "operator",
+    actorIdentifier: data.user.id,
     entityType: "operator",
     entityId: data.user.id,
   });
+
+  // Break Next.js App Router Client-Side Cache!
+  revalidatePath("/", "layout");
 
   // Return undefined = success (client will redirect)
   return undefined;

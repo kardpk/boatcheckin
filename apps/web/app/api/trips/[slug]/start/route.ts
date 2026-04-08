@@ -196,6 +196,8 @@ export async function POST(
     await auditLog({
       action: 'trip_started',
       operatorId: trip.operator_id,
+      actorType: 'captain',
+      actorIdentifier: data.captainName ?? 'Captain Token',
       entityType: 'trip',
       entityId: tripId,
       changes: {

@@ -154,6 +154,8 @@ export async function POST(
   auditLog({
     action: 'trip_ended',
     operatorId: trip.operator_id,
+    actorType: 'captain',
+    actorIdentifier: `Token: ${tripId}`,
     entityType: 'trip',
     entityId: tripId,
     changes: {

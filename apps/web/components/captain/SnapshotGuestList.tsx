@@ -1,3 +1,7 @@
+'use client'
+
+import { useRef, useState } from 'react'
+
 interface GuestRow {
   id: string
   fullName: string
@@ -13,6 +17,31 @@ export function SnapshotGuestList({
   maxGuests: number
 }) {
   const signed = guests.filter(g => g.waiverSigned).length
+  const [uploadingId, setUploadingId] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [targetGuest, setTargetGuest] = useState<string | null>(null)
+
+  const handleUploadClick = (guestId: string) => {
+    setTargetGuest(guestId)
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !targetGuest) return
+
+    setUploadingId(targetGuest)
+    // In actual implementation: 
+    // 1. Upload to Supabase Storage
+    // 2. Call server action to mark guest as signed bypass
+    console.log(`Uploading paper waiver for ${targetGuest}...`)
+    
+    // Simulate network delay
+    await new Promise(r => setTimeout(r, 1000))
+    setUploadingId(null)
+    setTargetGuest(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   return (
     <div className="
@@ -71,18 +100,39 @@ export function SnapshotGuestList({
                     {guest.addonEmojis.join('')}
                   </span>
                 )}
-                <span className={
-                  guest.waiverSigned
-                    ? 'text-[12px] font-bold text-[#1D9E75]'
-                    : 'text-[12px] font-bold text-[#E5910A]'
-                }>
-                  {guest.waiverSigned ? '✓' : '⏳'}
-                </span>
+                <div className="flex flex-col items-end gap-1">
+                  <span className={
+                    guest.waiverSigned
+                      ? 'text-[12px] font-bold text-[#1D9E75]'
+                      : 'text-[12px] font-bold text-[#E5910A]'
+                  }>
+                    {guest.waiverSigned ? '✓ Signed' : '⏳ Pending'}
+                  </span>
+                  
+                  {!guest.waiverSigned && (
+                    <button 
+                      onClick={() => handleUploadClick(guest.id)}
+                      disabled={uploadingId === guest.id}
+                      className="text-[10px] text-[#6B7C93] underline disabled:opacity-50"
+                    >
+                      {uploadingId === guest.id ? 'Uploading...' : 'Upload Paper'}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
+      
+      {/* Hidden file input for paper waiver upload */}
+      <input 
+        type="file" 
+        accept="application/pdf,image/*"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+      />
     </div>
   )
 }

@@ -252,6 +252,8 @@ export async function POST(
 
   auditLog({
     action: 'guest_registered',
+    actorType: 'guest',
+    actorIdentifier: guestId,
     entityType: 'guest',
     entityId: guestId,
     changes: {

@@ -121,6 +121,8 @@ export async function createTrip(
   auditLog({
     action: 'trip_created',
     operatorId: operator.id,
+    actorType: 'operator',
+    actorIdentifier: operator.id,
     entityType: 'trip',
     entityId: trip.id,
     changes: {
@@ -282,6 +284,8 @@ export async function cancelTrip(tripId: string): Promise<ActionResult> {
   auditLog({
     action: 'trip_cancelled',
     operatorId: operator.id,
+    actorType: 'operator',
+    actorIdentifier: operator.id,
     entityType: 'trip',
     entityId: tripId,
   })

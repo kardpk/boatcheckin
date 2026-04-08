@@ -29,6 +29,8 @@ export async function DELETE(
   auditLog({
     action: 'guest_removed',
     operatorId: operator.id,
+    actorType: 'operator',
+    actorIdentifier: operator.id,
     entityType: 'guest',
     entityId: id,
     changes: { guestName: data.full_name },

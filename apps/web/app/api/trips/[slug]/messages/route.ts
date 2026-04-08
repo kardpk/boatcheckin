@@ -20,9 +20,9 @@ const messageSchema = z.object({
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ tripId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { tripId } = await params
+  const { slug: tripId } = await params
 
   if (!/^[0-9a-f-]{36}$/.test(tripId)) {
     return NextResponse.json(
@@ -155,9 +155,9 @@ export async function POST(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ tripId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { tripId } = await params
+  const { slug: tripId } = await params
 
   const limited = await rateLimit(req, {
     max: 60, window: 60,

@@ -56,8 +56,12 @@ export function useOperatorNotifications(
   useEffect(() => {
     const supabase = createClient()
 
+    // Use a unique suffix to prevent React Strict Mode hot-reload crashes,
+    // where the singleton client re-returns an already subscribed channel!
+    const channelName = `${CHANNELS.operatorNotifications(operatorId)}-${Math.random().toString(36).substring(7)}`
+
     const channel = supabase
-      .channel(CHANNELS.operatorNotifications(operatorId))
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

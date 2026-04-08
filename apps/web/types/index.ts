@@ -39,6 +39,7 @@ export interface Operator {
   maxBoats: number;
   stripeCustomerId: string | null;
   stripeConnectAccountId: string | null;
+  firmaWorkspaceId: string | null;
   createdAt: string;
 }
 
@@ -64,6 +65,8 @@ export interface BoatProfile {
   whatToBring: string | null;
   houseRules: string | null;
   waiverText: string;
+  firmaTemplateId: string | null;
+  requiresAnnualWaiver: boolean;
   cancellationPolicy: string | null;
   addons: AddonItem[];
   photoUrl: string | null;
@@ -94,6 +97,7 @@ export interface TripWithBoat extends Trip {
 export interface GuestRecord {
   id: string;
   tripId: string;
+  customerId: string | null;
   fullName: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
@@ -302,6 +306,7 @@ export interface JoinFlowState {
 // ─── Full guest record for dashboard ────────
 export interface DashboardGuest {
   id: string
+  customerId: string | null
   fullName: string
   languagePreference: string
   dietaryRequirements: string | null
@@ -346,6 +351,7 @@ export interface OperatorTripDetail {
     lng: number | null
     captainName: string | null
     waiverText: string
+    firmaTemplateId: string | null
     safetyPoints: { id: string; text: string }[]
   }
   guests: DashboardGuest[]

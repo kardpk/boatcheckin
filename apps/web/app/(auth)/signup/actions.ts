@@ -3,7 +3,9 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { auditLog } from "@/lib/security/audit";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const signupSchema = z.object({
@@ -74,8 +76,9 @@ export async function signupAction(
     return { error: "Something went wrong. Please try again." };
   }
 
-  // Insert operator record
-  const { error: insertError } = await supabase.from("operators").insert({
+  // Insert operator record bypassing RLS (session may not be active yet)
+  const serviceClient = createServiceClient();
+  const { error: insertError } = await serviceClient.from("operators").insert({
     id: user.id,
     email: user.email,
     full_name: fullName,
@@ -96,6 +99,8 @@ export async function signupAction(
   auditLog({
     action: "operator_login", // closest match in AuditAction type
     operatorId: user.id,
+    actorType: "operator",
+    actorIdentifier: user.id,
     entityType: "operator",
     entityId: user.id,
   });

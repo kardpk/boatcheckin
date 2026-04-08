@@ -128,6 +128,8 @@ export async function POST(
 
   auditLog({
     action: 'addon_ordered',
+    actorType: 'guest',
+    actorIdentifier: guestId,
     entityType: 'guest',
     entityId: guestId,
     changes: {

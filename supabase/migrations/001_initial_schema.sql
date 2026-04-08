@@ -10,7 +10,7 @@
 -- ==========================================
 -- 1. OPERATORS
 -- ==========================================
-CREATE TABLE operators (
+CREATE TABLE IF NOT EXISTS operators (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           TEXT UNIQUE NOT NULL,
   full_name       TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE operators (
 -- ==========================================
 -- 2. BOATS
 -- ==========================================
-CREATE TABLE boats (
+CREATE TABLE IF NOT EXISTS boats (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   operator_id     UUID NOT NULL REFERENCES operators(id) ON DELETE CASCADE,
   boat_name       TEXT NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE boats (
 -- ==========================================
 -- 3. ADDONS (per boat)
 -- ==========================================
-CREATE TABLE addons (
+CREATE TABLE IF NOT EXISTS addons (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   boat_id         UUID NOT NULL REFERENCES boats(id) ON DELETE CASCADE,
   operator_id     UUID NOT NULL REFERENCES operators(id) ON DELETE CASCADE,
@@ -97,7 +97,7 @@ CREATE TABLE addons (
 -- ==========================================
 -- 4. TRIPS
 -- ==========================================
-CREATE TABLE trips (
+CREATE TABLE IF NOT EXISTS trips (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   operator_id     UUID NOT NULL REFERENCES operators(id) ON DELETE CASCADE,
   boat_id         UUID NOT NULL REFERENCES boats(id) ON DELETE CASCADE,
@@ -123,7 +123,7 @@ CREATE TABLE trips (
 -- ==========================================
 -- 5. BOOKINGS (multiple per trip for split charters)
 -- ==========================================
-CREATE TABLE bookings (
+CREATE TABLE IF NOT EXISTS bookings (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trip_id         UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
   operator_id     UUID NOT NULL REFERENCES operators(id),
@@ -140,7 +140,7 @@ CREATE TABLE bookings (
 -- ==========================================
 -- 6. GUESTS (self-registered)
 -- ==========================================
-CREATE TABLE guests (
+CREATE TABLE IF NOT EXISTS guests (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trip_id         UUID NOT NULL REFERENCES trips(id) ON DELETE RESTRICT,
   booking_id      UUID REFERENCES bookings(id),
@@ -179,7 +179,7 @@ CREATE TABLE guests (
 -- ==========================================
 -- 7. GUEST ADDON ORDERS
 -- ==========================================
-CREATE TABLE guest_addon_orders (
+CREATE TABLE IF NOT EXISTS guest_addon_orders (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   guest_id        UUID NOT NULL REFERENCES guests(id),
   trip_id         UUID NOT NULL REFERENCES trips(id),
@@ -197,7 +197,7 @@ CREATE TABLE guest_addon_orders (
 -- ==========================================
 -- 8. TRIP REVIEWS
 -- ==========================================
-CREATE TABLE trip_reviews (
+CREATE TABLE IF NOT EXISTS trip_reviews (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trip_id         UUID NOT NULL REFERENCES trips(id),
   guest_id        UUID REFERENCES guests(id),
@@ -214,7 +214,7 @@ CREATE TABLE trip_reviews (
 -- ==========================================
 -- 9. POSTCARDS
 -- ==========================================
-CREATE TABLE postcards (
+CREATE TABLE IF NOT EXISTS postcards (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   guest_id        UUID NOT NULL REFERENCES guests(id),
   trip_id         UUID NOT NULL REFERENCES trips(id),
@@ -229,7 +229,7 @@ CREATE TABLE postcards (
 -- ==========================================
 -- 10. OPERATOR NOTIFICATIONS
 -- ==========================================
-CREATE TABLE operator_notifications (
+CREATE TABLE IF NOT EXISTS operator_notifications (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   operator_id     UUID NOT NULL REFERENCES operators(id),
   type            TEXT NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE operator_notifications (
 -- ==========================================
 -- 11. AUDIT LOG
 -- ==========================================
-CREATE TABLE audit_log (
+CREATE TABLE IF NOT EXISTS audit_log (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   operator_id     UUID REFERENCES operators(id),
   action          TEXT NOT NULL,
@@ -261,45 +261,45 @@ CREATE TABLE audit_log (
 -- ==========================================
 
 -- Operators
-CREATE INDEX idx_operators_email ON operators(email);
-CREATE INDEX idx_operators_stripe_customer ON operators(stripe_customer_id);
-CREATE INDEX idx_operators_referral_code ON operators(referral_code);
+CREATE INDEX IF NOT EXISTS idx_operators_email ON operators(email);
+CREATE INDEX IF NOT EXISTS idx_operators_stripe_customer ON operators(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_operators_referral_code ON operators(referral_code);
 
 -- Boats
-CREATE INDEX idx_boats_operator_id ON boats(operator_id);
-CREATE INDEX idx_boats_active ON boats(operator_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_boats_operator_id ON boats(operator_id);
+CREATE INDEX IF NOT EXISTS idx_boats_active ON boats(operator_id, is_active);
 
 -- Trips
-CREATE INDEX idx_trips_slug ON trips(slug);
-CREATE INDEX idx_trips_operator ON trips(operator_id);
-CREATE INDEX idx_trips_boat ON trips(boat_id);
-CREATE INDEX idx_trips_date ON trips(trip_date);
-CREATE INDEX idx_trips_status ON trips(status);
+CREATE INDEX IF NOT EXISTS idx_trips_slug ON trips(slug);
+CREATE INDEX IF NOT EXISTS idx_trips_operator ON trips(operator_id);
+CREATE INDEX IF NOT EXISTS idx_trips_boat ON trips(boat_id);
+CREATE INDEX IF NOT EXISTS idx_trips_date ON trips(trip_date);
+CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
 
 -- Guests
-CREATE INDEX idx_guests_trip ON guests(trip_id);
-CREATE INDEX idx_guests_operator ON guests(operator_id);
-CREATE INDEX idx_guests_qr_token ON guests(qr_token);
-CREATE INDEX idx_guests_waiver ON guests(trip_id, waiver_signed);
-CREATE INDEX idx_guests_not_deleted ON guests(trip_id)
+CREATE INDEX IF NOT EXISTS idx_guests_trip ON guests(trip_id);
+CREATE INDEX IF NOT EXISTS idx_guests_operator ON guests(operator_id);
+CREATE INDEX IF NOT EXISTS idx_guests_qr_token ON guests(qr_token);
+CREATE INDEX IF NOT EXISTS idx_guests_waiver ON guests(trip_id, waiver_signed);
+CREATE INDEX IF NOT EXISTS idx_guests_not_deleted ON guests(trip_id)
   WHERE deleted_at IS NULL;
 
 -- Bookings
-CREATE INDEX idx_bookings_trip ON bookings(trip_id);
-CREATE INDEX idx_bookings_link ON bookings(booking_link);
+CREATE INDEX IF NOT EXISTS idx_bookings_trip ON bookings(trip_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_link ON bookings(booking_link);
 
 -- Orders
-CREATE INDEX idx_orders_guest ON guest_addon_orders(guest_id);
-CREATE INDEX idx_orders_trip ON guest_addon_orders(trip_id);
-CREATE INDEX idx_orders_operator ON guest_addon_orders(operator_id);
+CREATE INDEX IF NOT EXISTS idx_orders_guest ON guest_addon_orders(guest_id);
+CREATE INDEX IF NOT EXISTS idx_orders_trip ON guest_addon_orders(trip_id);
+CREATE INDEX IF NOT EXISTS idx_orders_operator ON guest_addon_orders(operator_id);
 
 -- Notifications
-CREATE INDEX idx_notifications_operator ON operator_notifications(operator_id, read_at);
+CREATE INDEX IF NOT EXISTS idx_notifications_operator ON operator_notifications(operator_id, read_at);
 
 -- Audit log
-CREATE INDEX idx_audit_log_operator ON audit_log(operator_id);
-CREATE INDEX idx_audit_log_action ON audit_log(action);
-CREATE INDEX idx_audit_log_created ON audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_operator ON audit_log(operator_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at);
 
 
 -- ==========================================
@@ -319,31 +319,39 @@ ALTER TABLE operator_notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
 -- ── OPERATORS ──
+DROP POLICY IF EXISTS "operators_own_data" ON operators;
 CREATE POLICY "operators_own_data" ON operators
   FOR ALL USING (auth.uid() = id);
 
 -- ── BOATS ──
+DROP POLICY IF EXISTS "boats_operator_owns" ON boats;
 CREATE POLICY "boats_operator_owns" ON boats
   FOR ALL USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "boats_public_read" ON boats;
 CREATE POLICY "boats_public_read" ON boats
   FOR SELECT USING (is_active = true);
 
 -- ── ADDONS ──
+DROP POLICY IF EXISTS "addons_operator_manages" ON addons;
 CREATE POLICY "addons_operator_manages" ON addons
   FOR ALL USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "addons_public_read" ON addons;
 CREATE POLICY "addons_public_read" ON addons
   FOR SELECT USING (is_available = true);
 
 -- ── TRIPS ──
+DROP POLICY IF EXISTS "trips_operator_owns" ON trips;
 CREATE POLICY "trips_operator_owns" ON trips
   FOR ALL USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "trips_public_read" ON trips;
 CREATE POLICY "trips_public_read" ON trips
   FOR SELECT USING (status != 'cancelled');
 
 -- ── BOOKINGS ──
+DROP POLICY IF EXISTS "bookings_operator_owns" ON bookings;
 CREATE POLICY "bookings_operator_owns" ON bookings
   FOR ALL USING (auth.uid() = operator_id);
 
@@ -356,11 +364,13 @@ CREATE POLICY "bookings_operator_owns" ON bookings
 -- ══════════════════════════════════════════
 
 -- Operators see their guests
+DROP POLICY IF EXISTS "guests_operator_reads" ON guests;
 CREATE POLICY "guests_operator_reads" ON guests
   FOR SELECT
   USING (auth.uid() = operator_id);
 
 -- Anonymous can INSERT (registration) but NOT SELECT
+DROP POLICY IF EXISTS "guests_anonymous_insert" ON guests;
 CREATE POLICY "guests_anonymous_insert" ON guests
   FOR INSERT
   WITH CHECK (
@@ -372,6 +382,7 @@ CREATE POLICY "guests_anonymous_insert" ON guests
   );
 
 -- Operators can UPDATE approval status only
+DROP POLICY IF EXISTS "guests_operator_approves" ON guests;
 CREATE POLICY "guests_operator_approves" ON guests
   FOR UPDATE
   USING (auth.uid() = operator_id)
@@ -381,23 +392,29 @@ CREATE POLICY "guests_operator_approves" ON guests
 -- Deletion via GDPR function uses service role
 
 -- ── GUEST ADDON ORDERS ──
+DROP POLICY IF EXISTS "orders_operator_sees" ON guest_addon_orders;
 CREATE POLICY "orders_operator_sees" ON guest_addon_orders
   FOR SELECT USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "orders_public_insert" ON guest_addon_orders;
 CREATE POLICY "orders_public_insert" ON guest_addon_orders
   FOR INSERT WITH CHECK (true);
 
 -- ── TRIP REVIEWS ──
+DROP POLICY IF EXISTS "reviews_operator_owns" ON trip_reviews;
 CREATE POLICY "reviews_operator_owns" ON trip_reviews
   FOR ALL USING (auth.uid() = operator_id);
 
+DROP POLICY IF EXISTS "reviews_public_read" ON trip_reviews;
 CREATE POLICY "reviews_public_read" ON trip_reviews
   FOR SELECT USING (is_public = true);
 
 -- ── POSTCARDS ──
+DROP POLICY IF EXISTS "postcards_public_insert" ON postcards;
 CREATE POLICY "postcards_public_insert" ON postcards
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "postcards_operator_reads" ON postcards;
 CREATE POLICY "postcards_operator_reads" ON postcards
   FOR SELECT USING (
     EXISTS (
@@ -408,11 +425,13 @@ CREATE POLICY "postcards_operator_reads" ON postcards
   );
 
 -- ── NOTIFICATIONS ──
+DROP POLICY IF EXISTS "notifications_own" ON operator_notifications;
 CREATE POLICY "notifications_own" ON operator_notifications
   FOR ALL USING (auth.uid() = operator_id);
 
 -- ── AUDIT LOG ──
 -- Only service role inserts (no RLS read for operators)
+DROP POLICY IF EXISTS "audit_log_operator_reads" ON audit_log;
 CREATE POLICY "audit_log_operator_reads" ON audit_log
   FOR SELECT USING (auth.uid() = operator_id);
 
@@ -430,14 +449,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS operators_updated_at ON operators;
 CREATE TRIGGER operators_updated_at
   BEFORE UPDATE ON operators
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS boats_updated_at ON boats;
 CREATE TRIGGER boats_updated_at
   BEFORE UPDATE ON boats
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS trips_updated_at ON trips;
 CREATE TRIGGER trips_updated_at
   BEFORE UPDATE ON trips
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();

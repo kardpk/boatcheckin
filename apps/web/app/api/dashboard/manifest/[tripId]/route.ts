@@ -73,6 +73,8 @@ export async function GET(
   auditLog({
     action: 'manifest_downloaded',
     operatorId: operator.id,
+    actorType: 'operator',
+    actorIdentifier: operator.id,
     entityType: 'trip',
     entityId: tripId,
     changes: { guestCount: trip.guests.length },
