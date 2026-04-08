@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 
 // ─── Text sanitiser ───────────────────────────────────────────────────────────
 
@@ -10,7 +10,7 @@ import DOMPurify from 'isomorphic-dompurify'
  * text is written to the database.
  */
 export function sanitiseText(input: string): string {
-  return DOMPurify.sanitize(input.trim())
+  return sanitizeHtml(input.trim())
 }
 
 // ─── Trip creation schema ─────────────────────────────────────────────────────

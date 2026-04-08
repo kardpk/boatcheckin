@@ -62,8 +62,8 @@ export function StepWaiver({
           gdprConsent: state.gdprConsent,
           marketingConsent: state.marketingConsent,
           safetyAcknowledgments: state.safetyAcks,
-          // If auto-signed via firma, these will be out of sync in closure unless we pull them strictly
-          waiverSignatureText: 'Digital E-Signature',
+          // Pass the actual typed signature if available, otherwise just use 'Digital E-Signature' for auto-signing flows
+          waiverSignatureText: state.signatureText.trim() || 'Digital E-Signature',
           waiverAgreed: true,
           waiverTextHash: waiverHash || 'firma_template',
           turnstileToken: 'dev-bypass',

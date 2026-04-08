@@ -151,23 +151,15 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
       route_stops, started_at, ended_at,
       operators ( id, company_name ),
       boats (
-        id, boat_name, boat_type, boat_type_key,
+        id, boat_name, boat_type,
         marina_name, marina_address, slip_number,
-        parking_instructions, operating_area, lat, lng,
+        parking_instructions, lat, lng,
         captain_name, captain_photo_url, captain_bio,
-        captain_license, captain_license_type,
-        captain_languages, captain_years_exp,
-        captain_trip_count, captain_rating,
-        captain_certifications,
-        what_to_bring, what_not_to_bring,
-        house_rules, prohibited_items,
-        custom_dos, custom_donts, custom_rule_sections,
-        safety_points, waiver_text, cancellation_policy,
-        selected_equipment, selected_amenities,
-        specific_field_values, onboard_info,
-        boat_photos (
-          id, public_url, display_order, is_cover
-        ),
+        captain_license, captain_languages,
+        captain_years_exp, captain_trip_count, captain_rating,
+        what_to_bring, house_rules, prohibited_items,
+        safety_briefing, waiver_text, cancellation_policy,
+        onboard_info, photo_urls,
         addons (
           id, name, description, emoji,
           price_cents, max_quantity, is_available, sort_order
@@ -175,17 +167,10 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
       )
     `)
     .eq('slug', slug)
-    .order('display_order', {
-      referencedTable: 'boats.boat_photos',
-      ascending: true,
-    })
-    .order('sort_order', {
-      referencedTable: 'boats.addons',
-      ascending: true,
-    })
     .single()
 
   if (error || !trip) {
+    if (error) console.error('[getTripPageData] Supabase Error:', error?.message, error?.details, error?.code, JSON.stringify(error))
     return { found: false, reason: 'not_found' }
   }
 
@@ -224,42 +209,44 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
       marinaAddress: boat.marina_address ?? '',
       slipNumber: boat.slip_number ?? null,
       parkingInstructions: boat.parking_instructions ?? null,
-      operatingArea: boat.operating_area ?? null,
+      operatingArea: null,
       lat: boat.lat ? Number(boat.lat) : null,
       lng: boat.lng ? Number(boat.lng) : null,
       captainName: boat.captain_name ?? null,
       captainPhotoUrl: boat.captain_photo_url ?? null,
       captainBio: boat.captain_bio ?? null,
       captainLicense: boat.captain_license ?? null,
-      captainLicenseType: boat.captain_license_type ?? null,
+      captainLicenseType: null,
       captainLanguages: (boat.captain_languages as string[]) ?? ['en'],
       captainYearsExp: boat.captain_years_exp ?? null,
       captainTripCount: boat.captain_trip_count ?? null,
       captainRating: boat.captain_rating ? Number(boat.captain_rating) : null,
-      captainCertifications: (boat.captain_certifications as string[]) ?? [],
+      captainCertifications: [],
       whatToBring: boat.what_to_bring ?? null,
-      whatNotToBring: boat.what_not_to_bring ?? null,
+      whatNotToBring: null,
       houseRules: boat.house_rules ?? null,
       prohibitedItems: boat.prohibited_items ?? null,
-      customDos: (boat.custom_dos as string[]) ?? [],
-      customDonts: (boat.custom_donts as string[]) ?? [],
-      customRuleSections: (boat.custom_rule_sections as CustomRuleSection[]) ?? [],
-      safetyPoints: (boat.safety_points as SafetyPoint[]) ?? [],
+      customDos: [],
+      customDonts: [],
+      customRuleSections: [],
+      safetyPoints: (boat.safety_briefing as string) ? [{ id: '1', rule: boat.safety_briefing as string }] : [],
       waiverText: boat.waiver_text ?? '',
       cancellationPolicy: boat.cancellation_policy ?? null,
-      selectedEquipment: (boat.selected_equipment as string[]) ?? [],
-      selectedAmenities: (boat.selected_amenities as Record<string, boolean>) ?? {},
-      specificFieldValues: (boat.specific_field_values as Record<string, unknown>) ?? {},
+      selectedEquipment: [],
+      selectedAmenities: {},
+      specificFieldValues: {},
       onboardInfo: (boat.onboard_info as Record<string, unknown>) ?? {},
     },
-    photos: ((boat.boat_photos as Record<string, unknown>[]) ?? []).map((p) => ({
-      id: p['id'] as string,
-      publicUrl: p['public_url'] as string,
-      displayOrder: p['display_order'] as number,
-      isCover: p['is_cover'] as boolean,
-    })),
+    photos: ((boat.photo_urls as string[]) ?? [])
+      .map((url, i) => ({
+        id: `photo-${i}`,
+        publicUrl: url,
+        displayOrder: i,
+        isCover: i === 0,
+      })),
     addons: ((boat.addons as Record<string, unknown>[]) ?? [])
       .filter((a) => a['is_available'] === true)
+      .sort((a, b) => (a['sort_order'] as number) - (b['sort_order'] as number))
       .map((a) => ({
         id: a['id'] as string,
         name: a['name'] as string,

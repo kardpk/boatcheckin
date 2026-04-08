@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { LANGUAGE_FLAGS, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from '@/lib/i18n/detect'
+import { LANGUAGE_FLAGS, LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from '@/lib/i18n/constants'
 import { cn } from '@/lib/utils/cn'
-import type { SupportedLang } from '@/lib/i18n/detect'
+import type { SupportedLang } from '@/lib/i18n/constants'
 
 interface LanguageSelectorProps {
   currentLang: SupportedLang

@@ -65,7 +65,7 @@ const EN_TRIP = {
   headTo: 'Head to',
   completedHeading: 'Hope you had an amazing time! 🌊',
 
-  guestCount: (n: number, max: number) => `${n} of ${max} checked in`,
+  guestCount: '{n} of {max} checked in',
 }
 
 export type TripT = typeof EN_TRIP
@@ -118,7 +118,7 @@ const ES_TRIP: TripT = {
   activeBanner: 'Tu charter está activo',
   headTo: 'Dirígete a',
   completedHeading: '¡Esperamos que lo hayas disfrutado! 🌊',
-  guestCount: (n, max) => `${n} de ${max} registrados`,
+  guestCount: '{n} de {max} registrados',
 }
 
 // ─── French ───────────────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ const FR_TRIP: TripT = {
   activeBanner: 'Votre charter est actif',
   headTo: 'Rendez-vous à',
   completedHeading: 'Nous espérons que vous avez passé un bon moment ! 🌊',
-  guestCount: (n, max) => `${n} sur ${max} enregistrés`,
+  guestCount: '{n} sur {max} enregistrés',
 }
 
 // ─── Portuguese ───────────────────────────────────────────────────────────────
@@ -220,7 +220,7 @@ const PT_TRIP: TripT = {
   activeBanner: 'O seu charter está ativo',
   headTo: 'Dirija-se a',
   completedHeading: 'Esperamos que tenha adorado! 🌊',
-  guestCount: (n, max) => `${n} de ${max} registados`,
+  guestCount: '{n} de {max} registados',
 }
 
 // ─── German ───────────────────────────────────────────────────────────────────
@@ -271,7 +271,7 @@ const DE_TRIP: TripT = {
   activeBanner: 'Ihr Charter ist aktiv',
   headTo: 'Begeben Sie sich zu',
   completedHeading: 'Wir hoffen, es war wunderschön! 🌊',
-  guestCount: (n, max) => `${n} von ${max} eingecheckt`,
+  guestCount: '{n} von {max} eingecheckt',
 }
 
 // ─── Italian ──────────────────────────────────────────────────────────────────
@@ -322,7 +322,7 @@ const IT_TRIP: TripT = {
   activeBanner: 'Il tuo charter è attivo',
   headTo: 'Dirigiti a',
   completedHeading: 'Speriamo tu abbia trascorso un momento fantastico! 🌊',
-  guestCount: (n, max) => `${n} di ${max} registrati`,
+  guestCount: '{n} di {max} registrati',
 }
 
 // ─── Registry ─────────────────────────────────────────────────────────────────

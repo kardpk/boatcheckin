@@ -32,24 +32,24 @@ describe('tripTranslations', () => {
     })
   })
 
-  it('guestCount function returns correct string for en', () => {
+  it('guestCount returns correct string with replacements for en', () => {
     const tr = t('en')
-    expect(tr.guestCount(7, 8)).toBe('7 of 8 checked in')
+    expect(tr.guestCount.replace('{n}','7').replace('{max}','8')).toBe('7 of 8 checked in')
   })
 
-  it('guestCount function works for es', () => {
+  it('guestCount works for es', () => {
     const tr = t('es')
-    expect(tr.guestCount(3, 10)).toBe('3 de 10 registrados')
+    expect(tr.guestCount.replace('{n}','3').replace('{max}','10')).toBe('3 de 10 registrados')
   })
 
-  it('guestCount function works for fr', () => {
+  it('guestCount works for fr', () => {
     const tr = t('fr')
-    expect(tr.guestCount(5, 12)).toBe('5 sur 12 enregistrés')
+    expect(tr.guestCount.replace('{n}','5').replace('{max}','12')).toBe('5 sur 12 enregistrés')
   })
 
-  it('guestCount function works for de', () => {
+  it('guestCount works for de', () => {
     const tr = t('de')
-    expect(tr.guestCount(2, 8)).toBe('2 von 8 eingecheckt')
+    expect(tr.guestCount.replace('{n}','2').replace('{max}','8')).toBe('2 von 8 eingecheckt')
   })
 
   it('charter type labels exist for all types in all languages', () => {

@@ -69,7 +69,7 @@ export function StickyJoinCTA({
 
         {/* Guest count */}
         <p className="text-[13px] text-[#6B7C93] text-center mb-3">
-          {tr.guestCount(guestCount, maxGuests)}
+          {tr.guestCount.replace('{n}', guestCount.toString()).replace('{max}', maxGuests.toString())}
         </p>
 
         {/* CTA button */}

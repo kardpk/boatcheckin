@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
+import { SUPPORTED_LANGUAGES, type SupportedLang } from './constants'
 
-export const SUPPORTED_LANGUAGES = ['en', 'es', 'pt', 'fr', 'de', 'it'] as const
-export type SupportedLang = typeof SUPPORTED_LANGUAGES[number]
+export * from './constants'
 
 export async function detectLanguage(langOverride?: string): Promise<SupportedLang> {
   // URL ?lang= override takes highest priority
@@ -17,14 +17,4 @@ export async function detectLanguage(langOverride?: string): Promise<SupportedLa
   return SUPPORTED_LANGUAGES.includes(primary as SupportedLang)
     ? (primary as SupportedLang)
     : 'en'
-}
-
-export const LANGUAGE_FLAGS: Record<SupportedLang, string> = {
-  en: '🇬🇧', es: '🇪🇸', pt: '🇵🇹',
-  fr: '🇫🇷', de: '🇩🇪', it: '🇮🇹',
-}
-
-export const LANGUAGE_NAMES: Record<SupportedLang, string> = {
-  en: 'English', es: 'Español', pt: 'Português',
-  fr: 'Français', de: 'Deutsch', it: 'Italiano',
 }
