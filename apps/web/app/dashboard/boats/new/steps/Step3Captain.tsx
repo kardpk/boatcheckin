@@ -18,25 +18,20 @@ const LANGUAGES = [
   { code: "it", flag: "🇮🇹", name: "Italian" },
 ] as const;
 
-const YEARS_OPTIONS = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6-10",
-  "10-15",
-  "15-20",
-  "20+",
-];
+const YEARS_OPTIONS = ["1", "2", "3", "4", "5", "6-10", "10-15", "15-20", "20+"];
+
+const CERTIFICATIONS = [
+  { key: "cpr_firstaid", label: "CPR / First Aid certified" },
+  { key: "swift_water", label: "Swift Water Rescue" },
+  { key: "uscg_safety", label: "USCG Safety Instructor" },
+  { key: "padi_dm", label: "PADI Divemaster" },
+  { key: "asa_instructor", label: "ASA Certified Instructor" },
+  { key: "fl_boating", label: "Florida Boating Safety Instructor" },
+] as const;
 
 const step3Schema = z.object({
   captainName: z.string().min(2, "Please enter the captain's name"),
-  captainLanguages: z
-    .array(z.string())
-    .min(1, "Please select at least one language"),
-  captainBio: z.string().max(300).optional(),
-  captainLicense: z.string().max(50).optional(),
+  captainLanguages: z.array(z.string()).min(1, "Please select at least one language"),
 });
 
 interface Step3Props {
@@ -46,23 +41,29 @@ interface Step3Props {
 
 export function Step3Captain({ data, onNext }: Step3Props) {
   const [captainName, setCaptainName] = useState(data.captainName);
-  const [captainPhotoFile, setCaptainPhotoFile] = useState<File | null>(
-    data.captainPhotoFile
-  );
-  const [captainPhotoPreview, setCaptainPhotoPreview] = useState(
-    data.captainPhotoPreview
-  );
+  const [captainPhotoFile, setCaptainPhotoFile] = useState<File | null>(data.captainPhotoFile);
+  const [captainPhotoPreview, setCaptainPhotoPreview] = useState(data.captainPhotoPreview);
   const [captainLicense, setCaptainLicense] = useState(data.captainLicense);
+  const [captainLicenseType, setCaptainLicenseType] = useState(data.captainLicenseType);
   const [captainYearsExp, setCaptainYearsExp] = useState(data.captainYearsExp);
-  const [captainLanguages, setCaptainLanguages] = useState<string[]>(
-    data.captainLanguages
-  );
+  const [captainLanguages, setCaptainLanguages] = useState<string[]>(data.captainLanguages);
   const [captainBio, setCaptainBio] = useState(data.captainBio);
+  const [captainTripCount, setCaptainTripCount] = useState(data.captainTripCount);
+  const [captainRating, setCaptainRating] = useState(data.captainRating);
+  const [captainCertifications, setCaptainCertifications] = useState<string[]>(
+    data.captainCertifications
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function toggleLanguage(code: string) {
     setCaptainLanguages((prev) =>
       prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    );
+  }
+
+  function toggleCert(key: string) {
+    setCaptainCertifications((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
     );
   }
 
@@ -72,14 +73,7 @@ export function Step3Captain({ data, onNext }: Step3Props) {
   }
 
   function handleContinue() {
-    const raw = {
-      captainName,
-      captainLanguages,
-      captainBio: captainBio || undefined,
-      captainLicense: captainLicense || undefined,
-    };
-
-    const result = step3Schema.safeParse(raw);
+    const result = step3Schema.safeParse({ captainName, captainLanguages });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of result.error.issues) {
@@ -96,9 +90,13 @@ export function Step3Captain({ data, onNext }: Step3Props) {
       captainPhotoFile,
       captainPhotoPreview,
       captainLicense,
+      captainLicenseType,
       captainYearsExp,
       captainLanguages,
       captainBio,
+      captainTripCount,
+      captainRating,
+      captainCertifications,
     });
   }
 
@@ -108,19 +106,11 @@ export function Step3Captain({ data, onNext }: Step3Props) {
     <div className="space-y-page">
       {/* Photo upload */}
       <div className="flex justify-center">
-        <CircularPhotoUpload
-          preview={captainPhotoPreview}
-          onFileSelected={handlePhotoSelected}
-        />
+        <CircularPhotoUpload preview={captainPhotoPreview} onFileSelected={handlePhotoSelected} />
       </div>
 
       {/* Captain name */}
-      <WizardField
-        label="Captain name"
-        required
-        error={errors.captainName}
-        htmlFor="captainName"
-      >
+      <WizardField label="Captain name" required error={errors.captainName} htmlFor="captainName">
         <input
           id="captainName"
           value={captainName}
@@ -161,15 +151,49 @@ export function Step3Captain({ data, onNext }: Step3Props) {
             captainYearsExp ? "text-dark-text" : "text-grey-text/50"
           )}
         >
-          <option value="" disabled>
-            Select experience
-          </option>
+          <option value="" disabled>Select experience</option>
           {YEARS_OPTIONS.map((yr) => (
-            <option key={yr} value={yr}>
-              {yr} years
-            </option>
+            <option key={yr} value={yr}>{yr} years</option>
           ))}
         </select>
+      </WizardField>
+
+      {/* Trip count */}
+      <WizardField
+        label="Number of charter trips completed"
+        helper="Shown as social proof on your guest page"
+        htmlFor="captainTripCount"
+      >
+        <input
+          id="captainTripCount"
+          type="number"
+          inputMode="numeric"
+          min={0}
+          value={captainTripCount}
+          onChange={(e) => setCaptainTripCount(e.target.value)}
+          placeholder="124"
+          className="w-full h-[44px] px-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
+        />
+      </WizardField>
+
+      {/* Rating */}
+      <WizardField
+        label="Current average rating"
+        helper="Pulls from your Boatsetter/GetMyBoat rating"
+        htmlFor="captainRating"
+      >
+        <input
+          id="captainRating"
+          type="number"
+          inputMode="decimal"
+          min={1}
+          max={5}
+          step={0.1}
+          value={captainRating}
+          onChange={(e) => setCaptainRating(e.target.value)}
+          placeholder="4.9"
+          className="w-full h-[44px] px-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
+        />
       </WizardField>
 
       {/* Languages */}
@@ -201,6 +225,31 @@ export function Step3Captain({ data, onNext }: Step3Props) {
         </div>
       </WizardField>
 
+      {/* Certifications */}
+      <WizardField label="Additional certifications">
+        <div className="flex flex-wrap gap-tight">
+          {CERTIFICATIONS.map((cert) => {
+            const selected = captainCertifications.includes(cert.key);
+            return (
+              <button
+                key={cert.key}
+                type="button"
+                onClick={() => toggleCert(cert.key)}
+                className={cn(
+                  "px-standard py-[6px] rounded-pill text-label transition-all",
+                  selected
+                    ? "bg-teal-500 text-white border border-teal-500"
+                    : "bg-white text-grey-text border border-border hover:border-border-dark"
+                )}
+              >
+                {selected ? "✓ " : ""}
+                {cert.label}
+              </button>
+            );
+          })}
+        </div>
+      </WizardField>
+
       {/* Bio */}
       <WizardField label="About the captain" htmlFor="captainBio">
         <textarea
@@ -209,7 +258,7 @@ export function Step3Captain({ data, onNext }: Step3Props) {
           maxLength={300}
           value={captainBio}
           onChange={(e) => setCaptainBio(e.target.value)}
-          placeholder="USCG licensed captain with 7 years experience on Biscayne Bay. 124 trips, 4.9 star rating. Specialises in sunset cruises and snorkelling tours."
+          placeholder="USCG licensed captain with 7 years experience on Biscayne Bay. 124 trips, 4.9 star rating."
           className="w-full min-h-[100px] p-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none resize-none"
         />
         <p

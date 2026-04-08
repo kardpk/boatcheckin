@@ -18,7 +18,7 @@ Always reference @SECURITY.md for XSS prevention.
 - i18next + react-i18next (multilingual)
 - Leaflet.js (maps, no API key)
 - qrcode.react (QR codes)
-- Lucide React (icons)
+- Lucide React (icons — see @DESIGN.md § Icon System for sizing, colours, and full registry)
 - Framer Motion (transitions only)
 - html2canvas (postcard generation)
 

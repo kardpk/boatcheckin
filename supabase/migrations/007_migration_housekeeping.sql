@@ -1,0 +1,21 @@
+-- Migration 007: Housekeeping documentation
+-- =============================================
+-- The following migration files were created with duplicate number prefixes
+-- during rapid development. They are applied in the order Supabase processes
+-- them (alphabetical within prefix). The effective order is documented here
+-- for clarity. No schema changes in this file.
+--
+-- Effective application order:
+--   001_initial_schema.sql
+--   002_phase2_boat_types.sql
+--   003_audit_additions.sql   (before 003_join_flow alphabetically)
+--   003_join_flow.sql
+--   004_post_trip.sql
+--   004_realtime_guests.sql
+--   005_realtime.sql
+--   006_weather_alerts.sql
+--   007_migration_housekeeping.sql  (this file — no-op)
+--
+-- From this point forward, new migrations use strictly sequential
+-- numbers starting from 008_.
+-- =============================================

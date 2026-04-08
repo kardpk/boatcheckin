@@ -134,3 +134,381 @@ export interface AddonOrder {
   unitPriceCents: number;
   totalCents: number;
 }
+
+// ─── Phase 3A: Trip Creation ──────────────────────────────────────────────────
+
+export interface TripFormData {
+  boatId: string
+  boatName: string           // display only
+  boatCapacity: number       // max from boat profile
+  tripDate: string           // YYYY-MM-DD
+  departureTime: string      // HH:MM
+  durationHours: number
+  maxGuests: number
+  bookingType: 'private' | 'split'
+  requiresApproval: boolean
+  tripCode: string           // 4-char, auto or manual
+  charterType: 'captained' | 'bareboat' | 'both'
+  specialNotes: string
+  splitBookings: SplitBookingEntry[]
+}
+
+export interface SplitBookingEntry {
+  id: string                 // temp client-side ID
+  organiserName: string
+  organiserEmail: string
+  maxGuests: number
+  notes: string
+}
+
+export interface TripCreatedResult {
+  tripId: string
+  tripSlug: string
+  tripCode: string
+  tripLink: string           // full URL
+  whatsappMessage: string    // pre-written
+  bookings: BookingCreatedResult[]
+}
+
+export interface BookingCreatedResult {
+  bookingId: string
+  bookingLink: string        // full URL
+  bookingCode: string        // 4-char
+  organiserName: string
+  maxGuests: number
+  whatsappMessage: string
+}
+
+// ── Trip list item (shaped for dashboard) ──
+export interface TripListItem {
+  id: string
+  slug: string
+  tripCode: string
+  tripDate: string
+  departureTime: string
+  durationHours: number
+  maxGuests: number
+  status: TripStatus
+  charterType: CharterType
+  specialNotes: string | null
+  guestCount: number
+  waiversSigned: number
+  boat: {
+    id: string
+    boatName: string
+    boatType: string
+    marinaName: string
+    slipNumber: string | null
+    captainName: string | null
+    lat: number | null
+    lng: number | null
+  }
+}
+
+// ── Duration picker options ──
+export const DURATION_OPTIONS = [
+  { value: 2,  label: '2 hours' },
+  { value: 3,  label: '3 hours' },
+  { value: 4,  label: '4 hours' },
+  { value: 5,  label: '5 hours' },
+  { value: 6,  label: '6 hours' },
+  { value: 8,  label: '8 hours' },
+  { value: 10, label: '10 hours' },
+  { value: 12, label: 'Full day (12 hrs)' },
+  { value: 0,  label: 'Custom duration' },
+] as const
+
+// ── Phase 3C — Guest Join Flow ──────────────────────────────────────────────
+
+/** Stored in localStorage after successful check-in. Key: dp-guest-{slug} */
+export interface GuestSession {
+  guestId: string
+  tripSlug: string
+  qrToken: string
+  guestName: string
+  checkedInAt: string       // ISO timestamp
+  addonOrderIds: string[]   // for receipt display
+}
+
+/** Helper to get the localStorage key for a trip */
+export const GUEST_SESSION_KEY = (slug: string) => `dp-guest-${slug}`
+
+/** Individual safety acknowledgment (local tracking) */
+export interface SafetyAck {
+  id: string
+  text: string
+  acknowledgedAt: string    // ISO timestamp
+}
+
+/** Steps in the guest join flow */
+export type JoinStep =
+  | 'code'       // step 1 — trip code entry
+  | 'details'    // step 2 — personal info
+  | 'safety'     // step 3 — safety card swipe
+  | 'waiver'     // step 4 — waiver signing + registration submit
+  | 'insurance'  // step 4.5 — conditional FL course info
+  | 'addons'     // step 5 — add-on ordering
+  | 'boarding'   // step 6 — boarding pass + QR
+
+/** Full state of the join flow bottom sheet */
+export interface JoinFlowState {
+  step: JoinStep
+
+  // Step 1 — code
+  tripCode: string
+  codeError: string
+  codeAttempts: number
+  codeLocked: boolean
+  codeLockUntil: number       // unix ms timestamp
+
+  // Step 2 — details
+  fullName: string
+  emergencyContactName: string
+  emergencyContactPhone: string
+  dietaryRequirements: string
+  languagePreference: string
+  dateOfBirth: string
+  isNonSwimmer: boolean
+  isSeaSicknessProne: boolean
+  gdprConsent: boolean
+  marketingConsent: boolean
+  isEU: boolean               // server-detected
+
+  // Step 3 — safety
+  safetyAcks: SafetyAck[]
+  currentSafetyCard: number
+
+  // Step 4 — waiver
+  waiverScrolled: boolean     // must scroll to bottom before signing
+  waiverAgreed: boolean
+  signatureText: string
+  waiverTextHash: string
+
+  // Step 5 — addons
+  addonQuantities: Record<string, number>  // addonId → qty
+
+  // Result
+  guestId: string
+  qrToken: string
+  requiresCourse: boolean
+  isSubmitting: boolean
+  submitError: string
+}
+
+// ═══════════════════════════════════════════
+// Phase 3D — Operator Dashboard Types
+// ═══════════════════════════════════════════
+
+// ─── Full guest record for dashboard ────────
+export interface DashboardGuest {
+  id: string
+  fullName: string
+  languagePreference: string
+  dietaryRequirements: string | null
+  isNonSwimmer: boolean
+  isSeaSicknessProne: boolean
+  waiverSigned: boolean
+  waiverSignedAt: string | null
+  approvalStatus: ApprovalStatus
+  checkedInAt: string | null
+  createdAt: string
+  addonOrders: {
+    addonName: string
+    emoji: string
+    quantity: number
+    totalCents: number
+  }[]
+}
+
+// ─── Trip detail for operator ───────────────
+export interface OperatorTripDetail {
+  id: string
+  slug: string
+  tripCode: string
+  tripDate: string
+  departureTime: string
+  durationHours: number
+  maxGuests: number
+  status: TripStatus
+  charterType: CharterType
+  requiresApproval: boolean
+  specialNotes: string | null
+  startedAt: string | null
+  buoyPolicyId: string | null
+  boat: {
+    id: string
+    boatName: string
+    boatType: string
+    marinaName: string
+    marinaAddress: string
+    slipNumber: string | null
+    lat: number | null
+    lng: number | null
+    captainName: string | null
+    waiverText: string
+    safetyPoints: { id: string; text: string }[]
+  }
+  guests: DashboardGuest[]
+  bookings: {
+    id: string
+    organiserName: string
+    organiserEmail: string | null
+    maxGuests: number
+    bookingCode: string
+    notes: string | null
+  }[]
+}
+
+// ─── Dashboard home stats ───────────────────
+export interface DashboardStats {
+  bookingsThisMonth: number
+  addonRevenueThisMonthCents: number
+  averageRating: number | null
+  totalGuestsThisMonth: number
+}
+
+// ─── Add-on summary for trip ─────────────────
+export interface AddonSummaryItem {
+  addonId: string
+  addonName: string
+  emoji: string
+  totalQty: number
+  totalCents: number
+  guestNames: string[]
+}
+
+// ─── Captain snapshot token ─────────────────
+export interface CaptainSnapshotData {
+  tripId: string
+  slug: string
+  boatName: string
+  marinaName: string
+  slipNumber: string | null
+  tripDate: string
+  departureTime: string
+  durationHours: number
+  captainName: string | null
+  weather: { label: string; temperature: number; icon: string } | null
+  alerts: {
+    nonSwimmers: number
+    children: number
+    seasicknessProne: number
+    dietary: { name: string; requirement: string }[]
+  }
+  guests: {
+    id: string
+    fullName: string
+    waiverSigned: boolean
+    languageFlag: string
+    addonEmojis: string[]
+  }[]
+  addonSummary: AddonSummaryItem[]
+  generatedAt: string
+  expiresAt: string
+}
+
+// ─── Phase 3F: Post-Trip Types ─────────────────
+
+export interface ReviewSubmission {
+  tripSlug: string
+  guestId: string
+  rating: number
+  feedbackText: string
+  platform: 'internal' | 'google' | 'boatsetter'
+}
+
+export type PostcardStyle = 'classic' | 'minimal' | 'sunset'
+
+export interface PostcardData {
+  guestName: string
+  boatName: string
+  captainName: string | null
+  marinaName: string
+  tripDate: string
+  durationHours: number
+  weatherIcon: string | null
+  weatherLabel: string | null
+  temperature: number | null
+  style: PostcardStyle
+}
+
+export interface PostTripPageData {
+  tripId: string
+  slug: string
+  tripDate: string
+  departureTime: string
+  durationHours: number
+  boatName: string
+  captainName: string | null
+  marinaName: string
+  operatorCompanyName: string | null
+  boatsetterUrl: string | null
+  googleReviewUrl: string | null
+  boatsetterReviewUrl: string | null
+  weather: {
+    icon: string
+    label: string
+    temperature: number
+  } | null
+  guestName: string | null
+  existingRating: number | null
+}
+
+// ═══════════════════════════════════════════
+// Phase 3G — Real-time Layer Types
+// ═══════════════════════════════════════════
+
+// ─── Chat message ─────────────────────────
+export interface ChatMessage {
+  id: string
+  tripId: string
+  guestId: string | null
+  senderType: 'guest' | 'captain' | 'operator' | 'system'
+  senderName: string
+  body: string
+  isQuickChip: boolean
+  chipKey: string | null
+  readAt: string | null
+  createdAt: string
+}
+
+// ─── Quick chips (predefined guest messages) ─
+export interface QuickChip {
+  key: string
+  icon: string
+  label: string
+}
+
+export const QUICK_CHIPS: QuickChip[] = [
+  { key: 'parking',   icon: '🅿️', label: "Where exactly do I park?" },
+  { key: 'late_10',   icon: '⏱️', label: "I'm running 10 min late" },
+  { key: 'entrance',  icon: '🚢', label: "Which dock entrance?" },
+  { key: 'arrived',   icon: '📍', label: "I'm at the marina now" },
+  { key: 'cant_find', icon: '🔍', label: "I can't find the boat" },
+  { key: 'question',  icon: '💬', label: "I have a question" },
+]
+
+// ─── Realtime channel names (centralised) ──
+export const CHANNELS = {
+  tripGuests: (tripId: string) =>
+    `trip-guests-${tripId}` as const,
+
+  tripStatus: (tripId: string) =>
+    `trip-status-${tripId}` as const,
+
+  tripChat: (tripId: string) =>
+    `trip-chat-${tripId}` as const,
+
+  operatorNotifications: (operatorId: string) =>
+    `op-notifications-${operatorId}` as const,
+
+  operatorDashboard: (operatorId: string) =>
+    `op-dashboard-${operatorId}` as const,
+} as const
+
+// ─── Connection state ─────────────────────
+export type RealtimeStatus =
+  | 'connecting'
+  | 'connected'
+  | 'disconnected'
+  | 'error'

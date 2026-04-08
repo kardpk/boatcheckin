@@ -1,0 +1,232 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { formatTripDate, formatTime, formatDuration } from '@/lib/utils/format'
+import { SnapshotAlerts } from './SnapshotAlerts'
+import { SnapshotGuestList } from './SnapshotGuestList'
+import { SnapshotAddonSummary } from './SnapshotAddonSummary'
+import { StartTripFlow } from './StartTripFlow'
+import { EndTripFlow } from './EndTripFlow'
+import { CaptainChatPanel } from './CaptainChatPanel'
+import { useTripGuests } from '@/hooks/useTripGuests'
+import type { CaptainSnapshotData, TripStatus } from '@/types'
+
+interface CaptainSnapshotViewProps {
+  snapshot: CaptainSnapshotData
+  token: string
+  tripStatus: TripStatus
+  startedAt: string | null
+  buoyPolicyId: string | null
+}
+
+export function CaptainSnapshotView({
+  snapshot, token, tripStatus, startedAt, buoyPolicyId,
+}: CaptainSnapshotViewProps) {
+  const [status, setStatus] = useState<TripStatus>(tripStatus)
+  const [startedAtState, setStartedAt] = useState(startedAt)
+  const [policyId, setPolicyId] = useState(buoyPolicyId)
+  const [showStartFlow, setShowStartFlow] = useState(false)
+  const [showEndFlow, setShowEndFlow] = useState(false)
+  const [liveSnapshot, setLiveSnapshot] = useState(snapshot)
+
+  // Realtime guest subscription (for sidebar notification, not display)
+  useTripGuests(snapshot.tripId, [])
+
+  // Polling fallback — reduced to 5 minutes since realtime is primary
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/snapshot/${token}`)
+        if (res.ok) {
+          const json = await res.json()
+          setLiveSnapshot(json.data)
+        }
+      } catch {}
+    }, 300000) // 5 minutes
+    return () => clearInterval(interval)
+  }, [token])
+
+  function onTripStarted(result: {
+    startedAt: string
+    buoyPolicyId: string | null
+  }) {
+    setStatus('active')
+    setStartedAt(result.startedAt)
+    setPolicyId(result.buoyPolicyId)
+    setShowStartFlow(false)
+  }
+
+  function onTripEnded() {
+    setStatus('completed')
+    setShowEndFlow(false)
+  }
+
+  // Show start flow overlay
+  if (showStartFlow) {
+    return (
+      <StartTripFlow
+        snapshot={liveSnapshot}
+        token={token}
+        onStarted={onTripStarted}
+        onCancel={() => setShowStartFlow(false)}
+      />
+    )
+  }
+
+  // Show end flow overlay
+  if (showEndFlow) {
+    return (
+      <EndTripFlow
+        boatName={liveSnapshot.boatName}
+        startedAt={startedAtState}
+        token={token}
+        tripSlug={liveSnapshot.slug}
+        onEnded={onTripEnded}
+        onCancel={() => setShowEndFlow(false)}
+      />
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-[#F5F8FC]">
+
+      {/* Header */}
+      <div className="bg-[#0C447C] px-5 pt-5 pb-6 text-white">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[13px] font-bold tracking-wider opacity-70">
+            CAPTAIN VIEW · DOCKPASS
+          </span>
+          <span className={
+            status === 'active'
+              ? 'text-[12px] font-bold bg-[#1D9E75] px-2.5 py-1 rounded-full'
+              : 'text-[12px] font-bold bg-white/20 px-2.5 py-1 rounded-full'
+          }>
+            {status === 'active' ? '● Active' : 'Upcoming'}
+          </span>
+        </div>
+        <h1 className="text-[24px] font-bold mb-1">
+          {liveSnapshot.boatName}
+        </h1>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {[
+            `📅 ${formatTripDate(liveSnapshot.tripDate)}`,
+            `⏰ ${formatTime(liveSnapshot.departureTime)}`,
+            `⏳ ${formatDuration(liveSnapshot.durationHours)}`,
+          ].map(chip => (
+            <span key={chip} className="bg-white/20 text-white text-[12px] px-3 py-1 rounded-full">
+              {chip}
+            </span>
+          ))}
+        </div>
+        <p className="text-white/70 text-[13px] mt-2">
+          📍 {liveSnapshot.marinaName}
+          {liveSnapshot.slipNumber ? ` · Slip ${liveSnapshot.slipNumber}` : ''}
+        </p>
+
+        {/* Weather */}
+        {liveSnapshot.weather && (
+          <div className="mt-3 flex items-center gap-2 bg-white/10 rounded-[10px] px-3 py-2">
+            <span className="text-[20px]">{liveSnapshot.weather.icon}</span>
+            <span className="text-[13px] font-medium">
+              {liveSnapshot.weather.label} · {liveSnapshot.weather.temperature}°F
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="px-4 py-4 space-y-3">
+
+        {/* Buoy insurance status */}
+        {status === 'active' && (
+          <div className="p-4 rounded-[16px] bg-[#E8F9F4] border border-[#1D9E75] border-opacity-30">
+            <div className="flex items-center gap-2">
+              <span className="text-[20px]">🟢</span>
+              <div>
+                <p className="text-[14px] font-semibold text-[#1D9E75]">
+                  Insurance active
+                </p>
+                {policyId && !policyId.startsWith('STUB') && !policyId.startsWith('FAIL') && (
+                  <p className="text-[12px] text-[#6B7C93]">
+                    Policy: {policyId}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Passenger alerts */}
+        <SnapshotAlerts alerts={liveSnapshot.alerts} />
+
+        {/* Guest list */}
+        <SnapshotGuestList
+          guests={liveSnapshot.guests}
+          maxGuests={snapshot.guests.length}
+        />
+
+        {/* Add-on summary */}
+        {liveSnapshot.addonSummary.length > 0 && (
+          <SnapshotAddonSummary summary={liveSnapshot.addonSummary} />
+        )}
+
+        {/* Chat panel (when trip is active) */}
+        {status === 'active' && (
+          <CaptainChatPanel
+            snapshot={liveSnapshot}
+            token={token}
+          />
+        )}
+
+        {/* Refresh indicator */}
+        <p className="text-[11px] text-[#6B7C93] text-center">
+          Live updates active · Fallback refresh every 5 min
+        </p>
+
+        {/* Bottom action button */}
+        <div className="pt-2 pb-8">
+          {status === 'upcoming' && (
+            <button
+              onClick={() => setShowStartFlow(true)}
+              className="
+                w-full h-[64px] rounded-[16px]
+                bg-[#1D9E75] text-white
+                font-bold text-[18px]
+                hover:bg-[#178a64] transition-colors
+                active:scale-[0.98]
+              "
+            >
+              ⚓ Slide to Start Trip →
+            </button>
+          )}
+
+          {status === 'active' && (
+            <button
+              onClick={() => setShowEndFlow(true)}
+              className="
+                w-full h-[64px] rounded-[16px]
+                bg-[#E8593C] text-white
+                font-bold text-[18px]
+                hover:bg-[#cc4a32] transition-colors
+              "
+            >
+              End Trip →
+            </button>
+          )}
+
+          {status === 'completed' && (
+            <div className="
+              w-full h-[64px] rounded-[16px]
+              bg-[#E8F9F4] border border-[#1D9E75] border-opacity-30
+              flex items-center justify-center
+            ">
+              <span className="text-[16px] font-semibold text-[#1D9E75]">
+                ✓ Trip completed
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

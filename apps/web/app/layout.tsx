@@ -30,7 +30,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(reg) {
+                      console.log('[SW] Registered, scope:', reg.scope);
+                    })
+                    .catch(function(err) {
+                      console.warn('[SW] Registration failed:', err);
+                    });
+                });
+              }
+            `,
+          }}
+        />
+      </body>
     </html>
   );
 }

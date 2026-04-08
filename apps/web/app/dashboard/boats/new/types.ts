@@ -1,14 +1,30 @@
-export type BoatType =
-  | "yacht"
+export type BoatTypeKey =
+  | "motor_yacht"
+  | "fishing_charter"
   | "catamaran"
-  | "motorboat"
-  | "sailboat"
   | "pontoon"
-  | "fishing"
+  | "snorkel_dive"
+  | "sailing_yacht"
   | "speedboat"
+  | "sunset_cruise"
   | "other";
 
 export type CharterType = "captained" | "bareboat" | "both";
+
+export interface SpecificFieldOption {
+  value: string;
+  label: string;
+}
+
+export interface SpecificField {
+  key: string;
+  label: string;
+  type: "text" | "number" | "select" | "multiselect" | "boolean";
+  required: boolean;
+  placeholder?: string;
+  helpText?: string;
+  options?: SpecificFieldOption[];
+}
 
 export interface WizardAddon {
   id: string;
@@ -19,22 +35,30 @@ export interface WizardAddon {
   maxQuantity: number;
 }
 
+export interface CustomRuleSection {
+  id: string;
+  title: string;
+  items: string[];
+  type: "bullet" | "numbered" | "check";
+}
+
 export interface WizardData {
-  // Step 1 — Boat basics
-  importUrl: string;
-  importSuccess: boolean;
+  // Step 1 — Vessel basics
   boatName: string;
-  boatType: BoatType | "";
+  boatType: BoatTypeKey | "";
   charterType: CharterType | "";
   yearBuilt: string;
+  lengthFt: string;
   maxCapacity: string;
-  photoUrls: string[];
+  uscgDocNumber: string;
+  registrationState: string;
 
   // Step 2 — Marina
   marinaName: string;
   marinaAddress: string;
   slipNumber: string;
   parkingInstructions: string;
+  operatingArea: string;
   lat: number | null;
   lng: number | null;
 
@@ -44,35 +68,53 @@ export interface WizardData {
   captainPhotoPreview: string;
   captainBio: string;
   captainLicense: string;
+  captainLicenseType: string;
   captainLanguages: string[];
   captainYearsExp: string;
+  captainTripCount: string;
+  captainRating: string;
+  captainCertifications: string[];
 
-  // Step 4 — Defaults
+  // Step 4 — Equipment & amenities
+  selectedEquipment: string[];
+  selectedAmenities: Record<string, boolean>;
+  specificFieldValues: Record<string, string | boolean | string[]>;
+  customDetails: { label: string; value: string }[];
+
+  // Step 5 — Rules
+  standardRules: string[];
+  customDos: string[];
+  customDonts: string[];
+  customRuleSections: CustomRuleSection[];
+
+  // Step 6 — Packing guide
   whatToBring: string;
-  houseRules: string;
-  prohibitedItems: string;
-  cancellationPolicy: string;
+  whatNotToBring: string;
 
-  // Step 5 — Waiver
+  // Step 7 — Safety & waiver
   waiverText: string;
+  safetyPoints: string[];
 
-  // Step 6 — Addons
+  // Step 8 — Photos + add-ons
+  boatPhotos: File[];
+  boatPhotosPreviews: string[];
   addons: WizardAddon[];
 }
 
 export const INITIAL_WIZARD_DATA: WizardData = {
-  importUrl: "",
-  importSuccess: false,
   boatName: "",
   boatType: "",
   charterType: "",
   yearBuilt: "",
+  lengthFt: "",
   maxCapacity: "",
-  photoUrls: [],
+  uscgDocNumber: "",
+  registrationState: "",
   marinaName: "",
   marinaAddress: "",
   slipNumber: "",
   parkingInstructions: "",
+  operatingArea: "",
   lat: null,
   lng: null,
   captainName: "",
@@ -80,23 +122,38 @@ export const INITIAL_WIZARD_DATA: WizardData = {
   captainPhotoPreview: "",
   captainBio: "",
   captainLicense: "",
+  captainLicenseType: "",
   captainLanguages: ["en"],
   captainYearsExp: "",
+  captainTripCount: "",
+  captainRating: "",
+  captainCertifications: [],
+  selectedEquipment: [],
+  selectedAmenities: {},
+  specificFieldValues: {},
+  customDetails: [],
+  standardRules: [],
+  customDos: [],
+  customDonts: [],
+  customRuleSections: [],
   whatToBring: "",
-  houseRules: "",
-  prohibitedItems: "",
-  cancellationPolicy: "",
+  whatNotToBring: "",
   waiverText: "",
+  safetyPoints: [],
+  boatPhotos: [],
+  boatPhotosPreviews: [],
   addons: [],
 };
 
 export const STEP_TITLES: Record<number, string> = {
-  1: "Your boat",
+  1: "Vessel basics",
   2: "Marina & dock",
-  3: "Captain profile",
-  4: "Trip defaults",
-  5: "Liability waiver",
-  6: "Add-on menu",
+  3: "Captain",
+  4: "Equipment",
+  5: "Rules & conduct",
+  6: "Packing guide",
+  7: "Safety & waiver",
+  8: "Photos & add-ons",
 };
 
-export const TOTAL_STEPS = 6;
+export const TOTAL_STEPS = 8;

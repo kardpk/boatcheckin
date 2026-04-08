@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import Link from "next/link";
@@ -15,6 +15,7 @@ const loginSchema = z.object({
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +42,13 @@ export function LoginForm() {
       if (res?.error) {
         setError(res.error);
       } else {
-        router.push("/dashboard");
+        // Read next param — validate to prevent open redirect
+        const nextPath = searchParams.get('next');
+        const safePath =
+          nextPath && nextPath.startsWith('/dashboard')
+            ? nextPath
+            : '/dashboard';
+        router.push(safePath);
         router.refresh();
       }
     } catch {

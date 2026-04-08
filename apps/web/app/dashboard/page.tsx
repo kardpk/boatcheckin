@@ -1,48 +1,96 @@
-import { requireOperator } from "@/lib/security/auth";
-import Link from "next/link";
+import { requireOperator } from '@/lib/security/auth'
+import { getDashboardHomeData } from '@/lib/dashboard/getDashboardData'
+import { getWeatherData } from '@/lib/trip/getWeatherData'
+import { DashboardGreeting } from '@/components/dashboard/DashboardGreeting'
+import { TodayTripCard } from '@/components/dashboard/TodayTripCard'
+import { TodayWeatherBar } from '@/components/dashboard/TodayWeatherBar'
+import { DashboardStatsRow } from '@/components/dashboard/DashboardStatsRow'
+import { UpcomingTripsList } from '@/components/dashboard/UpcomingTripsList'
+import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard'
+import Link from 'next/link'
+import type { Metadata } from 'next'
+import type { WeatherData } from '@/lib/trip/getWeatherData'
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
-}
+export const metadata: Metadata = { title: 'Dashboard — DockPass' }
 
 export default async function DashboardPage() {
-  const { operator, supabase } = await requireOperator();
-  const firstName = operator?.full_name?.split(" ")[0] ?? "there";
+  const { operator } = await requireOperator()
+  const data = await getDashboardHomeData(operator.id)
 
-  // Check if operator has any boats
-  const { count } = await supabase
-    .from("boats")
-    .select("id", { count: "exact", head: true })
-    .eq("operator_id", operator!.id);
+  // No boats yet — show setup prompt
+  if (!data.hasBoats) {
+    return <EmptyDashboard operatorName={
+      operator.full_name?.split(' ')[0] ?? 'there'
+    } />
+  }
 
-  const hasBoats = (count ?? 0) > 0;
+  // Fetch weather for today's trips (parallel)
+  const weatherMap = new Map<string, WeatherData>()
+  await Promise.all(
+    data.todaysTrips.map(async (trip) => {
+      if (trip.boat.lat && trip.boat.lng) {
+        const w = await getWeatherData(trip.boat.lat, trip.boat.lng, trip.tripDate)
+        if (w) weatherMap.set(trip.id, w)
+      }
+    })
+  )
 
   return (
-    <div className="px-page py-section md:px-large md:py-large">
-      <h1 className="text-h1 text-dark-text">
-        {getGreeting()}, {firstName} 👋
-      </h1>
+    <div className="max-w-[640px] mx-auto px-4 py-5 space-y-4">
 
-      {hasBoats ? (
-        <p className="text-body text-grey-text mt-tight">
-          Dashboard coming soon. Your boats are ready.
-        </p>
-      ) : (
-        <div className="mt-section">
-          <p className="text-body text-grey-text mb-section">
-            Dashboard coming soon. Set up your boat to get started.
+      {/* Greeting */}
+      <DashboardGreeting
+        operatorName={operator.full_name?.split(' ')[0] ?? ''}
+        todayTripCount={data.todaysTrips.length}
+      />
+
+      {/* Today's charter(s) */}
+      {data.todaysTrips.map(trip => {
+        const tripWeather = weatherMap.get(trip.id)
+        return (
+          <div key={trip.id} className="space-y-3">
+            {tripWeather && (
+              <TodayWeatherBar
+                weather={tripWeather}
+                boatName={trip.boat.boatName}
+                tripId={trip.id}
+              />
+            )}
+            <TodayTripCard trip={trip} />
+          </div>
+        )
+      })}
+
+      {/* Stats row */}
+      <DashboardStatsRow stats={data.stats} />
+
+      {/* Upcoming trips (next 7 days) */}
+      {data.upcomingTrips.length > 0 && (
+        <UpcomingTripsList trips={data.upcomingTrips} />
+      )}
+
+      {/* No trips at all */}
+      {!data.hasTrips && (
+        <div className="
+          text-center py-10 px-4
+          border border-dashed border-[#D0E2F3]
+          rounded-[16px]
+        ">
+          <p className="text-[15px] text-[#6B7C93] mb-4">
+            No trips created yet
           </p>
           <Link
-            href="/dashboard/boats/new"
-            className="inline-flex items-center justify-center h-[52px] px-large bg-navy text-white font-medium rounded-btn hover:bg-mid-blue transition-colors"
+            href="/dashboard/trips/new"
+            className="
+              inline-flex h-[52px] px-6 rounded-[12px]
+              bg-[#0C447C] text-white font-semibold text-[15px]
+              items-center hover:bg-[#093a6b] transition-colors
+            "
           >
-            Set up your first boat →
+            Create your first trip →
           </Link>
         </div>
       )}
     </div>
-  );
+  )
 }

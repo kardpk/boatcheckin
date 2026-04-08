@@ -3,6 +3,17 @@ import type { NextConfig } from "next";
 /**
  * ARCH 3 from AUDIT.md — Complete next.config.ts
  * PWA disabled until next-pwa supports Next.js 16 (use native service worker instead)
+ *
+ * Phase 3B — Trip page PWA cache config (activate when PWA is re-enabled):
+ * {
+ *   urlPattern: /^https:\/\/dockpass\.io\/trip\/.+/,
+ *   handler: 'NetworkFirst',
+ *   options: {
+ *     cacheName: 'trip-pages',
+ *     networkTimeoutSeconds: 3,
+ *     expiration: { maxEntries: 20, maxAgeSeconds: 86400 },
+ *   },
+ * }
  */
 const nextConfig: NextConfig = {
   // Server Actions security

@@ -1,0 +1,18 @@
+services:
+  - type: cron
+    name: dockpass-hourly
+    runtime: node
+    schedule: "0 * * * *"    # Every hour at :00
+    buildCommand: cd apps/worker && npm install && npm run build
+    startCommand: node dist/cron/hourly.js
+    envVars:
+      - fromGroup: dockpass-secrets
+
+  - type: cron
+    name: dockpass-daily
+    runtime: node
+    schedule: "0 6 * * *"    # 6:00 AM UTC daily
+    buildCommand: cd apps/worker && npm install && npm run build
+    startCommand: node dist/cron/daily-entry.js
+    envVars:
+      - fromGroup: dockpass-secrets

@@ -5,32 +5,43 @@ import { z } from "zod";
 import { WizardField } from "@/components/ui/WizardField";
 import { ContinueButton } from "@/components/ui/ContinueButton";
 import { LocationPicker } from "@/components/shared/LocationPicker";
-import type { WizardData } from "../types";
+import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
+import type { WizardData, BoatTypeKey } from "../types";
+
+const OPERATING_AREA_PLACEHOLDERS: Partial<Record<BoatTypeKey, string>> = {
+  motor_yacht: "Biscayne Bay and surrounding coastal waters",
+  fishing_charter: "Biscayne Bay, inshore and nearshore waters up to 20 miles",
+  sailing_yacht: "Coastal Florida waters, not exceeding 12 nautical miles offshore",
+  catamaran: "Biscayne Bay and the Florida Keys",
+  snorkel_dive: "Key Largo reefs and John Pennekamp Coral Reef State Park",
+  sunset_cruise: "Biscayne Bay sunset circuit departing from Miami Beach Marina",
+};
 
 const step2Schema = z.object({
   marinaName: z.string().min(2, "Please enter the marina name"),
   marinaAddress: z.string().min(5, "Please enter the marina address"),
-  slipNumber: z.string().max(20).optional(),
-  parkingInstructions: z.string().max(500).optional(),
-  lat: z.number().optional().nullable(),
-  lng: z.number().optional().nullable(),
 });
 
 interface Step2Props {
   data: WizardData;
   onNext: (partial: Partial<WizardData>) => void;
+  template: BoatTemplate | null;
 }
 
 export function Step2Marina({ data, onNext }: Step2Props) {
   const [marinaName, setMarinaName] = useState(data.marinaName);
   const [marinaAddress, setMarinaAddress] = useState(data.marinaAddress);
   const [slipNumber, setSlipNumber] = useState(data.slipNumber);
-  const [parkingInstructions, setParkingInstructions] = useState(
-    data.parkingInstructions
-  );
+  const [parkingInstructions, setParkingInstructions] = useState(data.parkingInstructions);
+  const [operatingArea, setOperatingArea] = useState(data.operatingArea);
   const [lat, setLat] = useState<number | null>(data.lat);
   const [lng, setLng] = useState<number | null>(data.lng);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // template prop available if needed for type-specific UI
+  const operatingPlaceholder =
+    OPERATING_AREA_PLACEHOLDERS[data.boatType as BoatTypeKey] ??
+    "e.g. Biscayne Bay and surrounding waters";
 
   function handleLocationChange(newLat: number, newLng: number) {
     setLat(newLat);
@@ -38,16 +49,7 @@ export function Step2Marina({ data, onNext }: Step2Props) {
   }
 
   function handleContinue() {
-    const raw = {
-      marinaName,
-      marinaAddress,
-      slipNumber: slipNumber || undefined,
-      parkingInstructions: parkingInstructions || undefined,
-      lat,
-      lng,
-    };
-
-    const result = step2Schema.safeParse(raw);
+    const result = step2Schema.safeParse({ marinaName, marinaAddress });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of result.error.issues) {
@@ -59,12 +61,11 @@ export function Step2Marina({ data, onNext }: Step2Props) {
     }
 
     setErrors({});
-    onNext({ marinaName, marinaAddress, slipNumber, parkingInstructions, lat, lng });
+    onNext({ marinaName, marinaAddress, slipNumber, parkingInstructions, operatingArea, lat, lng });
   }
 
   return (
     <div className="space-y-page">
-      {/* Marina name */}
       <WizardField label="Marina name" required error={errors.marinaName} htmlFor="marinaName">
         <input
           id="marinaName"
@@ -75,7 +76,6 @@ export function Step2Marina({ data, onNext }: Step2Props) {
         />
       </WizardField>
 
-      {/* Address */}
       <WizardField
         label="Marina address"
         required
@@ -92,12 +92,7 @@ export function Step2Marina({ data, onNext }: Step2Props) {
         />
       </WizardField>
 
-      {/* Slip number */}
-      <WizardField
-        label="Slip or dock number"
-        helper="Helps guests find the exact location"
-        htmlFor="slipNumber"
-      >
+      <WizardField label="Slip or dock number" helper="Helps guests find the exact location" htmlFor="slipNumber">
         <input
           id="slipNumber"
           value={slipNumber}
@@ -107,15 +102,30 @@ export function Step2Marina({ data, onNext }: Step2Props) {
         />
       </WizardField>
 
-      {/* Parking */}
       <WizardField label="Parking" htmlFor="parking">
         <textarea
           id="parking"
           rows={3}
           value={parkingInstructions}
           onChange={(e) => setParkingInstructions(e.target.value)}
-          placeholder="Free parking in Lot B off Alton Rd. Enter from 3rd St. Look for green P signs."
+          placeholder="Free parking in Lot B off Alton Rd. Enter from 3rd St."
           className="w-full min-h-[100px] p-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none resize-none"
+        />
+      </WizardField>
+
+      {/* Operating area — new */}
+      <WizardField
+        label="Where does this vessel operate?"
+        helper="Appears on the guest trip page as 'where you'll be going'"
+        htmlFor="operatingArea"
+      >
+        <textarea
+          id="operatingArea"
+          rows={2}
+          value={operatingArea}
+          onChange={(e) => setOperatingArea(e.target.value)}
+          placeholder={operatingPlaceholder}
+          className="w-full min-h-[70px] p-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none resize-none"
         />
       </WizardField>
 

@@ -109,6 +109,165 @@ modals:         20px (bottom sheet: 20px top only)
 
 ---
 
+## Icon System — Lucide React
+
+**Library:** [`lucide-react`](https://lucide.dev/) (MIT, tree-shakeable, 1000+ icons)
+
+```bash
+# Already installed — import individual icons:
+import { Ship, Anchor, Users } from "lucide-react";
+```
+
+### Sizing Rules
+
+```
+size={14}  — micro:   inline with text-micro / text-caption
+size={16}  — small:   inline with text-label / form field icons
+size={18}  — card:    stat cards, info cards
+size={20}  — nav:     sidebar items, bottom nav, button icons
+size={28}  — hero:    page headers, detail page icons
+size={32}  — feature: empty states, success screens
+size={40}  — jumbo:   empty state illustrations
+size={48}  — display: completion screens (StepComplete)
+```
+
+### Colour Rules
+
+```
+text-navy       — active nav, primary icons, CTAs
+text-mid-blue   — secondary emphasis
+text-grey-text  — inactive nav, helper icons, chevrons
+text-dark-text  — inline with headings
+text-white      — on navy backgrounds (hero, CTAs)
+text-error-text — destructive actions (Trash2, X)
+text-[#2E7D32]  — success icons (Check on green bg)
+```
+
+### Icon Chip Pattern
+
+```tsx
+{/* Standard icon chip — used in info cards, stat cards */}
+<div className="w-10 h-10 rounded-[10px] bg-[#E8F2FB]
+                flex items-center justify-center shrink-0">
+  <Ship size={20} className="text-[#0C447C]" />
+</div>
+
+{/* Circular icon chip — boat detail, avatars */}
+<div className="w-14 h-14 rounded-full bg-light-blue
+                flex items-center justify-center shrink-0">
+  <Ship size={28} className="text-navy" />
+</div>
+```
+
+### Icon Registry — By Category
+
+#### Navigation (Sidebar + BottomNav)
+
+| Icon | Import | Where Used |
+|------|--------|------------|
+| 🏠 Home | `Home` | Dashboard home |
+| 🚢 Boats | `Ship` | Boats list, boat cards, boat detail |
+| ⚓ Trips | `Anchor` | Trips list, trip creation, completion screen |
+| 📈 Revenue | `TrendingUp` | Revenue dashboard |
+| 👥 Guests | `Users` | Guest list, max guests field |
+| ⚙️ Settings | `Settings` | Settings page |
+| 🚪 Sign out | `LogOut` | Sidebar sign-out |
+
+#### Actions
+
+| Icon | Import | Where Used |
+|------|--------|------------|
+| ➕ Add | `Plus` | Add boat CTA, add item buttons |
+| ✕ Remove | `X` | Remove tag, close modal |
+| ✓ Confirm | `Check` | Toggle on, copy confirmed, success |
+| 📋 Copy | `Copy` | Copy trip link |
+| ✏️ Edit | `Pencil` | Edit rule, edit item |
+| 🗑️ Delete | `Trash2` | Delete photo, delete rule |
+| ← Back | `ChevronLeft` | Wizard back, breadcrumb back |
+| → Forward | `ChevronRight` | Boat card arrow, list item |
+| ↓ Expand | `ChevronDown` | Collapsible sections |
+| ↑ Collapse | `ChevronUp` | Collapsible sections |
+| ☰ Drag | `GripVertical` | Drag handle for reorder |
+
+#### Status & Feedback
+
+| Icon | Import | Where Used |
+|------|--------|------------|
+| ✅ Success | `CheckCircle` | Password reset success |
+| ⚠️ Alert | `AlertCircle` | Error messages |
+| ⚠ Warning | `AlertTriangle` | Validation warnings |
+| 🛡️ Safety | `Shield` | Safety section header |
+| ℹ️ Info | `Info` | Helper tooltips, info sections |
+
+#### Form Field Icons (left-aligned, 16px)
+
+| Icon | Import | Where Used |
+|------|--------|------------|
+| 📅 Date | `CalendarDays` | Trip date picker |
+| ⏰ Time | `Clock` | Departure time picker |
+| 👥 Guests | `Users` | Max guests input |
+| 🚢 Boat | `Ship` | Boat selector |
+| 📍 Location | `MapPin` | Marina address |
+| 📅 Schedule | `Calendar` | Trip count stat card |
+
+#### Auth
+
+| Icon | Import | Where Used |
+|------|--------|------------|
+| 👁️ Show | `Eye` | Password visibility toggle |
+| 👁️‍🗨️ Hide | `EyeOff` | Password visibility toggle |
+
+### Usage — Form Field with Icon
+
+```tsx
+import { CalendarDays } from "lucide-react";
+
+<div className="relative">
+  <CalendarDays
+    size={16}
+    className="absolute left-standard top-1/2 -translate-y-1/2
+               text-grey-text pointer-events-none"
+  />
+  <input
+    type="date"
+    className="w-full h-[44px] pl-[40px] pr-standard
+               border border-border rounded-input text-body
+               text-dark-text focus:border-border-dark focus:outline-none"
+  />
+</div>
+```
+
+### Usage — Nav Item
+
+```tsx
+import { Ship } from "lucide-react";
+
+<Link href="/dashboard/boats" className={cn(
+  "flex items-center gap-standard px-page py-[10px]
+   rounded-[8px] text-[15px] transition-colors",
+  isActive ? "bg-light-blue text-navy font-medium"
+           : "text-grey-text hover:bg-off-white"
+)}>
+  <Ship size={20} />
+  Boats
+</Link>
+```
+
+### Usage — Stat Card
+
+```tsx
+import { Users } from "lucide-react";
+
+<div className="p-standard bg-white border border-border
+                rounded-card text-center">
+  <Users size={18} className="text-navy mx-auto" />
+  <p className="text-h2 text-dark-text mt-micro">8</p>
+  <p className="text-micro text-grey-text">Max guests</p>
+</div>
+```
+
+---
+
 ## Components Reference
 
 ### Primary Button
