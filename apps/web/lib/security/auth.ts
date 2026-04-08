@@ -41,7 +41,7 @@ export async function requireOperator() {
   const { data: operator } = await supabase
     .from("operators")
     .select(
-      "id, subscription_status, subscription_tier, is_active, max_boats"
+      "id, full_name, email, company_name, subscription_status, subscription_tier, is_active, max_boats"
     )
     .eq("id", user.id)
     .single();

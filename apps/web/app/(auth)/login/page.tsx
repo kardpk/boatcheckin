@@ -1,14 +1,27 @@
-export default function LoginPage() {
+import type { Metadata } from "next";
+import { LoginForm } from "./LoginForm";
+import { AUTH_ERRORS } from "./error-messages";
+
+export const metadata: Metadata = {
+  title: "Sign in — DockPass",
+};
+
+export default async function LoginPage(props: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const searchParams = await props.searchParams;
+  const errorCode =
+    typeof searchParams.error === "string" ? searchParams.error : undefined;
+  const errorMessage = errorCode ? AUTH_ERRORS[errorCode] : undefined;
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-off-white px-page">
-      <div className="w-full max-w-sm">
-        <h1 className="text-h1 text-dark-text text-center mb-section">
-          Sign in to DockPass
-        </h1>
-        <p className="text-body text-grey-text text-center">
-          Operator login coming soon.
-        </p>
-      </div>
-    </main>
+    <>
+      {errorMessage && (
+        <div className="mb-page p-standard bg-error-bg rounded-chip">
+          <p className="text-[13px] text-error-text">{errorMessage}</p>
+        </div>
+      )}
+      <LoginForm />
+    </>
   );
 }
