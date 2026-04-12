@@ -153,8 +153,8 @@ export const guestRegistrationSchema = z.object({
   waiverTextHash: z.string()
     .regex(/^([a-f0-9]{64}|firma_template)$/, 'Invalid waiver hash'),
 
-  // Turnstile bot protection token
-  turnstileToken: z.string().min(1),
+  // Turnstile bot protection token (optional in dev when widget fails to load)
+  turnstileToken: z.string().optional().default(''),
 })
 
 // ─── Addon order schema (Phase 3C) ───────────────────────────────────────────

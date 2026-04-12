@@ -5,8 +5,9 @@ import "server-only";
  * Free bot protection — verify tokens before guest registration.
  */
 export async function verifyTurnstile(token: string): Promise<boolean> {
-  if (process.env.NODE_ENV === 'development' && token === 'dev-bypass') {
-    return true; // Bypass for local testing
+  // In development, bypass when Turnstile widget fails to load (Error 110200)
+  if (process.env.NODE_ENV === 'development' && (!token || token === 'dev-bypass')) {
+    return true;
   }
 
   const secret = process.env.TURNSTILE_SECRET_KEY;

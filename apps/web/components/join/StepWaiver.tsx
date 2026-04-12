@@ -37,6 +37,16 @@ export function StepWaiver({
   }, [state])
 
   // ── Scroll handling (legacy mode only) ─────────────────────────────────────
+  // Auto-mark as scrolled if the waiver text fits without scrolling
+  useEffect(() => {
+    if (!firmaTemplateId && scrollRef.current) {
+      const el = scrollRef.current
+      if (el.scrollHeight <= el.clientHeight + 5) {
+        onUpdate({ waiverScrolled: true })
+      }
+    }
+  }, [firmaTemplateId, onUpdate])
+
   function handleScroll(e: React.UIEvent<HTMLDivElement>) {
     const el = e.currentTarget
     const progress = el.scrollTop / Math.max(el.scrollHeight - el.clientHeight, 1)
