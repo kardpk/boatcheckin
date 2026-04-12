@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/service";
 
 /**
- * Require authenticated operator — CRITICAL 1 fix (Next.js 15 async cookies)
+ * Require authenticated operator — uses service client for operator lookup
+ * to avoid RLS issues with cookie-based sessions in Server Components.
  * Use in Server Components and Server Actions for dashboard routes.
  */
 export async function requireOperator() {
@@ -50,17 +51,20 @@ export async function requireOperator() {
 
   if (error || !user) redirect(loginUrl);
 
-  let { data: operator } = await supabase
+  // Use service client (bypasses RLS) for operator lookup.
+  // The anon-key client's RLS policy (auth.uid() = id) can fail in Server Components
+  // because the cookie-based session isn't always recognized during redirects.
+  // Using SELECT * to be resilient to missing columns from unapplied migrations.
+  const serviceClient = createServiceClient();
+
+  let { data: operator } = await serviceClient
     .from("operators")
-    .select(
-      "id, full_name, email, company_name, subscription_status, subscription_tier, is_active, max_boats, trial_ends_at, firma_workspace_id"
-    )
+    .select("*")
     .eq("id", user.id)
     .single();
 
   if (!operator) {
-    // Self-heal ghost accounts: auth created, but operator row failed or hasn't created yet
-    const serviceClient = createServiceClient();
+    // Self-heal ghost accounts: auth created, but operator row missing
     const { error: healError } = await serviceClient.from("operators").insert({
       id: user.id,
       email: user.email!,
@@ -73,25 +77,30 @@ export async function requireOperator() {
     });
     
     if (healError) {
-      console.error("[AUTH_HEAL_ERROR]", healError);
-      redirect(`/login?error=account_inactive&debug=${encodeURIComponent(healError.message)}`);
+      // Duplicate key = row already exists (race condition); re-fetch
+      if (healError.code === '23505') {
+        const { data: existing } = await serviceClient
+          .from("operators")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+        operator = existing;
+      } else {
+        console.error("[AUTH_HEAL_ERROR]", healError);
+        redirect(`/login?error=account_inactive`);
+      }
+    } else {
+      // Fetch newly created operator
+      const { data: healed } = await serviceClient
+        .from("operators")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      operator = healed;
     }
-
-    // Fetch newly created operator
-    const { data: healed, error: fetchError } = await supabase
-      .from("operators")
-      .select("id, full_name, email, company_name, subscription_status, subscription_tier, is_active, max_boats, trial_ends_at, firma_workspace_id")
-      .eq("id", user.id)
-      .single();
-      
-    if (fetchError) {
-       console.error("[AUTH_HEAL_FETCH_ERROR]", fetchError);
-    }
-    operator = healed;
   }
 
   if (!operator?.is_active) redirect(`/login?error=account_inactive&next=${encodeURIComponent(pathname)}`);
 
   return { user, operator, supabase };
 }
-
