@@ -26,7 +26,7 @@ export function useTripGuests(
     const channelName = CHANNELS.tripGuests(tripId)
 
     // Remove any existing channel with this name first (React strict mode double-mount)
-    const existing = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`)
+    const existing = supabase.getChannels().find((c: { topic: string }) => c.topic === `realtime:${channelName}`)
     if (existing) {
       supabase.removeChannel(existing)
     }
