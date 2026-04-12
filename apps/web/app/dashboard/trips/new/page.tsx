@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { requireOperator } from '@/lib/security/auth'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { AnchorLoader } from '@/components/ui/AnchorLoader'
 import { TripCreateForm } from './TripCreateForm'
 import type { Metadata } from 'next'
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 async function getOperatorBoats(operatorId: string) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const { data } = await supabase
     .from('boats')
     .select('id, boat_name, boat_type, max_capacity, charter_type, marina_name, slip_number')

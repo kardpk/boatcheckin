@@ -65,9 +65,14 @@ export function useChat(options: UseChatOptions): UseChatResult {
     if (!enabled) return
 
     const supabase = createClient()
+    const channelName = CHANNELS.tripChat(tripId)
+
+    // Remove existing channel (React strict mode double-mount)
+    const existing = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`)
+    if (existing) supabase.removeChannel(existing)
 
     const channel = supabase
-      .channel(CHANNELS.tripChat(tripId))
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

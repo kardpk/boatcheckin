@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { requireOperator } from '@/lib/security/auth'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { shapeTripDetail, buildAddonSummary } from '@/lib/dashboard/getDashboardData'
 import { getWeatherData } from '@/lib/trip/getWeatherData'
 import { TripDetailHeader } from '@/components/dashboard/TripDetailHeader'
@@ -21,7 +21,7 @@ export default async function TripDetailPage({
 }) {
   const { id } = await params
   const { operator } = await requireOperator()
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   const { data: raw, error } = await supabase
     .from('trips')
@@ -29,7 +29,7 @@ export default async function TripDetailPage({
       id, slug, trip_code, trip_date, departure_time,
       duration_hours, max_guests, status, charter_type,
       requires_approval, special_notes,
-      started_at, buoy_policy_id,
+      started_at,
       bookings ( id, organiser_name, organiser_email,
         max_guests, booking_code, notes ),
       boats (
@@ -59,7 +59,10 @@ export default async function TripDetailPage({
     })
     .single()
 
-  if (error || !raw) notFound()
+  if (error || !raw) {
+    console.error('[TRIP_DETAIL_404]', { id, error: error?.message })
+    notFound()
+  }
 
   const trip = shapeTripDetail(raw as Record<string, unknown>)
   const addonSummary = buildAddonSummary(trip.guests)

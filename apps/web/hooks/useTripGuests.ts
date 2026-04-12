@@ -23,9 +23,16 @@ export function useTripGuests(
 
   useEffect(() => {
     const supabase = createClient()
+    const channelName = CHANNELS.tripGuests(tripId)
+
+    // Remove any existing channel with this name first (React strict mode double-mount)
+    const existing = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`)
+    if (existing) {
+      supabase.removeChannel(existing)
+    }
 
     const channel = supabase
-      .channel(CHANNELS.tripGuests(tripId))
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -62,9 +69,6 @@ export function useTripGuests(
         },
         (payload: any) => {
           const g = payload.new as Record<string, unknown>
-          // Full re-map: Supabase Realtime sends the COMPLETE NEW row on UPDATE,
-          // so we can safely replace the entire guest record via mapRawGuest.
-          // This ensures safety acks, Firma hash, and all other fields stay current.
           setGuests(prev =>
             prev.map(x => x.id === g.id ? mapRawGuest(g) : x)
           )

@@ -1,5 +1,5 @@
 import { requireOperator } from '@/lib/security/auth'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { TripCard } from '@/components/dashboard/TripCard'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Trips — BoatCheckin' }
 
 export default async function TripsPage() {
   const { operator } = await requireOperator()
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   const { data: trips } = await supabase
     .from('trips')

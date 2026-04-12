@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import type { DashboardGuest, DashboardStats, OperatorTripDetail, AddonSummaryItem } from '@/types'
 
 export interface DashboardHomeData {
@@ -14,7 +14,7 @@ export interface DashboardHomeData {
 export async function getDashboardHomeData(
   operatorId: string
 ): Promise<DashboardHomeData> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const today = new Date().toISOString().split('T')[0]!
 
   const [
@@ -29,7 +29,7 @@ export async function getDashboardHomeData(
       .select(`
         id, slug, trip_code, trip_date, departure_time,
         duration_hours, max_guests, status, charter_type,
-        requires_approval, special_notes, started_at, buoy_policy_id,
+        requires_approval, special_notes, started_at,
         boats (
           id, boat_name, boat_type, marina_name,
           marina_address, slip_number, lat, lng,
@@ -102,7 +102,7 @@ export async function getDashboardHomeData(
 async function getMonthlyStats(
   operatorId: string
 ): Promise<DashboardStats> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const startOfMonth = new Date()
   startOfMonth.setDate(1)
   startOfMonth.setHours(0, 0, 0, 0)
@@ -192,7 +192,7 @@ export function shapeTripDetail(raw: Record<string, unknown>): OperatorTripDetai
     requiresApproval: raw.requires_approval as boolean,
     specialNotes: (raw.special_notes as string | null) ?? null,
     startedAt: (raw.started_at as string | null) ?? null,
-    buoyPolicyId: (raw.buoy_policy_id as string | null) ?? null,
+    buoyPolicyId: (raw.buoy_policy_id as string | null) ?? null, // column may not exist yet
     boat: {
       id: (boat.id as string) ?? '',
       boatName: (boat.boat_name as string) ?? '',

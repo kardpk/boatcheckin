@@ -56,7 +56,7 @@ export async function GET(
     .select(`
       id, slug, trip_date, departure_time, duration_hours,
       max_guests, trip_code, status, started_at, charter_type, requires_approval,
-      special_notes, buoy_policy_id,
+      special_notes,
       boats (
         id, boat_name, boat_type, marina_name, marina_address,
         slip_number, captain_name, lat, lng, waiver_text, safety_cards

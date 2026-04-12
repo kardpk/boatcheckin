@@ -34,7 +34,7 @@ export async function GET(
       id, slug, trip_code, trip_date, departure_time,
       duration_hours, max_guests, status, charter_type,
       requires_approval, special_notes,
-      started_at, buoy_policy_id,
+      started_at,
       boats (
         id, boat_name, boat_type, marina_name,
         marina_address, slip_number, lat, lng,

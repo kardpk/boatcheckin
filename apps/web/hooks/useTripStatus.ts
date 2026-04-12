@@ -26,9 +26,14 @@ export function useTripStatus(
 
   useEffect(() => {
     const supabase = createClient()
+    const channelName = CHANNELS.tripStatus(tripId)
+
+    // Remove existing channel (React strict mode double-mount)
+    const existing = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`)
+    if (existing) supabase.removeChannel(existing)
 
     const channel = supabase
-      .channel(CHANNELS.tripStatus(tripId))
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
