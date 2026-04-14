@@ -10,6 +10,7 @@ import { AddonOrdersSummary } from '@/components/dashboard/AddonOrdersSummary'
 import { TripReviewsSummary } from '@/components/dashboard/TripReviewsSummary'
 import { TripActionBar } from '@/components/dashboard/TripActionBar'
 import { WeatherAlertCard } from '@/components/dashboard/WeatherAlertCard'
+import { TripCrewPanel } from '@/components/dashboard/TripCrewPanel'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Trip detail — BoatCheckin' }
@@ -74,6 +75,19 @@ export default async function TripDetailPage({
     ? await getWeatherData(boat.lat, boat.lng, trip.tripDate)
     : null
 
+  // Fetch crew assignments for this trip
+  const { data: crewAssignments } = await supabase
+    .from('trip_assignments')
+    .select('captain_id, role, captains ( full_name )')
+    .eq('trip_id', id)
+    .eq('operator_id', operator.id)
+
+  const assignments = (crewAssignments ?? []).map(a => ({
+    captainId: a.captain_id as string,
+    captainName: (a.captains as unknown as { full_name: string })?.full_name ?? 'Unknown',
+    role: a.role as string,
+  }))
+
   const whatsappMsg = [
     `Hi! Everything for your charter is here:`,
     ``,
@@ -104,6 +118,15 @@ export default async function TripDetailPage({
         maxGuests={trip.maxGuests}
         requiresApproval={trip.requiresApproval}
       />
+
+      {/* Crew Assignment */}
+      <div className="mt-4">
+        <TripCrewPanel
+          tripId={trip.id}
+          tripStatus={trip.status}
+          initialAssignments={assignments}
+        />
+      </div>
 
       {/* Trip Control — Start/End + compliance banner */}
       <TripStatusBar

@@ -21,12 +21,23 @@ interface Boat {
   slip_number: string | null
 }
 
+interface CaptainPick {
+  id: string
+  fullName: string
+  photoUrl: string | null
+  licenseType: string | null
+  licenseNumber: string | null
+  licenseExpiry: string | null
+  isDefault: boolean
+}
+
 interface TripCreateFormProps {
   boats: Boat[]
   operatorName: string
+  captains?: CaptainPick[]
 }
 
-export function TripCreateForm({ boats }: TripCreateFormProps) {
+export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [result, setResult] = useState<TripCreatedResult | null>(null)
@@ -34,6 +45,12 @@ export function TripCreateForm({ boats }: TripCreateFormProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
   const [showCustomDuration, setShowCustomDuration] = useState(false)
   const [splitBookings, setSplitBookings] = useState<SplitBookingEntry[]>([])
+
+  // Captain picker state — pre-select default captain
+  const defaultCaptain = captains.find(c => c.isDefault)
+  const [selectedCaptainId, setSelectedCaptainId] = useState<string | null>(
+    defaultCaptain?.id ?? null
+  )
 
   // ─── Form state ────────────────────────────────────────────────────────────
   const [form, setForm] = useState<TripFormData>({
@@ -87,6 +104,15 @@ export function TripCreateForm({ boats }: TripCreateFormProps) {
         setError(res.error)
         if (res.fieldErrors) setFieldErrors(res.fieldErrors)
         return
+      }
+
+      // Auto-assign captain (non-blocking)
+      if (selectedCaptainId && res.data.tripId) {
+        fetch(`/api/dashboard/trips/${res.data.tripId}/assign-crew`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ captainId: selectedCaptainId, role: 'captain' }),
+        }).catch(() => { /* silent — trip created, assignment is best-effort */ })
       }
 
       setResult(res.data)
@@ -255,6 +281,62 @@ export function TripCreateForm({ boats }: TripCreateFormProps) {
           <p className="text-[12px] text-[#D63B3B] mt-1">{fieldErrors.boatId[0]}</p>
         )}
       </div>
+
+      {/* ── CAPTAIN PICKER ──────────────────────────────────────────────── */}
+      {captains.length > 0 && form.charterType !== 'bareboat' && (
+        <div>
+          <label className="block text-[13px] font-medium text-[#6B7C93] mb-2">
+            👨‍✈️ Assign Captain
+          </label>
+          <div className="space-y-2">
+            {captains.map(captain => {
+              const initials = captain.fullName.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()
+              return (
+                <button
+                  key={captain.id}
+                  type="button"
+                  onClick={() => setSelectedCaptainId(
+                    selectedCaptainId === captain.id ? null : captain.id
+                  )}
+                  className={cn(
+                    'w-full flex items-center gap-3 p-3 border rounded-[12px] text-left transition-all',
+                    selectedCaptainId === captain.id
+                      ? 'border-2 border-[#0C447C] bg-[#E8F2FB]'
+                      : 'border border-[#D0E2F3] bg-white hover:border-[#A8C4E0]',
+                  )}
+                >
+                  {captain.photoUrl ? (
+                    <img src={captain.photoUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[#E8F2FB] flex items-center justify-center text-[13px] font-bold text-[#0C447C]">
+                      {initials}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-medium text-[#0D1B2A] truncate">
+                      {captain.fullName}
+                      {captain.isDefault && (
+                        <span className="ml-1.5 text-[10px] font-bold text-[#0C447C] bg-[#E8F2FB] px-1.5 py-0.5 rounded-full">
+                          DEFAULT
+                        </span>
+                      )}
+                    </p>
+                    {captain.licenseType && (
+                      <p className="text-[12px] text-[#6B7C93]">🪪 {captain.licenseType}</p>
+                    )}
+                  </div>
+                  {selectedCaptainId === captain.id && (
+                    <span className="text-[#0C447C] text-[16px]">✓</span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+          <p className="text-[11px] text-[#6B7C93] mt-1.5">
+            Captain will be assigned to this trip. <a href="/dashboard/captains" className="text-[#0C447C] underline">Manage roster →</a>
+          </p>
+        </div>
+      )}
 
       {/* ── DATE + TIME ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-3">

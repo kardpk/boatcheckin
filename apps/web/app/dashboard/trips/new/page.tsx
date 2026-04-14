@@ -5,6 +5,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { AnchorLoader } from '@/components/ui/AnchorLoader'
 import { TripCreateForm } from './TripCreateForm'
 import type { Metadata } from 'next'
+import type { CaptainProfile } from '@/types'
 
 export const metadata: Metadata = {
   title: 'Create trip — BoatCheckin',
@@ -21,9 +22,30 @@ async function getOperatorBoats(operatorId: string) {
   return data ?? []
 }
 
+async function getOperatorCaptains(operatorId: string) {
+  const supabase = createServiceClient()
+  const { data } = await supabase
+    .from('captains')
+    .select('id, full_name, photo_url, license_type, license_number, license_expiry, is_default, is_active')
+    .eq('operator_id', operatorId)
+    .eq('is_active', true)
+    .order('is_default', { ascending: false })
+    .order('full_name', { ascending: true })
+  return (data ?? []).map(c => ({
+    id: c.id as string,
+    fullName: c.full_name as string,
+    photoUrl: (c.photo_url as string) ?? null,
+    licenseType: (c.license_type as string) ?? null,
+    licenseNumber: (c.license_number as string) ?? null,
+    licenseExpiry: (c.license_expiry as string) ?? null,
+    isDefault: c.is_default as boolean,
+  }))
+}
+
 export default async function CreateTripPage() {
   const { operator } = await requireOperator()
   const boats = await getOperatorBoats(operator.id)
+  const captains = await getOperatorCaptains(operator.id)
 
   if (boats.length === 0) {
     return (
@@ -66,6 +88,7 @@ export default async function CreateTripPage() {
         <TripCreateForm
           boats={boats}
           operatorName={operator.full_name ?? ''}
+          captains={captains}
         />
       </Suspense>
     </div>

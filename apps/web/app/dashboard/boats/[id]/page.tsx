@@ -2,7 +2,7 @@ import { requireOperator } from "@/lib/security/auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Ship, MapPin, Users, Calendar, Anchor, ChevronLeft,
+  Ship, MapPin, Users, Calendar, Anchor, ChevronLeft, UserCog,
 } from "lucide-react";
 
 interface BoatDetailPageProps {
@@ -27,6 +27,17 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
     .from("trips")
     .select("id", { count: "exact", head: true })
     .eq("boat_id", id);
+
+  // Fetch default captain from roster (not legacy boats.captain_name)
+  const { data: rosterCaptains } = await supabase
+    .from('captains')
+    .select('id, full_name, license_type, is_default')
+    .eq('operator_id', operator.id)
+    .eq('is_active', true)
+    .order('is_default', { ascending: false })
+    .limit(3)
+
+  const defaultCaptain = rosterCaptains?.[0] ?? null
 
   return (
     <div className="px-page py-section max-w-[640px] mx-auto">
@@ -91,14 +102,28 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
           </div>
         )}
 
-        {boat.captain_name && (
+        {(defaultCaptain || boat.captain_name) && (
           <div className="flex items-start gap-tight p-standard bg-white border border-border rounded-card">
-            <Users size={16} className="text-grey-text mt-[2px] shrink-0" />
-            <div>
-              <p className="text-label text-dark-text">{boat.captain_name}</p>
-              {boat.captain_bio && (
+            <UserCog size={16} className="text-grey-text mt-[2px] shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-label text-dark-text">
+                {defaultCaptain ? defaultCaptain.full_name : boat.captain_name}
+              </p>
+              {defaultCaptain?.license_type && (
+                <p className="text-caption text-grey-text">
+                  🪪 {defaultCaptain.license_type}
+                  {defaultCaptain.is_default && ' · ⭐ Default'}
+                </p>
+              )}
+              {!defaultCaptain && boat.captain_bio && (
                 <p className="text-caption text-grey-text">{boat.captain_bio}</p>
               )}
+              <a
+                href="/dashboard/captains"
+                className="text-micro text-navy hover:underline mt-1 inline-block"
+              >
+                Manage crew →
+              </a>
             </div>
           </div>
         )}

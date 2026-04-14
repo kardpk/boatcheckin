@@ -7,6 +7,7 @@ import {
   Ship,
   Anchor,
   TrendingUp,
+  UserCog,
   Users,
   Settings,
   LogOut,
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/dashboard/boats", icon: Ship, label: "Boats" },
   { href: "/dashboard/trips", icon: Anchor, label: "Trips" },
   { href: "/dashboard/revenue", icon: TrendingUp, label: "Revenue" },
+  { href: "/dashboard/captains", icon: UserCog, label: "Crew" },
   { href: "/dashboard/guests", icon: Users, label: "Guests" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
 ] as const;
