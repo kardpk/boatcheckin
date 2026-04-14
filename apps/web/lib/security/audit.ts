@@ -30,6 +30,8 @@ type AuditAction =
   | "captain_created"
   | "captain_updated"
   | "captain_deactivated"
+  | "captain_boat_linked"
+  | "captain_boat_unlinked"
   | "crew_assigned"
   | "crew_removed"
   | "captain_notes_updated"

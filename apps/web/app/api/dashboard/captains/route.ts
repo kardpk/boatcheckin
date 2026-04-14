@@ -26,6 +26,7 @@ const createCaptainSchema = z.object({
   yearsExperience: z.number().int().min(0).max(80).optional().nullable(),
   certifications: z.array(z.string().max(100)).max(20).optional(),
   isDefault: z.boolean().optional(),
+  defaultRole: z.enum(['captain', 'first_mate', 'crew', 'deckhand']).optional(),
 })
 
 
@@ -47,6 +48,8 @@ function toCaptainProfile(row: Record<string, unknown>): CaptainProfile {
     certifications: (row.certifications as string[]) ?? [],
     isActive: row.is_active as boolean,
     isDefault: row.is_default as boolean,
+    defaultRole: (row.default_role as CaptainProfile['defaultRole']) ?? 'captain',
+    linkedBoats: [],
     createdAt: row.created_at as string,
   }
 }
@@ -132,6 +135,7 @@ export async function POST(req: NextRequest) {
       years_experience: d.yearsExperience ?? null,
       certifications: d.certifications ?? [],
       is_default: d.isDefault ?? false,
+      default_role: d.defaultRole ?? 'captain',
     })
     .select('*')
     .single()

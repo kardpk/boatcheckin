@@ -549,6 +549,8 @@ export interface CaptainProfile {
   certifications: string[]
   isActive: boolean
   isDefault: boolean
+  defaultRole: CrewRole
+  linkedBoats: { boatId: string; boatName: string }[]
   createdAt: string
 }
 
