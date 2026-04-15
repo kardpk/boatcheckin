@@ -6,52 +6,51 @@ import { NextRequest, NextResponse } from 'next/server'
  * Handles: Auth guard, CSP, security headers, CORS, request size limits
  */
 
-const WEBHOOK_PATHS = [
-  '/api/webhooks/stripe',
-  '/api/webhooks/buoy',
-  '/api/webhooks/tint',
-]
-
-const ALLOWED_ORIGINS = [
-  'https://boatcheckin.com',
-  'https://www.boatcheckin.com',
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '',
-].filter(Boolean)
-
-// CRITICAL 2: Full CSP that allows Mapbox, Supabase Realtime, Stripe
-const csp = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://api.mapbox.com https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com https://events.mapbox.com",
-  "font-src 'self' https://fonts.gstatic.com",
-  [
-    "connect-src 'self'",
-    'https://*.supabase.co',
-    'wss://*.supabase.co',
-    'https://api.open-meteo.com',
-    'https://api.mapbox.com',
-    'https://events.mapbox.com',
-    'https://api.stripe.com',
-    'https://api.resend.com',
-    'https://api.twilio.com',
-    'https://api.apify.com',
-    'https://api.buoy.insure',
-    'https://challenges.cloudflare.com',
-  ].join(' '),
-  "worker-src 'self' blob:",
-  'frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com',
-  "frame-ancestors 'none'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join('; ')
-
-// Auth pages — logged-in operators are redirected away from these
-const AUTH_PATHS = ['/login', '/signup', '/forgot-password']
-
 export async function middleware(request: NextRequest) {
   try {
+    const WEBHOOK_PATHS = [
+      '/api/webhooks/stripe',
+      '/api/webhooks/buoy',
+      '/api/webhooks/tint',
+    ]
+
+    const ALLOWED_ORIGINS = [
+      'https://boatcheckin.com',
+      'https://www.boatcheckin.com',
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '',
+    ].filter(Boolean)
+
+    // CRITICAL 2: Full CSP that allows Mapbox, Supabase Realtime, Stripe
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://api.mapbox.com https://challenges.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
+      "img-src 'self' data: blob: https://*.supabase.co https://api.mapbox.com https://events.mapbox.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      [
+        "connect-src 'self'",
+        'https://*.supabase.co',
+        'wss://*.supabase.co',
+        'https://api.open-meteo.com',
+        'https://api.mapbox.com',
+        'https://events.mapbox.com',
+        'https://api.stripe.com',
+        'https://api.resend.com',
+        'https://api.twilio.com',
+        'https://api.apify.com',
+        'https://api.buoy.insure',
+        'https://challenges.cloudflare.com',
+      ].join(' '),
+      "worker-src 'self' blob:",
+      'frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com',
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ')
+
+    const AUTH_PATHS = ['/login', '/signup', '/forgot-password']
+
     const { pathname } = request.nextUrl
     const origin = request.headers.get('origin') ?? ''
     const isWebhook = WEBHOOK_PATHS.some((p) => pathname.startsWith(p))
