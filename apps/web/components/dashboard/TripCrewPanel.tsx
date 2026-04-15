@@ -95,14 +95,14 @@ export function TripCrewPanel({
   const otherCrew = assignments.filter(a => a.role !== 'captain')
 
   return (
-    <div className="bg-white rounded-[16px] border border-[#D0E2F3] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#F5F8FC] flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-[#0D1B2A]">
-          👨‍✈️ Crew Assignment
+    <div className="bg-white rounded-[16px] border border-border overflow-hidden">
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-[16px] font-semibold text-navy">
+          Crew Assignment
         </h2>
         {isLocked && (
-          <span className="text-[11px] text-[#6B7C93] bg-[#F5F8FC] px-2 py-0.5 rounded-full">
-            🔒 Locked
+          <span className="text-[11px] text-text-mid bg-bg px-2 py-0.5 rounded-full">
+            Locked
           </span>
         )}
       </div>
@@ -110,28 +110,28 @@ export function TripCrewPanel({
       <div className="p-5 space-y-3">
         {/* Current captain */}
         {currentCaptain ? (
-          <div className="flex items-center gap-3 p-3 rounded-[12px] bg-[#E8F2FB] border border-[#D0E2F3]">
-            <div className="w-10 h-10 rounded-full bg-[#0C447C] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
+          <div className="flex items-center gap-3 p-3 rounded-[12px] bg-gold-dim border border-border">
+            <div className="w-10 h-10 rounded-full bg-navy flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
               {currentCaptain.captainName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-[#0D1B2A] truncate">
+              <p className="text-[14px] font-semibold text-navy truncate">
                 {currentCaptain.captainName}
               </p>
-              <p className="text-[12px] text-[#0C447C] font-medium">Captain · PIC</p>
+              <p className="text-[12px] text-navy font-medium">Captain · PIC</p>
             </div>
             {!isLocked && (
               <div className="flex gap-1.5">
                 <button
                   onClick={() => setShowPicker(true)}
-                  className="text-[12px] text-[#0C447C] hover:underline font-medium"
+                  className="text-[12px] text-navy hover:underline font-medium"
                 >
                   Swap
                 </button>
                 <span className="text-[#D0E2F3]">·</span>
                 <button
                   onClick={() => handleRemove(currentCaptain.captainId)}
-                  className="text-[12px] text-[#D63B3B] hover:underline font-medium"
+                  className="text-[12px] text-error hover:underline font-medium"
                 >
                   Remove
                 </button>
@@ -140,13 +140,13 @@ export function TripCrewPanel({
           </div>
         ) : (
           <div className="text-center py-4">
-            <p className="text-[14px] text-[#6B7C93] mb-2">
+            <p className="text-[14px] text-text-mid mb-2">
               No captain assigned
             </p>
             {!isLocked && (
               <button
                 onClick={() => setShowPicker(true)}
-                className="h-[36px] px-4 rounded-[8px] bg-[#0C447C] text-white text-[13px] font-semibold hover:bg-[#093a6b] transition-colors"
+                className="h-[36px] px-4 rounded-[8px] bg-navy text-white text-[13px] font-semibold hover:bg-navy/90 transition-colors"
               >
                 + Assign Captain
               </button>
@@ -156,18 +156,18 @@ export function TripCrewPanel({
 
         {/* Other crew */}
         {otherCrew.map(member => (
-          <div key={member.captainId} className="flex items-center gap-3 p-3 rounded-[12px] bg-[#F5F8FC]">
-            <div className="w-8 h-8 rounded-full bg-[#D0E2F3] flex items-center justify-center text-[12px] font-bold text-[#0C447C]">
+          <div key={member.captainId} className="flex items-center gap-3 p-3 rounded-[12px] bg-bg">
+            <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-[12px] font-bold text-navy">
               {member.captainName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-[#0D1B2A] truncate">{member.captainName}</p>
-              <p className="text-[11px] text-[#6B7C93] capitalize">{member.role.replace(/_/g, ' ')}</p>
+              <p className="text-[13px] font-medium text-navy truncate">{member.captainName}</p>
+              <p className="text-[11px] text-text-mid capitalize">{member.role.replace(/_/g, ' ')}</p>
             </div>
             {!isLocked && (
               <button
                 onClick={() => handleRemove(member.captainId)}
-                className="text-[11px] text-[#D63B3B] hover:underline"
+                className="text-[11px] text-error hover:underline"
               >
                 Remove
               </button>
@@ -178,11 +178,11 @@ export function TripCrewPanel({
         {/* Captain picker overlay */}
         {showPicker && (
           <div className="mt-2 p-3 border border-[#0C447C] rounded-[12px] bg-white space-y-2">
-            <p className="text-[12px] font-bold text-[#6B7C93] uppercase tracking-wider mb-2">
+            <p className="text-[12px] font-bold text-text-mid uppercase tracking-wider mb-2">
               Select from roster
             </p>
             {captains.length === 0 && (
-              <p className="text-[13px] text-[#6B7C93] py-2">Loading roster...</p>
+              <p className="text-[13px] text-text-mid py-2">Loading roster...</p>
             )}
             {captains.map(captain => (
               <button
@@ -192,31 +192,31 @@ export function TripCrewPanel({
                 onClick={() => handleAssign(captain.id, captain.fullName)}
                 className={cn(
                   'w-full flex items-center gap-3 p-2.5 rounded-[8px] text-left transition-all',
-                  'hover:bg-[#E8F2FB] disabled:opacity-50',
+                  'hover:bg-gold-dim disabled:opacity-50',
                   assignments.some(a => a.captainId === captain.id)
-                    ? 'bg-[#E8F2FB] border border-[#0C447C]'
+                    ? 'bg-gold-dim border border-[#0C447C]'
                     : 'border border-transparent'
                 )}
               >
-                <div className="w-8 h-8 rounded-full bg-[#E8F2FB] flex items-center justify-center text-[12px] font-bold text-[#0C447C]">
+                <div className="w-8 h-8 rounded-full bg-gold-dim flex items-center justify-center text-[12px] font-bold text-navy">
                   {captain.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-[#0D1B2A] truncate">
+                  <p className="text-[13px] font-medium text-navy truncate">
                     {captain.fullName}
                     {captain.isDefault && (
-                      <span className="ml-1 text-[9px] font-bold text-[#0C447C] bg-[#E8F2FB] px-1.5 py-0.5 rounded-full">⭐</span>
+                      <span className="ml-1 text-[9px] font-bold text-navy bg-gold-dim px-1.5 py-0.5 rounded-full"> ★</span>
                     )}
                   </p>
                   {captain.licenseType && (
-                    <p className="text-[11px] text-[#6B7C93]">🪪 {captain.licenseType}</p>
+                    <p className="text-[11px] text-text-mid">{captain.licenseType}</p>
                   )}
                 </div>
               </button>
             ))}
             <button
               onClick={() => setShowPicker(false)}
-              className="w-full h-[32px] text-[12px] text-[#6B7C93] hover:text-[#0D1B2A]"
+              className="w-full h-[32px] text-[12px] text-text-mid hover:text-navy"
             >
               Cancel
             </button>
@@ -225,8 +225,8 @@ export function TripCrewPanel({
 
         {/* Link to roster */}
         {!isLocked && (
-          <p className="text-[11px] text-[#6B7C93] text-center pt-1">
-            <a href="/dashboard/captains" className="text-[#0C447C] underline">
+          <p className="text-[11px] text-text-mid text-center pt-1">
+            <a href="/dashboard/captains" className="text-navy underline">
               Manage crew roster →
             </a>
           </p>

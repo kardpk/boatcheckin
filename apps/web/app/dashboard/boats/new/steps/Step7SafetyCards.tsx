@@ -117,7 +117,7 @@ function SortableCardRow({
       ? card.custom_title || "Custom Safety Topic"
       : topicMeta?.label || card.topic_key;
 
-  const displayEmoji = topicMeta?.emoji || "📋";
+  const displayEmoji = topicMeta?.emoji || "";
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -451,7 +451,7 @@ export function Step7SafetyCards({ data, onNext }: Step7Props) {
                   />
                   {uploadErrors[card.id] && (
                     <p className="text-[11px] text-error-text mt-micro px-standard">
-                      ⚠️ {uploadErrors[card.id]}
+                      {uploadErrors[card.id]}
                     </p>
                   )}
                 </div>

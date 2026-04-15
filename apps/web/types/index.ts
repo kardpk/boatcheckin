@@ -12,6 +12,7 @@ export interface ApiResponse<T> {
 export type TripStatus = "upcoming" | "active" | "completed" | "cancelled";
 export type SubscriptionTier = "solo" | "captain" | "fleet" | "marina";
 export type CharterType = "captained" | "bareboat" | "both";
+export type AdminRole = "founder" | "admin" | "member" | "support";
 export type TripPurpose =
   | 'commercial'      // Paying customers — full USCG compliance
   | 'private_party'   // Friends/social gathering

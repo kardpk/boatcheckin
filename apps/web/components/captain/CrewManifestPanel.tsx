@@ -1,5 +1,6 @@
 'use client'
 
+import { Shield, Anchor, Users, HardHat, Briefcase } from 'lucide-react'
 import type { CrewRole } from '@/types'
 
 interface CrewMember {
@@ -15,11 +16,11 @@ const ROLE_LABELS: Record<CrewRole, string> = {
   deckhand: 'Deckhand',
 }
 
-const ROLE_ICONS: Record<CrewRole, string> = {
-  captain: '👨‍✈️',
-  first_mate: '⚓',
-  crew: '🧑‍🤝‍🧑',
-  deckhand: '🪢',
+const ROLE_ICONS: Record<CrewRole, typeof Shield> = {
+  captain: Shield,
+  first_mate: Anchor,
+  crew: Users,
+  deckhand: HardHat,
 }
 
 export function CrewManifestPanel({
@@ -44,44 +45,45 @@ export function CrewManifestPanel({
   if (effectiveCrew.length === 0) return null
 
   return (
-    <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#F5F8FC]">
-        <h2 className="text-[16px] font-semibold text-[#0D1B2A]">
-          👨‍✈️ Crew Manifest
+    <div className="bg-white rounded-[14px] border border-border overflow-hidden">
+      <div className="px-card py-[14px] border-b border-border flex items-center gap-[6px]">
+        <Shield size={16} className="text-text-dim" />
+        <h2 className="text-[16px] font-bold text-navy">
+          Crew Manifest
         </h2>
       </div>
-      <div className="divide-y divide-[#F5F8FC]">
+      <div className="divide-y divide-border">
         {effectiveCrew.map((member, idx) => {
           const role = member.role as CrewRole
+          const RoleIcon = ROLE_ICONS[role] ?? Users
           return (
-            <div key={`${member.name}-${idx}`} className="px-5 py-3.5 flex items-center gap-3">
+            <div key={`${member.name}-${idx}`} className="px-card py-[12px] flex items-center gap-[10px]">
               <div className="
-                w-10 h-10 rounded-full bg-[#E8F2FB]
-                flex items-center justify-center
-                text-[18px] flex-shrink-0
+                w-[40px] h-[40px] rounded-full bg-[#EBF0F7]
+                flex items-center justify-center shrink-0
               ">
-                {ROLE_ICONS[role] ?? '🧑'}
+                <RoleIcon size={18} className="text-navy" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold text-[#0D1B2A] truncate">
+                <p className="text-[14px] font-semibold text-navy truncate">
                   {member.name}
                 </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[12px] text-[#6B7C93]">
+                <div className="flex items-center gap-[6px] mt-[2px]">
+                  <span className="text-[12px] text-text-mid font-medium">
                     {ROLE_LABELS[role] ?? member.role}
                   </span>
                   {member.license && (
                     <>
-                      <span className="text-[#D0E2F3]">·</span>
-                      <span className="text-[11px] text-[#0C447C] font-medium">
-                        🪪 {member.license}
+                      <span className="text-border">·</span>
+                      <span className="text-[11px] text-navy font-medium flex items-center gap-[3px]">
+                        <Briefcase size={10} /> {member.license}
                       </span>
                     </>
                   )}
                 </div>
               </div>
               {role === 'captain' && (
-                <span className="text-[11px] font-bold text-[#0C447C] bg-[#E8F2FB] px-2.5 py-1 rounded-full flex-shrink-0">
+                <span className="text-[10px] font-bold text-gold bg-gold-dim border border-gold-line px-[10px] py-[4px] rounded-[5px] shrink-0 uppercase tracking-[0.04em]">
                   PIC
                 </span>
               )}

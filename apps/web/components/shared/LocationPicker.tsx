@@ -36,7 +36,7 @@ export function LocationPicker({
         markerRef.current.setLngLat(lngLat);
       } else {
         const marker = new mapboxgl.Marker({
-          color: "#0C447C",
+          color: "#0B1D3A",
           draggable: true,
         })
           .setLngLat(lngLat)
@@ -133,12 +133,12 @@ export function LocationPicker({
         )}
         {geocodeStatus === "from-address" && (
           <p className="text-caption text-success-text">
-            📍 Location set from address
+            Location set from address
           </p>
         )}
         {geocodeStatus === "manual" && (
           <p className="text-caption text-success-text">
-            📍 Location set — guests will navigate here
+            Location set — guests will navigate here
           </p>
         )}
         {lat && lng && (

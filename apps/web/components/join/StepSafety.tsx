@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
@@ -72,7 +72,7 @@ interface StepSafetyProps {
 
 export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules, state, onUpdate, onNext, onBack }: StepSafetyProps) {
   // Apply USCG/FWC compliance filter + state-specific topic prioritization
-  const applicableCards = useMemo(
+  const filteredCards = useMemo(
     () => filterAndPrioritizeSafetyCards(
       safetyCards,
       charterType,
@@ -82,18 +82,25 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
     [safetyCards, charterType, lengthFt, complianceRules]
   )
 
+  // NEVER auto-skip — if 0 cards, show a mandatory fallback
+  const applicableCards: GuestSafetyCardData[] = filteredCards.length > 0
+    ? filteredCards
+    : [{
+        topic_key: 'general_safety',
+        image_url: null,
+        captainInstructions: '',
+        title: 'Safety Briefing',
+        instructions: 'Please listen to your captain\'s safety briefing before departure. Follow all crew instructions at all times.',
+        audio_url: null,
+        emoji: '',
+        sort_order: 0,
+        compliance_target: 'all',
+      }]
+
   const current = state.currentSafetyCard
   const total = applicableCards.length
   const card = applicableCards[current]
   const allAcknowledged = state.safetyAcks.length >= total
-
-  // If no safety cards configured — skip step after mount
-  useEffect(() => {
-    if (total === 0) onNext()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  if (total === 0) return null
 
   function acknowledge() {
     if (!card) return
@@ -110,7 +117,7 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
     <div className="pt-2">
       <button
         onClick={onBack}
-        className="flex items-center gap-1 text-[13px] text-[#6B7C93] -ml-1 mb-4 min-h-[44px]"
+        className="flex items-center gap-1 text-[13px] text-text-mid -ml-1 mb-4 min-h-[44px]"
       >
         <ChevronLeft size={16} /> Back
       </button>
@@ -118,14 +125,14 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[20px] font-bold text-[#0D1B2A]">Safety briefing</h2>
-          <p className="text-[13px] text-[#6B7C93] mt-0.5">
+          <h2 className="text-[20px] font-bold text-navy">Safety briefing</h2>
+          <p className="text-[13px] text-text-mid mt-0.5">
             {allAcknowledged
               ? 'All safety cards reviewed ✓'
               : `${state.safetyAcks.length} of ${total} reviewed`}
           </p>
         </div>
-        <div className="w-12 h-12 rounded-full bg-[#E8F2FB] flex items-center justify-center text-[13px] font-bold text-[#0C447C]">
+        <div className="w-12 h-12 rounded-full bg-gold-dim flex items-center justify-center text-[13px] font-bold text-navy">
           {Math.min(state.safetyAcks.length, total)}/{total}
         </div>
       </div>
@@ -140,8 +147,8 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
               i < state.safetyAcks.length
                 ? 'w-2 h-2 bg-[#1D9E75]'
                 : i === current && !allAcknowledged
-                ? 'w-3 h-3 bg-[#0C447C]'
-                : 'w-2 h-2 bg-[#D0E2F3]'
+                ? 'w-3 h-3 bg-navy'
+                : 'w-2 h-2 bg-border'
             )}
           />
         ))}
@@ -174,11 +181,11 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-[#E8F9F4] rounded-[20px] p-6 border border-[#1D9E75]/30 text-center"
+          className="bg-[#E8F9F4] rounded-[14px] p-6 border border-[#1D9E75]/30 text-center"
         >
-          <div className="text-[48px] mb-3">✅</div>
-          <h3 className="text-[18px] font-bold text-[#1D9E75] mb-2">Safety briefing complete</h3>
-          <p className="text-[14px] text-[#6B7C93]">
+          <div className="text-teal mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
+          <h3 className="text-[18px] font-bold text-teal mb-2">Safety briefing complete</h3>
+          <p className="text-[14px] text-text-mid">
             You&apos;ve acknowledged all {total} safety cards.
           </p>
         </motion.div>
@@ -190,7 +197,7 @@ export function StepSafety({ safetyCards, charterType, lengthFt, complianceRules
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={onNext}
-          className="w-full h-[56px] rounded-[12px] mt-4 bg-[#0C447C] text-white font-semibold text-[16px] hover:bg-[#093a6b] transition-colors"
+          className="w-full h-[56px] rounded-[12px] mt-4 bg-navy text-white font-semibold text-[16px] hover:bg-navy/90 transition-colors"
         >
           Continue to waiver →
         </motion.button>

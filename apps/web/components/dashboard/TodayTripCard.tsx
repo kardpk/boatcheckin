@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Copy, Check, FileText } from 'lucide-react'
+import { Copy, Check, FileText, MapPin, Calendar, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatTime, formatTripDate, formatDuration } from '@/lib/utils/format'
 import { useTripGuests } from '@/hooks/useTripGuests'
@@ -22,12 +22,12 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
   // Pre-written WhatsApp reminder message
   const appUrl = typeof window !== 'undefined' ? window.location.origin : ''
   const reminderMsg = [
-    `Hi! Just a reminder about your charter tomorrow ⚓`,
+    `Hi! Just a reminder about your charter tomorrow`,
     ``,
-    `📋 ${total} of ${trip.maxGuests} guests checked in`,
+    `${total} of ${trip.maxGuests} guests checked in`,
     pending > 0
-      ? `⏳ ${pending} guest${pending !== 1 ? 's' : ''} still need${pending === 1 ? 's' : ''} to sign the waiver`
-      : `✅ All waivers signed!`,
+      ? `${pending} guest${pending !== 1 ? 's' : ''} still need${pending === 1 ? 's' : ''} to sign the waiver`
+      : `All waivers signed!`,
     ``,
     `Join link: ${appUrl}/trip/${trip.slug}`,
     `Code: ${trip.tripCode}`,
@@ -61,112 +61,69 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
   }
 
   return (
-    <div className="bg-[#0C447C] rounded-[20px] p-5 text-white">
+    <div className="bg-navy rounded-[14px] p-card text-white relative overflow-hidden">
+      {/* Subtle gold glow */}
+      <div className="absolute top-[-20px] right-[-20px] w-[140px] h-[140px] bg-[radial-gradient(circle,rgba(184,136,42,0.08)_0%,transparent_70%)] pointer-events-none" />
+
       {/* Trip header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-[14px]">
         <div>
-          <p className="text-[17px] font-bold">
-            {trip.boat.boatName}
-          </p>
-          <p className="text-white/70 text-[13px] mt-0.5">
-            {formatTripDate(trip.tripDate)} ·{' '}
-            {formatTime(trip.departureTime)} ·{' '}
-            {formatDuration(trip.durationHours)}
+          <p className="text-[17px] font-bold">{trip.boat.boatName}</p>
+          <p className="text-white/70 text-[13px] mt-[3px] flex items-center gap-[5px]">
+            <Calendar size={13} />
+            {formatTripDate(trip.tripDate)} · {formatTime(trip.departureTime)} · {formatDuration(trip.durationHours)}
           </p>
           {trip.boat.slipNumber && (
-            <p className="text-white/60 text-[12px] mt-0.5">
-              📍 Slip {trip.boat.slipNumber} · {trip.boat.marinaName}
+            <p className="text-white/60 text-[12px] mt-[3px] flex items-center gap-[4px]">
+              <MapPin size={12} />
+              Slip {trip.boat.slipNumber} · {trip.boat.marinaName}
             </p>
           )}
         </div>
-        <span className={cn(
-          'text-[11px] font-bold px-2.5 py-1 rounded-full',
-          trip.status === 'active'
-            ? 'bg-[#1D9E75] text-white'
-            : 'bg-white/20 text-white'
-        )}>
-          {trip.status === 'active' ? 'Active ●' : 'Today'}
-        </span>
-        <RealtimeIndicator status={connectionStatus} />
+        <div className="flex items-center gap-[6px]">
+          <span className={cn(
+            'text-[10px] font-bold uppercase tracking-[0.05em] px-[10px] py-[4px] rounded-[5px]',
+            trip.status === 'active'
+              ? 'bg-teal text-white'
+              : 'bg-white/15 text-white'
+          )}>
+            {trip.status === 'active' ? 'Active' : 'Today'}
+          </span>
+          <RealtimeIndicator status={connectionStatus} />
+        </div>
       </div>
 
       {/* Guest progress */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-[14px]">
+        <div className="flex items-center justify-between mb-[6px]">
           <span className="text-[14px] font-semibold">
             {total} / {trip.maxGuests} checked in
           </span>
           <span className="text-[13px] text-white/70">
             {signed} signed · {pending > 0 ? (
-              <span className="text-[#FEF3DC]">{pending} pending</span>
-            ) : '✓ all signed'}
+              <span className="text-gold">{pending} pending</span>
+            ) : (
+              <span className="text-teal">all signed</span>
+            )}
           </span>
         </div>
-        <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+        <div className="w-full h-[6px] bg-white/15 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#1D9E75] rounded-full transition-all duration-700"
+            className="h-full bg-teal rounded-full transition-all duration-700"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
       </div>
 
-      {/* Mini guest list (first 4) */}
-      {guests.length > 0 && (
-        <div className="space-y-1.5 mb-4">
-          {guests.slice(0, 4).map(guest => (
-            <div
-              key={guest.id}
-              className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-[10px]',
-                guest.waiverSigned
-                  ? 'bg-white/10'
-                  : 'bg-[#E5910A]/20'
-              )}
-            >
-              {/* Avatar */}
-              <div className="
-                w-7 h-7 rounded-full bg-white/20
-                flex items-center justify-center
-                text-[11px] font-bold flex-shrink-0
-              ">
-                {guest.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-              </div>
-
-              <span className="text-[13px] font-medium flex-1 truncate">
-                {guest.fullName.split(' ')[0]}
-              </span>
-
-              {/* Addon emojis */}
-              <span className="text-[12px]">
-                {guest.addonOrders.map(o => o.emoji).join(' ')}
-              </span>
-
-              {/* Waiver badge */}
-              <span className={cn(
-                'text-[11px] font-semibold',
-                guest.waiverSigned ? 'text-[#4ADE80]' : 'text-[#FEF3DC]'
-              )}>
-                {guest.waiverSigned ? '✓' : '…'}
-              </span>
-            </div>
-          ))}
-          {guests.length > 4 && (
-            <p className="text-[12px] text-white/60 pl-3">
-              +{guests.length - 4} more · See full list →
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Action buttons */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-[8px]">
         <button
           onClick={downloadPdf}
           disabled={downloadingPdf || guests.length === 0}
           className="
-            flex items-center justify-center gap-2
-            h-[44px] rounded-[10px]
-            bg-white/15 hover:bg-white/25
+            flex items-center justify-center gap-[6px]
+            h-[42px] rounded-[10px]
+            bg-white/12 hover:bg-white/20
             text-[13px] font-medium text-white
             transition-colors disabled:opacity-40
           "
@@ -178,9 +135,9 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
         <button
           onClick={copyReminder}
           className="
-            flex items-center justify-center gap-2
-            h-[44px] rounded-[10px]
-            bg-white/15 hover:bg-white/25
+            flex items-center justify-center gap-[6px]
+            h-[42px] rounded-[10px]
+            bg-white/12 hover:bg-white/20
             text-[13px] font-medium text-white
             transition-colors
           "
@@ -193,8 +150,8 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
       <Link
         href={`/dashboard/trips/${trip.id}`}
         className="
-          block text-center text-[13px] text-white/70
-          underline mt-3 min-h-[44px] flex items-center
+          block text-center text-[13px] text-white/60
+          underline mt-[10px] min-h-[40px] flex items-center
           justify-center hover:text-white transition-colors
         "
       >

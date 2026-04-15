@@ -33,7 +33,7 @@ export default function BoardingPassPage({ params }: Props) {
   if (!loaded) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="w-8 h-8 border-2 border-[#0C447C]/30 border-t-[#0C447C] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-navy/30 border-t-[#0C447C] rounded-full animate-spin" />
       </div>
     )
   }
@@ -41,8 +41,8 @@ export default function BoardingPassPage({ params }: Props) {
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        <div className="text-[48px] mb-4">⚓</div>
-        <p className="text-[16px] text-[#6B7C93] mb-4">
+        
+        <p className="text-[16px] text-text-mid mb-4">
           No check-in found for this trip.
         </p>
         <a
@@ -56,7 +56,7 @@ export default function BoardingPassPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F8FC] flex flex-col items-center justify-center p-5">
+    <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-5">
       <div className="w-full max-w-sm">
         <h1 className="text-[20px] font-bold text-[#0D1B2A] text-center mb-4">
           Your boarding pass
@@ -65,10 +65,10 @@ export default function BoardingPassPage({ params }: Props) {
         {/* Boarding pass card */}
         <div className="bg-white rounded-[20px] shadow-[0_4px_24px_rgba(12,68,124,0.12)] overflow-hidden">
           <div className="px-5 pt-5 pb-4">
-            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-[#6B7C93] mb-2">
+            <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-text-mid mb-2">
               BOATCHECKIN
             </p>
-            <p className="text-[13px] text-[#6B7C93]">
+            <p className="text-[13px] text-text-mid">
               Checked in {new Date(session.checkedInAt).toLocaleDateString()}
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function BoardingPassPage({ params }: Props) {
 
         <a
           href={`/trip/${slug}`}
-          className="block text-center text-[14px] text-[#6B7C93] underline mt-5"
+          className="block text-center text-[14px] text-text-mid underline mt-5"
         >
           ← Back to trip info
         </a>

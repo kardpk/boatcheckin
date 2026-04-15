@@ -58,17 +58,17 @@ export function StickyJoinCTA({
   return (
     <>
       {/* Fixed bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#D0E2F3] px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
 
         {/* Active trip green banner */}
         {isActive && (
-          <div className="bg-[#E8F9F4] text-[#1D9E75] text-[13px] text-center py-2 rounded-[8px] mb-3">
+          <div className="bg-[#E8F9F4] text-teal text-[13px] text-center py-2 rounded-[8px] mb-3">
             ✓ {tr.activeBanner}
           </div>
         )}
 
         {/* Guest count */}
-        <p className="text-[13px] text-[#6B7C93] text-center mb-3">
+        <p className="text-[13px] text-text-mid text-center mb-3">
           {tr.guestCount.replace('{n}', guestCount.toString()).replace('{max}', maxGuests.toString())}
         </p>
 
@@ -79,10 +79,10 @@ export function StickyJoinCTA({
           className={cn(
             'w-full h-[52px] rounded-[12px] font-semibold text-[16px] transition-colors',
             isDisabled
-              ? 'bg-[#D0E2F3] text-[#6B7C93] cursor-not-allowed'
+              ? 'bg-border text-text-mid cursor-not-allowed'
               : isActive
               ? 'bg-[#1D9E75] text-white hover:bg-[#178c65]'
-              : 'bg-[#0C447C] text-white hover:bg-[#093a6b]',
+              : 'bg-navy text-white hover:bg-navy/90',
           )}
         >
           {isDisabled
@@ -94,7 +94,7 @@ export function StickyJoinCTA({
 
         {/* Approval note */}
         {requiresApproval && !isDisabled && (
-          <p className="text-[12px] text-[#6B7C93] text-center mt-2">
+          <p className="text-[12px] text-text-mid text-center mt-2">
             ⏳ Subject to approval
           </p>
         )}

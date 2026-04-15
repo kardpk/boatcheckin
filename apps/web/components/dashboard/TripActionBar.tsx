@@ -99,7 +99,7 @@ export function TripActionBar({
   return (
     <div className="
       fixed bottom-0 left-0 right-0 z-40
-      bg-white border-t border-[#D0E2F3]
+      bg-white border-t border-border
       px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3
       md:relative md:bottom-auto md:border-none
       md:bg-transparent md:px-0 md:pt-4 md:pb-0
@@ -111,16 +111,16 @@ export function TripActionBar({
           <div className="
             mb-3 flex items-center gap-2
             p-3 rounded-[12px]
-            bg-[#E8F2FB] border border-[#D0E2F3]
+            bg-gold-dim border border-border
           ">
-            <p className="text-[13px] text-[#0C447C] flex-1 truncate">
-              📎 {snapshotUrl}
+            <p className="text-[13px] text-navy flex-1 truncate">
+              {snapshotUrl}
             </p>
             <button
               onClick={copySnapshot}
               className="
                 flex items-center gap-1 px-3 py-1.5
-                rounded-[8px] bg-[#0C447C] text-white
+                rounded-[8px] bg-navy text-white
                 text-[12px] font-medium flex-shrink-0
               "
             >
@@ -138,8 +138,8 @@ export function TripActionBar({
             className="
               flex flex-col items-center justify-center gap-1
               h-[60px] rounded-[12px]
-              bg-[#F5F8FC] border border-[#D0E2F3]
-              text-[#0C447C] hover:bg-[#E8F2FB]
+              bg-bg border border-border
+              text-navy hover:bg-gold-dim
               transition-colors disabled:opacity-40
               text-[11px] font-medium
             "
@@ -155,7 +155,7 @@ export function TripActionBar({
               flex flex-col items-center justify-center gap-1
               h-[60px] rounded-[12px]
               bg-[#E8F9F4] border border-[#1D9E75]/30
-              text-[#1D9E75] hover:bg-[#D0F0E6]
+              text-teal hover:bg-[#D0F0E6]
               transition-colors disabled:opacity-40
               text-[11px] font-medium
             "
@@ -169,8 +169,8 @@ export function TripActionBar({
             className="
               flex flex-col items-center justify-center gap-1
               h-[60px] rounded-[12px]
-              bg-[#F5F8FC] border border-[#D0E2F3]
-              text-[#0C447C] hover:bg-[#E8F2FB]
+              bg-bg border border-border
+              text-navy hover:bg-gold-dim
               transition-colors text-[11px] font-medium
             "
           >
@@ -188,7 +188,7 @@ export function TripActionBar({
               h-[60px] rounded-[12px]
               text-white transition-colors
               disabled:opacity-40 text-[11px] font-medium
-              ${snapshotUrl ? 'bg-[#D63B3B] hover:bg-[#b02a2a]' : 'bg-[#0C447C] hover:bg-[#093a6b]'}
+              ${snapshotUrl ? 'bg-[#D63B3B] hover:bg-[#b02a2a]' : 'bg-navy hover:bg-navy/90'}
             `}
           >
             {generatingSnapshot ? (

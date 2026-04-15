@@ -1,20 +1,38 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import {
+  Shield, Anchor, HardHat, Users,
+  Phone, Mail, Ship, Link2, Pencil, Trash2,
+  AlertTriangle, Ban, MoreVertical, X, Briefcase, Globe
+} from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { Avatar } from '@/components/ui/Avatar'
 import type { CaptainProfile, CrewRole } from '@/types'
 
-const ROLE_CONFIG: Record<CrewRole, { label: string; emoji: string; color: string; bg: string }> = {
-  captain: { label: 'Captain', emoji: '👨‍✈️', color: 'text-[#0C447C]', bg: 'bg-[#E8F2FB]' },
-  first_mate: { label: 'First Mate', emoji: '⚓', color: 'text-[#1B6B4A]', bg: 'bg-[#E6F4EE]' },
-  crew: { label: 'Crew', emoji: '🧑‍🤝‍🧑', color: 'text-[#7C5A0C]', bg: 'bg-[#FEF3DC]' },
-  deckhand: { label: 'Deckhand', emoji: '🪢', color: 'text-[#6B4C93]', bg: 'bg-[#F3EEF9]' },
+const ROLE_CONFIG: Record<CrewRole, {
+  label: string; Icon: typeof Shield;
+  color: string; bg: string; border: string;
+}> = {
+  captain: {
+    label: 'Captain', Icon: Shield,
+    color: 'text-gold', bg: 'bg-gold-dim', border: 'border-gold-line',
+  },
+  first_mate: {
+    label: 'First Mate', Icon: Anchor,
+    color: 'text-teal', bg: 'bg-teal-dim', border: 'border-teal-line',
+  },
+  crew: {
+    label: 'Crew', Icon: Users,
+    color: 'text-[#7C5A0C]', bg: 'bg-[rgba(124,90,12,0.06)]', border: 'border-[rgba(124,90,12,0.18)]',
+  },
+  deckhand: {
+    label: 'Deckhand', Icon: HardHat,
+    color: 'text-[#6B4C93]', bg: 'bg-[rgba(107,76,147,0.06)]', border: 'border-[rgba(107,76,147,0.18)]',
+  },
 }
 
-interface BoatOption {
-  id: string
-  name: string
-}
+interface BoatOption { id: string; name: string }
 
 interface CaptainCardProps {
   captain: CaptainProfile
@@ -26,34 +44,21 @@ interface CaptainCardProps {
 }
 
 export function CaptainCard({
-  captain,
-  operatorBoats,
-  onEdit,
-  onDeactivate,
-  onBoatLinked,
-  onBoatUnlinked,
+  captain, operatorBoats, onEdit, onDeactivate, onBoatLinked, onBoatUnlinked,
 }: CaptainCardProps) {
   const [showActions, setShowActions] = useState(false)
   const [showBoatPicker, setShowBoatPicker] = useState(false)
   const [linkLoading, setLinkLoading] = useState(false)
 
-  const initials = captain.fullName
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
   const role = ROLE_CONFIG[captain.defaultRole] ?? ROLE_CONFIG.captain
+  const RoleIcon = role.Icon
 
   const daysUntilExpiry = captain.licenseExpiry
     ? Math.ceil((new Date(captain.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
-
   const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 30 && daysUntilExpiry > 0
   const isExpired = daysUntilExpiry !== null && daysUntilExpiry <= 0
 
-  // Boats not yet linked to this captain
   const availableBoats = operatorBoats.filter(
     b => !captain.linkedBoats.some(lb => lb.boatId === b.id)
   )
@@ -99,158 +104,164 @@ export function CaptainCard({
   return (
     <div
       className={cn(
-        'bg-white rounded-[16px] border-2 p-4 transition-all relative',
-        isExpired
-          ? 'border-[#D63B3B]/40'
-          : isExpiringSoon
-            ? 'border-[#E5910A]/40'
-            : 'border-[#D0E2F3]',
-        'hover:shadow-md'
+        'relative overflow-hidden bg-white rounded-[14px] border p-card transition-all',
+        isExpired ? 'border-error/40' : isExpiringSoon ? 'border-warn/40' : 'border-border',
       )}
     >
-      {/* Top row: role badge + default badge */}
-      <div className="flex items-center gap-2 mb-3">
-        <span className={cn('text-[11px] font-bold px-2.5 py-0.5 rounded-full', role.bg, role.color)}>
-          {role.emoji} {role.label}
-        </span>
-        {captain.isDefault && (
-          <span className="text-[10px] font-bold text-[#0C447C] bg-[#E8F2FB] px-2 py-0.5 rounded-full">
-            ⭐ DEFAULT
-          </span>
-        )}
-        <div className="flex-1" />
-        <button
-          onClick={() => setShowActions(!showActions)}
-          className="w-8 h-8 rounded-full hover:bg-[#F5F8FC] flex items-center justify-center text-[16px] text-[#6B7C93]"
-        >
-          ⋮
-        </button>
-      </div>
+      {/* State top bar */}
+      {isExpired && <div className="absolute top-0 left-0 right-0 h-[3px] bg-error" />}
+      {isExpiringSoon && !isExpired && <div className="absolute top-0 left-0 right-0 h-[3px] bg-warn" />}
 
-      <div className="flex items-start gap-3">
-        {/* Avatar */}
-        {captain.photoUrl ? (
-          <img
-            src={captain.photoUrl}
-            alt={captain.fullName}
-            className="w-12 h-12 rounded-full object-cover border-2 border-[#D0E2F3] flex-shrink-0"
-          />
-        ) : (
-          <div className={cn(
-            'w-12 h-12 rounded-full flex items-center justify-center text-[16px] font-bold flex-shrink-0',
-            role.bg, role.color
-          )}>
-            {initials}
-          </div>
-        )}
+      {/* Header: avatar + info + menu */}
+      <div className="flex items-start gap-[12px]">
+        <Avatar
+          name={captain.fullName}
+          role={captain.defaultRole === 'first_mate' ? 'first-mate' : captain.defaultRole === 'deckhand' ? 'deckhand' : 'captain'}
+          size="lg"
+        />
 
-        {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-[15px] font-semibold text-[#0D1B2A] truncate">
+          <p className="text-[16px] font-bold text-navy truncate">
             {captain.fullName}
           </p>
 
-          {/* License */}
-          {captain.licenseType && (
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[12px] text-[#0C447C] font-medium bg-[#E8F2FB] px-2 py-0.5 rounded-full">
-                🪪 {captain.licenseType}
-              </span>
-              {captain.licenseNumber && (
-                <span className="text-[11px] text-[#6B7C93]">
-                  #{captain.licenseNumber}
-                </span>
-              )}
-            </div>
-          )}
+          {/* Role badge */}
+          <span className={cn(
+            'inline-flex items-center gap-[4px] mt-[4px] px-[10px] py-[3px] rounded-[5px]',
+            'text-[11px] font-bold uppercase tracking-[0.04em] border',
+            role.bg, role.color, role.border
+          )}>
+            <RoleIcon size={12} />
+            {role.label}
+          </span>
 
-          {/* Expiry */}
-          {captain.licenseExpiry && (
-            <p className={cn(
-              'text-[11px] mt-1',
-              isExpired ? 'text-[#D63B3B] font-bold' :
-              isExpiringSoon ? 'text-[#E5910A] font-semibold' :
-              'text-[#6B7C93]'
-            )}>
-              {isExpired ? '⛔ License EXPIRED' :
-               isExpiringSoon ? `⚠️ Expires in ${daysUntilExpiry} days` :
-               `Expires: ${new Date(captain.licenseExpiry).toLocaleDateString()}`}
-            </p>
+          {captain.isDefault && (
+            <span className="ml-[6px] text-[10px] font-bold uppercase tracking-[0.04em] text-gold bg-gold-dim border border-gold-line px-[8px] py-[3px] rounded-[5px]">
+              Default
+            </span>
           )}
-
-          {/* Meta */}
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            {captain.yearsExperience != null && (
-              <span className="text-[11px] text-[#6B7C93]">
-                {captain.yearsExperience}yr exp
-              </span>
-            )}
-            {captain.phone && (
-              <span className="text-[11px] text-[#6B7C93]">
-                📱 {captain.phone}
-              </span>
-            )}
-            {captain.email && (
-              <span className="text-[11px] text-[#6B7C93]">
-                ✉️ {captain.email}
-              </span>
-            )}
-          </div>
         </div>
+
+        <button
+          onClick={() => setShowActions(!showActions)}
+          className="w-[32px] h-[32px] rounded-full hover:bg-bg flex items-center justify-center text-text-dim shrink-0"
+        >
+          <MoreVertical size={16} />
+        </button>
       </div>
 
-      {/* Boat chips */}
-      <div className="mt-3 pt-3 border-t border-[#F5F8FC]">
-        <p className="text-[10px] font-bold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+      {/* License */}
+      {captain.licenseType && (
+        <div className="flex items-center gap-[6px] mt-[10px]">
+          <span className="inline-flex items-center gap-[4px] text-[12px] text-navy-mid font-medium bg-[#EBF0F7] px-[8px] py-[3px] rounded-[5px]">
+            <Briefcase size={11} />
+            {captain.licenseType}
+          </span>
+          {captain.licenseNumber && (
+            <span className="text-[11px] text-text-dim font-medium">
+              #{captain.licenseNumber}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Expiry warning */}
+      {captain.licenseExpiry && (
+        <p className={cn(
+          'text-[11px] mt-[6px] flex items-center gap-[4px] font-medium',
+          isExpired ? 'text-error font-bold' :
+          isExpiringSoon ? 'text-warn font-semibold' :
+          'text-text-dim'
+        )}>
+          {isExpired ? <><Ban size={12} /> License EXPIRED</> :
+           isExpiringSoon ? <><AlertTriangle size={12} /> Expires in {daysUntilExpiry} days</> :
+           `Expires: ${new Date(captain.licenseExpiry).toLocaleDateString()}`}
+        </p>
+      )}
+
+      {/* Meta row */}
+      <div className="flex items-center gap-[10px] mt-[8px] flex-wrap">
+        {captain.yearsExperience != null && (
+          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
+            <Briefcase size={11} />
+            {captain.yearsExperience}yr exp
+          </span>
+        )}
+        {captain.phone && (
+          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
+            <Phone size={11} />
+            {captain.phone}
+          </span>
+        )}
+        {captain.email && (
+          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
+            <Mail size={11} />
+            {captain.email}
+          </span>
+        )}
+        {captain.languages && captain.languages.length > 0 && (
+          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
+            <Globe size={11} />
+            {captain.languages.join(', ')}
+          </span>
+        )}
+      </div>
+
+      {/* Linked boats */}
+      <div className="mt-[12px] pt-[12px] border-t border-border">
+        <p className="text-[10px] font-bold text-text-dim uppercase tracking-[0.06em] mb-[6px] flex items-center gap-[4px]">
+          <Ship size={11} />
           Linked Boats
         </p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-[6px]">
           {captain.linkedBoats.map(lb => (
             <span
               key={lb.boatId}
-              className="inline-flex items-center gap-1 text-[12px] text-[#0D1B2A] bg-[#F5F8FC] border border-[#D0E2F3] px-2.5 py-1 rounded-full"
+              className="inline-flex items-center gap-[4px] text-[12px] text-navy bg-[#EBF0F7] border border-border px-[10px] py-[4px] rounded-[8px] font-medium"
             >
-              🛥️ {lb.boatName}
+              <Ship size={12} className="text-text-dim" />
+              {lb.boatName}
               <button
                 onClick={() => handleUnlinkBoat(lb.boatId)}
-                className="text-[#6B7C93] hover:text-[#D63B3B] ml-0.5 text-[10px] font-bold"
+                className="text-text-dim hover:text-error ml-[2px]"
                 title={`Unlink ${lb.boatName}`}
               >
-                ✕
+                <X size={12} />
               </button>
             </span>
           ))}
 
-          {/* Link boat button */}
           {availableBoats.length > 0 && (
             <button
               onClick={() => setShowBoatPicker(!showBoatPicker)}
-              className="inline-flex items-center gap-1 text-[12px] text-[#0C447C] bg-[#E8F2FB] px-2.5 py-1 rounded-full hover:bg-[#D0E2F3] transition-colors"
+              className="inline-flex items-center gap-[4px] text-[12px] text-gold font-semibold bg-gold-dim border border-gold-line px-[10px] py-[4px] rounded-[8px] hover:bg-gold/10 transition-colors"
             >
-              + Link Boat
+              <Link2 size={12} />
+              Link Boat
             </button>
           )}
 
           {captain.linkedBoats.length === 0 && availableBoats.length === 0 && (
-            <span className="text-[11px] text-[#6B7C93] italic">No boats available</span>
+            <span className="text-[11px] text-text-dim italic">No boats available</span>
           )}
 
           {captain.linkedBoats.length === 0 && availableBoats.length > 0 && !showBoatPicker && (
-            <span className="text-[11px] text-[#6B7C93] italic">Not linked to any boat</span>
+            <span className="text-[11px] text-text-dim italic">Not linked to any boat</span>
           )}
         </div>
 
-        {/* Boat picker dropdown */}
+        {/* Boat picker */}
         {showBoatPicker && (
-          <div className="mt-2 p-2 bg-white border border-[#D0E2F3] rounded-[10px] shadow-sm space-y-1">
+          <div className="mt-[8px] p-[8px] bg-white border border-border rounded-[10px] shadow-card space-y-[4px]">
             {availableBoats.map(boat => (
               <button
                 key={boat.id}
                 disabled={linkLoading}
                 onClick={() => handleLinkBoat(boat.id)}
-                className="w-full text-left px-3 py-2 rounded-[8px] text-[13px] text-[#0D1B2A] hover:bg-[#E8F2FB] disabled:opacity-50 transition-colors"
+                className="w-full text-left px-[12px] py-[8px] rounded-[8px] text-[13px] text-navy font-medium hover:bg-gold-dim disabled:opacity-50 transition-colors flex items-center gap-[6px]"
               >
-                🛥️ {boat.name}
+                <Ship size={14} className="text-text-dim" />
+                {boat.name}
               </button>
             ))}
           </div>
@@ -259,17 +270,19 @@ export function CaptainCard({
 
       {/* Action buttons */}
       {showActions && (
-        <div className="mt-3 pt-3 border-t border-[#D0E2F3] flex gap-2">
+        <div className="mt-[12px] pt-[12px] border-t border-border flex gap-[8px]">
           <button
             onClick={() => { onEdit(captain); setShowActions(false) }}
-            className="flex-1 h-[36px] rounded-[8px] border border-[#D0E2F3] text-[13px] font-medium text-[#0C447C] hover:bg-[#E8F2FB] transition-colors"
+            className="flex-1 h-[36px] rounded-[10px] border border-border text-[13px] font-semibold text-navy hover:bg-bg transition-colors flex items-center justify-center gap-[5px]"
           >
-            ✏️ Edit
+            <Pencil size={13} />
+            Edit
           </button>
           <button
             onClick={() => { onDeactivate(captain); setShowActions(false) }}
-            className="h-[36px] px-4 rounded-[8px] border border-[#D63B3B]/30 text-[13px] font-medium text-[#D63B3B] hover:bg-[#FDEAEA] transition-colors"
+            className="h-[36px] px-[16px] rounded-[10px] border border-error/30 text-[13px] font-semibold text-error hover:bg-error-dim transition-colors flex items-center justify-center gap-[5px]"
           >
+            <Trash2 size={13} />
             Remove
           </button>
         </div>

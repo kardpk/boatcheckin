@@ -17,7 +17,7 @@ export function ParkingCollapsible({
     <div>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 text-[14px] font-medium text-[#6B7C93] hover:text-[#0D1B2A] transition-colors min-h-[44px]"
+        className="flex items-center gap-2 text-[14px] font-medium text-text-mid hover:text-navy transition-colors min-h-[44px]"
       >
         🅿️ {label}
         <ChevronDown
@@ -26,12 +26,12 @@ export function ParkingCollapsible({
         />
       </button>
       {open && (
-        <p className="mt-2 text-[14px] text-[#0D1B2A] leading-relaxed whitespace-pre-line">
+        <p className="mt-2 text-[14px] text-navy leading-relaxed whitespace-pre-line">
           {text}
         </p>
       )}
       <noscript>
-        <p className="mt-2 text-[14px] text-[#0D1B2A] leading-relaxed whitespace-pre-line">
+        <p className="mt-2 text-[14px] text-navy leading-relaxed whitespace-pre-line">
           {text}
         </p>
       </noscript>

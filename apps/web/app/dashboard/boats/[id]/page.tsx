@@ -111,8 +111,8 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
               </p>
               {defaultCaptain?.license_type && (
                 <p className="text-caption text-grey-text">
-                  🪪 {defaultCaptain.license_type}
-                  {defaultCaptain.is_default && ' · ⭐ Default'}
+                  {defaultCaptain.license_type}
+                  {defaultCaptain.is_default && ' · Default'}
                 </p>
               )}
               {!defaultCaptain && boat.captain_bio && (

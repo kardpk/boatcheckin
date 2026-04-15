@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { Users, AlertTriangle, CheckCircle2, Minus, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 interface HeadCountConfirmProps {
@@ -51,23 +52,26 @@ export function HeadCountConfirm({
   if (confirmed && result) {
     return (
       <div className={cn(
-        'p-4 rounded-[16px] border-2',
+        'p-card rounded-[14px] border-2',
         result.mismatch
-          ? 'bg-[#FEF3DC] border-[#E5910A]'
-          : 'bg-[#E8F9F4] border-[#1D9E75]'
+          ? 'bg-warn-dim border-warn'
+          : 'bg-teal-dim border-teal'
       )}>
-        <div className="flex items-center gap-3">
-          <span className="text-[24px]">{result.mismatch ? '⚠️' : '✅'}</span>
+        <div className="flex items-center gap-[10px]">
+          {result.mismatch
+            ? <AlertTriangle size={22} className="text-warn" />
+            : <CheckCircle2 size={22} className="text-teal" />
+          }
           <div>
             <p className={cn(
               'text-[14px] font-bold',
-              result.mismatch ? 'text-[#92400E]' : 'text-[#1D9E75]'
+              result.mismatch ? 'text-warn' : 'text-teal'
             )}>
               {result.mismatch
                 ? `HEAD COUNT MISMATCH`
                 : 'Head count confirmed'}
             </p>
-            <p className="text-[12px] text-[#6B7C93] mt-0.5">
+            <p className="text-[12px] text-text-mid mt-[3px]">
               {result.physicalCount} aboard · {result.digitalCount} registered
               {result.mismatch && ' · Operator notified'}
             </p>
@@ -78,28 +82,29 @@ export function HeadCountConfirm({
   }
 
   return (
-    <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#F5F8FC]">
-        <h2 className="text-[16px] font-semibold text-[#0D1B2A]">
-          👥 Head Count Verification
+    <div className="bg-white rounded-[14px] border border-border overflow-hidden">
+      <div className="px-card py-[14px] border-b border-border flex items-center gap-[6px]">
+        <Users size={16} className="text-text-dim" />
+        <h2 className="text-[16px] font-bold text-navy">
+          Head Count Verification
         </h2>
       </div>
-      <div className="px-5 py-4 space-y-3">
-        <p className="text-[13px] text-[#6B7C93]">
-          Digital count: <span className="font-bold text-[#0D1B2A]">{digitalGuestCount} guests</span> registered
+      <div className="px-card py-[14px] space-y-[10px]">
+        <p className="text-[13px] text-text-mid font-medium">
+          Digital count: <span className="font-bold text-navy">{digitalGuestCount} guests</span> registered
         </p>
 
-        <div className="flex items-center gap-3">
-          <label className="text-[13px] text-[#6B7C93] flex-shrink-0">
+        <div className="flex items-center gap-[10px]">
+          <label className="text-[13px] text-text-mid flex-shrink-0 font-medium">
             Actual count aboard:
           </label>
-          <div className="flex items-center border border-[#D0E2F3] rounded-[10px] overflow-hidden">
+          <div className="flex items-center border border-border rounded-[10px] overflow-hidden">
             <button
               type="button"
               onClick={() => setCount(String(Math.max(0, numericCount - 1)))}
-              className="w-[44px] h-[44px] text-[18px] font-medium text-[#0C447C] hover:bg-[#E8F2FB] transition-colors flex items-center justify-center"
+              className="w-[44px] h-[44px] text-navy hover:bg-bg transition-colors flex items-center justify-center"
             >
-              −
+              <Minus size={16} />
             </button>
             <input
               type="number"
@@ -107,23 +112,23 @@ export function HeadCountConfirm({
               max="500"
               value={count}
               onChange={e => setCount(e.target.value)}
-              className="w-16 h-[44px] text-center text-[18px] font-bold text-[#0D1B2A] border-none outline-none bg-transparent"
+              className="w-16 h-[44px] text-center text-[18px] font-bold text-navy border-none outline-none bg-transparent"
             />
             <button
               type="button"
               onClick={() => setCount(String(numericCount + 1))}
-              className="w-[44px] h-[44px] text-[18px] font-medium text-[#0C447C] hover:bg-[#E8F2FB] transition-colors flex items-center justify-center"
+              className="w-[44px] h-[44px] text-navy hover:bg-bg transition-colors flex items-center justify-center"
             >
-              +
+              <Plus size={16} />
             </button>
           </div>
         </div>
 
         {/* Mismatch warning */}
         {mismatch && (
-          <div className="flex items-center gap-2 p-3 rounded-[10px] bg-[#FEF3DC] border border-[#E5910A]/30">
-            <span className="text-[16px]">⚠️</span>
-            <p className="text-[12px] text-[#92400E] font-medium">
+          <div className="flex items-center gap-[8px] p-[10px] rounded-[10px] bg-warn-dim border border-warn/30">
+            <AlertTriangle size={16} className="text-warn shrink-0" />
+            <p className="text-[12px] text-warn font-medium">
               Mismatch detected: {numericCount} aboard vs {digitalGuestCount} registered.
               You can still confirm — the operator will be notified.
             </p>
@@ -135,14 +140,15 @@ export function HeadCountConfirm({
           onClick={handleConfirm}
           disabled={numericCount <= 0 || confirming}
           className="
-            w-full h-[48px] rounded-[12px]
-            bg-[#0C447C] text-white font-semibold text-[14px]
-            hover:bg-[#093a6b] transition-colors
+            w-full h-[48px] rounded-[10px]
+            bg-gold text-white font-bold text-[14px]
+            hover:bg-gold-hi transition-colors
             disabled:opacity-40 disabled:cursor-not-allowed
-            flex items-center justify-center gap-2
+            flex items-center justify-center gap-[6px]
           "
         >
-          {confirming ? 'Confirming...' : `✓ Confirm ${numericCount} aboard`}
+          <CheckCircle2 size={16} />
+          {confirming ? 'Confirming...' : `Confirm ${numericCount} aboard`}
         </button>
       </div>
     </div>

@@ -11,18 +11,69 @@ No deviations without explicit approval.
 
 ## Design Philosophy
 
-BoatCheckin uses a **dual-surface** design system:
+BoatCheckin uses a **unified design system** with two rendering contexts:
 
-| Surface | Context | Identity |
+| Context | Surface | Identity |
 |---------|---------|----------|
-| **Dark Maritime** | Homepage, marketing, public landing | Deep ink backgrounds, gold accents, serif headlines, editorial luxury |
-| **Light Dashboard** | Operator dashboard, guest flows, captain iPad | White surfaces, navy accents, flat cards, mobile-first |
+| **Homepage & Marketing** | Deep ink backgrounds | Navy ink layers, gold accents, editorial luxury, scroll reveals |
+| **Dashboard & App** | Paper white backgrounds | White cards on `#F5F7FA`, deep navy headings, gold CTAs, mobile-first |
 
-Both surfaces share the same **typography, spacing grid, and icon system** — only the colour context changes.
+Both contexts share the **same font, icon system, colour palette, and spacing** — only the background context flips.
+
+### Core Principles
+- **Mobile-first** — every screen works at 390px before scaling up
+- **Consistent cards** — one standard `.card` component for all content
+- **No emojis** — use Lucide icons exclusively
+- **Less dead space** — tight 16px padding, 10px card gaps
+- **Bottom navigation** — 5-tab bottom bar, no sidebar on app screens
+- **Paper white + Deep Navy + Gold** — the three-colour gravity
 
 ---
 
 ## Colour Palette
+
+### App Surface (Dashboard, Guest Flows, Captain iPad)
+
+```css
+:root {
+  /* ── Backgrounds ── */
+  --bg:          #F5F7FA;   /* page background    */
+  --white:       #FFFFFF;   /* card surfaces       */
+
+  /* ── Brand — Deep Navy ── */
+  --navy:        #0B1D3A;   /* headings, top bar, avatars, trip header cards */
+  --navy-mid:    #1A3A5C;   /* secondary headings, inline links             */
+
+  /* ── Brand — Gold ── */
+  --gold:        #B8882A;   /* primary CTAs, active tab, badges, kickers     */
+  --gold-hi:     #D4A84B;   /* hover/pressed state for gold CTAs             */
+  --gold-dim:    rgba(184,136,42,0.06);  /* gold tint bg (badges, alert bg)  */
+  --gold-line:   rgba(184,136,42,0.22);  /* gold border (dashed link-boat)   */
+
+  /* ── Text Hierarchy ── */
+  --text:        #1E2A3A;   /* body copy, primary text                       */
+  --text-mid:    #5C6E82;   /* secondary text, descriptions, meta            */
+  --text-dim:    #8E9EB0;   /* captions, placeholders, inactive nav          */
+
+  /* ── Structure ── */
+  --border:      #E2E8F0;   /* card borders, table dividers, input borders   */
+  --border-dark: #C8D5E3;   /* focused borders, hover states                 */
+
+  /* ── Status ── */
+  --teal:        #1D9E75;   /* success, signed, boarded, confirmed, USCG     */
+  --teal-dim:    rgba(29,158,117,0.06);  /* teal tint bg                     */
+  --teal-line:   rgba(29,158,117,0.2);   /* teal border                      */
+  --warn:        #D4860A;   /* warning, pending, license expiry              */
+  --warn-dim:    rgba(212,134,10,0.05);  /* warning tint bg                  */
+  --error:       #C93030;   /* error, destructive, compliance block          */
+  --error-dim:   rgba(201,48,48,0.05);   /* error tint bg                    */
+
+  /* ── Foundation ── */
+  --font:        'BL Melody', system-ui, -apple-system, sans-serif;
+  --card-radius: 14px;
+  --card-pad:    16px;
+}
+```
 
 ### Dark Maritime Surface (Homepage & Marketing)
 
@@ -30,119 +81,97 @@ Both surfaces share the same **typography, spacing grid, and icon system** — o
 :root {
   /* ── Ink Layers (backgrounds) ── */
   --ink:         #07101C;   /* primary page background */
-  --ink2:        #0B1624;   /* alternate section bg (cover, pricing cards) */
-  --ink3:        #0F1E30;   /* elevated sections (attorney, SB606) */
+  --ink2:        #0B1624;   /* alternate section bg    */
+  --ink3:        #0F1E30;   /* elevated sections       */
 
-  /* ── Brand Accent ── */
+  /* ── Brand ── */
   --navy:        #0B3660;   /* deep navy — nav CTA bg, stat cards */
-  --gold:        #B8882A;   /* primary accent — headlines italic, CTAs, kickers, badges */
-  --gold-hi:     #D4A84B;   /* hover state for gold CTAs */
-  --gold-dim:    rgba(184,136,42,0.1);   /* gold tint bg (quote panels, total cards) */
-  --gold-line:   rgba(184,136,42,0.28);  /* gold border/divider */
+  --gold:        #B8882A;   /* primary accent — headlines, CTAs    */
+  --gold-hi:     #D4A84B;   /* hover state                         */
+  --gold-dim:    rgba(184,136,42,0.1);   /* gold tint bg            */
+  --gold-line:   rgba(184,136,42,0.28);  /* gold border             */
 
-  /* ── Text Hierarchy ── */
-  --white:       #FFFFFF;   /* headings, primary text on dark */
-  --text:        #DCE5F0;   /* body copy on dark bg */
-  --text-mid:    #9AADC4;   /* secondary text, descriptions, nav links */
-  --text-dim:    #5A7090;   /* meta text, kickers, footer labels */
+  /* ── Text ── */
+  --white:       #FFFFFF;   /* headings on dark                    */
+  --text:        #DCE5F0;   /* body copy on dark bg                */
+  --text-mid:    #9AADC4;   /* secondary text, nav links           */
+  --text-dim:    #5A7090;   /* meta text, kickers, footer          */
 
   /* ── Structure ── */
-  --rule:        rgba(255,255,255,0.07);   /* section/cell dividers */
+  --rule:        rgba(255,255,255,0.07);   /* section dividers    */
   --rule-gold:   rgba(184,136,42,0.2);     /* gold-tinted dividers */
 }
 ```
 
-### Light Dashboard Surface (App)
-
-```css
-/* Primary */
---navy:        #0C447C;  /* primary, headers, CTAs, active */
---mid-blue:    #1A6FB5;  /* secondary buttons, icons */
---light-blue:  #E8F2FB;  /* card bg, icon chips, highlights */
-
-/* Neutrals */
---white:       #FFFFFF;  /* page bg, cards, modals */
---off-white:   #F5F8FC;  /* section backgrounds */
---dark-text:   #0D1B2A;  /* headings, body */
---grey-text:   #6B7C93;  /* labels, captions, hints */
---border:      #D0E2F3;  /* card borders, dividers */
---border-dark: #A8C4E0;  /* focused borders */
-
-/* Status (flat backgrounds) */
---success-bg:  #E8F9F4;   --success-text: #1D9E75;
---warning-bg:  #FEF3DC;   --warning-text: #E5910A;
---error-bg:    #FDEAEA;   --error-text:   #D63B3B;
---info-bg:     #E8F2FB;   --info-text:    #0C447C;
-```
-
 ### Colour Bridge (Shared Between Surfaces)
 
-| Token | Dark Surface | Light Surface | Usage |
-|-------|-------------|---------------|-------|
-| Gold accent | `#B8882A` | `#0C447C` (navy) | Primary CTA, active states |
-| Body text | `#DCE5F0` | `#0D1B2A` | Paragraph copy |
-| Muted text | `#9AADC4` | `#6B7C93` | Labels, captions |
-| Dividers | `rgba(255,255,255,0.07)` | `#D0E2F3` | Section borders |
+| Token | App Surface | Dark Surface | Usage |
+|-------|-------------|--------------|-------|
+| Gold accent | `#B8882A` | `#B8882A` | Primary CTA, active states ← **unified** |
+| Body text | `#1E2A3A` | `#DCE5F0` | Paragraph copy |
+| Muted text | `#5C6E82` | `#9AADC4` | Labels, captions |
+| Dividers | `#E2E8F0` | `rgba(255,255,255,0.07)` | Section borders |
 
 ---
 
 ## Typography
 
-### Font Stack
+### Font: BL Melody
 
 ```css
-/* Dual font system */
---serif: 'Cormorant Garamond', Georgia, serif;    /* Headlines, display, numbers, quotes */
---sans:  'Instrument Sans', system-ui, sans-serif; /* Body, UI, buttons, labels */
+/* Single font family — full weight range */
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-ExtraLight.otf'); font-weight: 200; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-Light.otf');      font-weight: 300; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-Regular.otf');    font-weight: 400; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-Book.otf');       font-weight: 450; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-Medium.otf');     font-weight: 500; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-SemiBold.otf');   font-weight: 600; }
+@font-face { font-family: 'BL Melody'; src: url('/fonts/BLMelody-Bold.otf');       font-weight: 700; }
 
-/* Google Fonts import */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Instrument+Sans:wght@300;400;500;600&display=swap');
+/* Font stack */
+--font: 'BL Melody', system-ui, -apple-system, sans-serif;
+
+/* Source files location */
+/* packages/resource/fonts/BLMelody-*.otf */
+/* Copy to: apps/web/public/fonts/ for web access */
 ```
 
-### Dark Surface Type Scale (Homepage)
+### App Type Scale (Dashboard)
 
-| Class | Font | Size | Weight | Line Height | Letter Spacing | Usage |
-|-------|------|------|--------|-------------|----------------|-------|
-| `.hero-h` | Serif | `clamp(48px, 5.8vw, 78px)` | 700 | 1.0 | -0.03em | Hero headline |
-| `.sh` | Serif | `clamp(28px, 3.5vw, 46px)` | 700 | 1.08 | -0.025em | Section headline |
-| `.sb-h` | Serif | `clamp(22px, 3vw, 38px)` | 600 | 1.25 | -0.02em | Statement break |
-| `.fh` | Serif | `clamp(34px, 5vw, 64px)` | 700 | 1.05 | -0.03em | Final CTA |
-| `.why-h` | Serif | `clamp(26px, 3.2vw, 42px)` | 700 | 1.1 | -0.025em | Feature headline |
-| `.why-num` | Serif | 88px | 700 | 0.9 | -0.05em | Giant stat number |
-| `.hero-body` | Sans | 16px | 400 | 1.75 | — | Hero body copy |
-| `.ssub` | Sans | 15px | 400 | 1.75 | — | Section subtitle |
-| `.gc-t` | Sans | 16px | 600 | 1.3 | — | Grid cell title |
-| `.gc-b` | Sans | 13px | 400 | 1.65 | — | Grid cell body |
-| kicker | Sans | 11px | 600 | — | 0.2em | Section kicker (uppercase) |
-| badge | Sans | 10px | 600 | — | 0.1em | Compliance badge (uppercase) |
-| nav link | Sans | 13px | 400 | — | 0.05em | Navigation links |
-| CTA button | Sans | 14px | 600 | — | 0.04em | Action buttons |
+| Token | Size | Weight | Spacing | Usage |
+|-------|------|--------|---------|-------|
+| `page-title` | 26px | 700 (Bold) | -0.02em | Page headers: "Crew Roster", "Trips" |
+| `section-label` | 18px | 700 | -0.01em | Section headers: "Captains", "Guests" |
+| `card-head` | 18px | 700 | -0.01em | Card section heads with icon |
+| `card-name` | 18px | 700 | -0.02em | Crew names, boat names |
+| `body` | 15px | 400 | — | Body text, descriptions |
+| `body-sm` | 14px | 400 | — | Meta text, secondary info |
+| `meta` | 13px | 400–500 | — | Captions, inline details |
+| `badge` | 11px | 700 | 0.04em | Badge text, uppercase labels |
+| `nav-label` | 10.5px | 500/700 | — | Bottom nav tab labels |
+| `micro` | 11px | 600 | 0.02em | Kickers, sublabels |
 
-### Italic Rules
+### Homepage Type Scale (Dark Surface)
 
-- **Gold italic in serif headlines** — `<em>` tags inside `.hero-h`, `.sh`, `.sb-h`, `.fh` render as `font-style: italic; color: var(--gold)`
-- **Company tagline** — Serif, italic, `--text-mid` colour, used for subtitles: `font-family: var(--serif); font-style: italic`
-- **Blockquotes** — Serif, italic, 18px, white on gold-dim background
+| Token | Size | Weight | Spacing | Usage |
+|-------|------|--------|---------|-------|
+| `hero-h` | `clamp(48px, 5.8vw, 78px)` | 700 | -0.03em | Hero headline |
+| `sh` | `clamp(28px, 3.5vw, 46px)` | 700 | -0.025em | Section headline |
+| `sb-h` | `clamp(22px, 3vw, 38px)` | 600 | -0.02em | Statement break |
+| `hero-body` | 16px | 400 | — | Hero body copy |
+| `kicker` | 11px | 600 | 0.2em | Section kicker (uppercase) |
+| `CTA button` | 14px | 600 | 0.04em | Action buttons |
 
-### Light Surface Type Scale (Dashboard)
+### Special Typography
 
 ```css
-.text-display { font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
-.text-h1      { font-size: 22px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
-.text-h2      { font-size: 18px; font-weight: 600; line-height: 1.3; }
-.text-h3      { font-size: 16px; font-weight: 500; line-height: 1.4; }
-.text-body    { font-size: 15px; font-weight: 400; line-height: 1.6; }
-.text-label   { font-size: 13px; font-weight: 500; line-height: 1.4; }
-.text-caption { font-size: 12px; font-weight: 400; line-height: 1.5; }
-.text-micro   { font-size: 11px; font-weight: 500; line-height: 1.4; }
-
 /* Waiver signature field */
 .text-signature {
   font-family: 'Satisfy', cursive; /* Google Font */
   font-size: 24px;
-  color: #0C447C;
+  color: var(--navy);
   border: none;
-  border-bottom: 2px solid #0C447C;
+  border-bottom: 2px solid var(--navy);
 }
 ```
 
@@ -152,16 +181,14 @@ Both surfaces share the same **typography, spacing grid, and icon system** — o
 
 ```
 4px   — micro: between inline elements
-8px   — tight: related items
-12px  — standard: padding, small gaps
-16px  — page: horizontal page padding (mobile)
-20px  — card: internal card padding
-24px  — section: between sections
-32px  — large: major section breaks
-44px  — page-pad: horizontal page padding (desktop homepage)
-48px  — hero: hero section padding
-72px  — tight-section: section vertical padding (homepage)
-88px  — section-pad: section vertical padding (homepage)
+8px   — tight: related items (badge gap, chip gap)
+10px  — card-gap: between cards
+12px  — standard: status pill padding, small gaps
+16px  — page-pad: horizontal page padding (mobile), card internal padding
+18px  — section: between card sections (boats area, actions row)
+24px  — deck: major section breaks inside page
+32px  — large: page header bottom margin
+44px  — desktop-pad: horizontal padding (desktop)
 ```
 
 ---
@@ -169,14 +196,576 @@ Both surfaces share the same **typography, spacing grid, and icon system** — o
 ## Border Radius
 
 ```
-Homepage cells:     5px   (grid cells, law cards, pricing)
-Homepage badges:    3px   (compliance badges, buttons, nav)
-Homepage inputs:    4px   (trip code finder)
-Dashboard cards:    16px
-Dashboard buttons:  12px
-Dashboard pills:    20px  (full round)
-Dashboard inputs:   10px
-Dashboard modals:   20px  (bottom sheet: 20px top only)
+Cards:         14px  (var(--card-radius))
+Buttons (CTA): 10px
+Buttons (sm):   8px
+Badges:         5px
+Chips:          8px  (boat chips, trip chips)
+Avatars:       50%   (full circle)
+Bottom sheet:  20px  (top corners only)
+Inputs:        10px
+```
+
+---
+
+## Card System
+
+### Standard Card
+
+Every content block in the dashboard uses the same card component:
+
+```css
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);       /* 14px */
+  padding: var(--card-pad);                /* 16px */
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+```
+
+### Card State Indicators
+
+Cards use a **3px top bar** for state. The card design stays identical — only the top bar changes:
+
+```css
+/* Warning (license expiry, pending items) */
+.card.warn::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--warn);     /* #D4860A */
+}
+
+/* Error (expired, compliance block) */
+.card.error::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--error);    /* #C93030 */
+}
+
+/* Info / Success (safety confirmed, manifest ready) */
+.card.info::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--teal);     /* #1D9E75 */
+}
+```
+
+### Alert Card
+
+For prominent warnings (license expiry banner, compliance alerts):
+
+```css
+.alert-card {
+  background: var(--warn-dim);
+  border: 1px solid rgba(212,134,10,0.15);
+  border-radius: var(--card-radius);
+  padding: 14px var(--card-pad);
+  position: relative;
+  overflow: hidden;
+}
+.alert-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--warn);
+}
+```
+
+### Card Internal Layout
+
+```css
+/* Card head — title + action button */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-head h2 {
+  font-size: 18px; font-weight: 700;
+  color: var(--navy);
+  display: flex; align-items: center; gap: 7px;
+}
+
+/* Card sections separated by top border */
+.card-section + .card-section {
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+```
+
+---
+
+## Navigation
+
+### Top Bar (Sticky, Navy)
+
+```css
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--navy);       /* #0B1D3A */
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+```
+
+**Contents:**
+- Left: Gold-bordered anchor logo + "BoatCheckin" (BL Melody Bold 17px, white)
+- Right: User avatar circle (32px, `rgba(255,255,255,0.12)`, white initials)
+
+### Bottom Navigation (5 Tabs)
+
+```css
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 20;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 6px 0 env(safe-area-inset-bottom, 8px);
+}
+```
+
+| Tab | Icon | Label |
+|-----|------|-------|
+| Home | `Home` | Home |
+| Boats | `Ship` | Boats |
+| Trips | `Anchor` | Trips |
+| Crew | `Users` | Crew |
+| More | `Settings` | More |
+
+#### Nav Tab States
+
+```css
+/* Inactive — dim grey */
+.nav-tab {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  padding: 8px 0;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--navy);             /* dark navy icons when inactive */
+}
+.nav-tab i { width: 22px; height: 22px; stroke-width: 2; }
+
+/* Active — gold, bold icon */
+.nav-tab.active {
+  color: var(--gold);             /* #B8882A */
+  font-weight: 700;
+}
+.nav-tab.active i { stroke-width: 2.5; }   /* bolder icon stroke */
+```
+
+> **Important:** Bottom nav icons must be **dark navy (`--navy`)** when inactive and **gold (`--gold`)** when active. Icons should feel bold — use `stroke-width: 2` for inactive, `stroke-width: 2.5` for active.
+
+### Logo Mark
+
+```css
+.topbar-logo {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--gold);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--gold);
+}
+/* Uses: Lucide <Anchor> at 17px */
+```
+
+---
+
+## Icon System — Lucide
+
+**Library:** [`lucide-react`](https://lucide.dev/) (MIT, tree-shakeable, 1000+ icons)
+
+```bash
+# Already installed:
+import { Ship, Anchor, Users, Shield } from "lucide-react";
+```
+
+### Critical Rule: No Emojis
+
+**Never use emoji in UI.** Every icon must be a Lucide `<Icon>` component.
+
+### Sizing Rules
+
+```
+size={13}  — micro:   inline with meta text, crew-meta, badges
+size={14}  — small:   inline with form labels, check items
+size={16}  — body:    back links, alert icons, chip icons
+size={18}  — card:    card-head h2 icons, section icons
+size={20}  — nav:     bottom nav tabs, action bar buttons
+size={22}  — feature: action grid icons, weather
+size={32}  — hero:    weather icon, empty state
+size={48}  — display: completion screens
+```
+
+### Colour Rules
+
+```
+var(--navy)      — inactive bottom nav, primary icons, card-head icons
+var(--gold)      — active bottom nav, badges, CTAs, kickers
+var(--text-mid)  — secondary icons, meta, chevrons
+var(--text-dim)  — placeholder icons, captions
+var(--teal)      — success, confirmed, USCG
+var(--warn)      — warning, pending, expiry
+var(--error)     — destructive, remove, expired
+#FFFFFF          — icons on navy bg (top bar, trip header)
+```
+
+### Icon Registry — By Category
+
+#### Navigation (Bottom Nav + Top Bar)
+
+| Context | Icon | Import | Colour |
+|---------|------|--------|--------|
+| Home | `Home` | `Home` | `--navy` / `--gold` active |
+| Boats | `Ship` | `Ship` | `--navy` / `--gold` active |
+| Trips | `Anchor` | `Anchor` | `--navy` / `--gold` active |
+| Crew | `Users` | `Users` | `--navy` / `--gold` active |
+| More | `Settings` | `Settings` | `--navy` / `--gold` active |
+| Logo | `Anchor` | `Anchor` | `--gold` always |
+
+#### Maritime & Boats
+
+| Context | Icon | Import |
+|---------|------|--------|
+| Boat name / chip | `Sailboat` | `Sailboat` |
+| Ship (list/card) | `Ship` | `Ship` |
+| Linked boats label | `Ship` | `Ship` |
+| Link boat CTA | `Link` | `Link` |
+| Unlink boat | `X` | `X` |
+| Compass | `Compass` | `Compass` |
+| Map pin | `MapPin` | `MapPin` |
+| Waves | `Waves` | `Waves` |
+| Wind | `Wind` | `Wind` |
+| Weather | `CloudSun` | `CloudSun` |
+
+#### Crew & Roles
+
+| Context | Icon | Import |
+|---------|------|--------|
+| Captain badge | `Shield` | `Shield` |
+| First Mate badge | `Anchor` | `Anchor` |
+| Deckhand badge | `HardHat` | `HardHat` |
+| License/ID card | `IdCard` | `IdCard` |
+| Experience | `Briefcase` | `Briefcase` |
+| Crew assignment | `UserCog` | `UserCog` |
+
+#### Actions
+
+| Context | Icon | Import |
+|---------|------|--------|
+| Add / Plus | `Plus` | `Plus` |
+| Remove / Close | `X` | `X` |
+| Confirm / Check | `Check` | `Check` |
+| Edit | `Pencil` | `Pencil` |
+| Delete | `Trash2` | `Trash2` |
+| Back | `ChevronLeft` | `ChevronLeft` |
+| Forward | `ChevronRight` | `ChevronRight` |
+| Expand | `ChevronDown` | `ChevronDown` |
+| Copy | `Copy` | `Copy` |
+| Play / Start | `Play` | `Play` |
+| Drag handle | `GripVertical` | `GripVertical` |
+
+#### Status & Feedback
+
+| Context | Icon | Import |
+|---------|------|--------|
+| Success | `CheckCircle` | `CheckCircle` |
+| Warning | `AlertTriangle` | `AlertTriangle` |
+| Error | `AlertCircle` | `AlertCircle` |
+| Safety / Shield | `ShieldCheck` | `ShieldCheck` |
+| Info | `Info` | `Info` |
+| Clipboard check | `ClipboardCheck` | `ClipboardCheck` |
+
+#### Contact & Communication
+
+| Context | Icon | Import |
+|---------|------|--------|
+| Phone | `Phone` | `Phone` |
+| Email | `Mail` | `Mail` |
+| Globe / Language | `Globe` | `Globe` |
+| Message / WhatsApp | `MessageCircle` | `MessageCircle` |
+| Calendar | `Calendar` | `Calendar` |
+| Clock / Time | `Clock` | `Clock` |
+| Timer / Duration | `Timer` | `Timer` |
+| File / Manifest | `FileText` | `FileText` |
+
+---
+
+## Button System
+
+### Primary CTA (Gold)
+
+```css
+.btn-gold {
+  font-family: var(--font);
+  font-size: 14px; font-weight: 600;
+  color: #FFFFFF;
+  background: var(--gold);       /* #B8882A */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center; gap: 6px;
+  transition: background 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-gold:hover { background: var(--gold-hi); }
+```
+
+### Full-Width CTA (Start Trip, Submit)
+
+```css
+.btn-start {
+  font-family: var(--font);
+  font-size: 15px; font-weight: 600;
+  color: #FFFFFF;
+  background: var(--gold);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center; gap: 7px;
+}
+```
+
+### Small Button (Swap, Assign)
+
+```css
+.btn-sm {
+  font-size: 12px; font-weight: 500;
+  color: var(--text-mid);
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center; gap: 4px;
+}
+.btn-sm:hover { border-color: var(--navy); color: var(--navy); }
+
+/* Danger variant */
+.btn-sm.danger { color: var(--error); border-color: rgba(201,48,48,0.2); }
+
+/* Gold-fill variant */
+.btn-sm.gold-fill {
+  color: #FFF;
+  background: var(--gold);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+```
+
+### Outline Button (Edit, Back)
+
+```css
+.btn-outline {
+  font-size: 13px; font-weight: 500;
+  color: var(--navy-mid);
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center; gap: 5px;
+}
+.btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+```
+
+---
+
+## Status Badges
+
+```css
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+/* Variants */
+.pill-signed  { color: var(--teal); background: var(--teal-dim); }
+.pill-pending { color: var(--warn); background: var(--warn-dim); }
+.pill-boarded { color: var(--navy); background: #EBF0F7; border: 1px solid var(--border-dark); font-weight: 700; }
+.pill-upcoming { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-line); }
+```
+
+### Role Badges
+
+```css
+.badge {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center; gap: 4px;
+}
+.badge-captain    { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-line); }
+.badge-first-mate { color: var(--teal); background: var(--teal-dim); border: 1px solid rgba(29,158,117,0.2); }
+.badge-deckhand   { color: #6B4C93; background: rgba(107,76,147,0.06); border: 1px solid rgba(107,76,147,0.18); }
+.badge-default    { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-line); }
+```
+
+---
+
+## Avatar System
+
+```css
+/* Standard avatar — navy bg, white initials */
+.avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--navy);      /* #0B1D3A */
+  display: grid; place-items: center;
+  font-size: 17px; font-weight: 700;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+/* Role-colored variants */
+.avatar.mate     { background: #1D6B50; }   /* teal-dark for First Mates */
+.avatar.deckhand { background: #5A4A7C; }   /* purple for Deckhands     */
+
+/* Sizes */
+.avatar-sm { width: 34px; height: 34px; font-size: 12px; }  /* guest rows */
+.avatar-md { width: 42px; height: 42px; font-size: 16px; }  /* crew assign */
+.avatar-lg { width: 48px; height: 48px; font-size: 17px; }  /* crew cards  */
+.avatar-xl { width: 58px; height: 58px; font-size: 20px; }  /* profile     */
+```
+
+---
+
+## Section Labels
+
+```css
+/* Section divider — large text + count + gold underline bar */
+.section-label {
+  font-size: 18px; font-weight: 700;
+  color: var(--navy);
+  margin: 18px 0 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label .count {
+  font-weight: 400; font-size: 14px; color: var(--text-dim);
+}
+
+/* Gold underline accent */
+.section-bar {
+  width: 28px; height: 2px;
+  background: var(--gold);
+  border-radius: 1px;
+  margin-bottom: 12px;
+}
+```
+
+---
+
+## Chip System
+
+### Boat Chips
+
+```css
+.boat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--navy);
+  font-weight: 500;
+  background: #F4F7FA;
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 8px;
+}
+/* Unlink X icon: var(--text-dim) → var(--error) on hover */
+
+.boat-add {
+  font-size: 13px; color: var(--gold);
+  font-weight: 600;
+  background: var(--gold-dim);
+  border: 1px dashed var(--gold-line);
+  padding: 5px 12px;
+  border-radius: 8px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+```
+
+### Trip Info Chips (on navy background)
+
+```css
+.trip-chip {
+  font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.1);
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+```
+
+---
+
+## Trip Header Card
+
+```css
+.trip-header {
+  background: var(--navy);          /* #0B1D3A */
+  border-radius: var(--card-radius);
+  padding: 20px var(--card-pad) 18px;
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle gold radial glow */
+.trip-header::after {
+  content: '';
+  position: absolute; top: -20px; right: -20px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(184,136,42,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+/* Kicker: gold uppercase label */
+/* Title: BL Melody Bold 24px white */
+/* Chips: frosted white/10% */
+/* Status pill: gold-dim bg */
+```
+
+---
+
+## Action Grid
+
+```css
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.action-btn {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
+  padding: 14px 4px;
+  border-radius: 12px;
+  font-size: 11px; font-weight: 500;
+  border: 1px solid;
+}
+
+/* Variants */
+.action-default { color: var(--text-mid); background: var(--white); border-color: var(--border); }
+.action-teal    { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-line); }
+.action-gold    { color: #FFF; background: var(--gold); border-color: var(--gold); font-weight: 600; }
 ```
 
 ---
@@ -184,558 +773,48 @@ Dashboard modals:   20px  (bottom sheet: 20px top only)
 ## Shadows
 
 ```css
-/* Dashboard — cards only */
-.shadow-card {
-  box-shadow: 0 1px 4px rgba(12, 68, 124, 0.08);
+/* Hover elevation — cards only */
+.card:hover {
+  box-shadow: 0 6px 24px rgba(11,29,58,0.06);
+  border-color: var(--border-dark);
 }
 
-/* Homepage — no box-shadows */
-/* The dark surface uses borders and background tints for depth */
-/* No drop-shadow on buttons */
-/* No elevation system */
+/* No drop shadows on buttons or badges */
+/* No box-shadow on homepage (dark surface uses borders and tints) */
 ```
 
 ---
 
-## Homepage — Structural Patterns
+## Mobile Layout
 
-### Grid Cell Pattern (Coverage, Legal, Flow)
-
-```css
-/* Container: 1px gap grid creates visible borders between cells */
-.gcells {
-  display: grid;
-  gap: 1px;
-  background: var(--rule);     /* gap colour = subtle divider */
-  border: 1px solid var(--rule);
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-/* Cell */
-.gcell {
-  background: var(--ink2);     /* solid on ink layer 2 */
-  padding: 32px 28px;
-  transition: background 0.25s;
-}
-.gcell:hover {
-  background: rgba(184,136,42,0.04);  /* warm gold tint on hover */
-}
-```
-
-**Grid column variants:**
-- `.g3` → `repeat(3, 1fr)` — 3-column (coverage, legal)
-- `.g4` → `repeat(4, 1fr)` — 4-column (flow, pricing, vessels)
-- `.g2` → `repeat(2, 1fr)` — 2-column (stats)
-
-### Section Header Pattern
+### Page Container
 
 ```css
-/* Kicker line + uppercase label */
-.slabel {
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--gold);
-  display: flex; align-items: center; gap: 10px;
+body {
+  max-width: 520px;       /* mobile viewport feel */
+  margin: 0 auto;         /* centered on desktop  */
+  padding-bottom: 80px;   /* space for bottom nav */
 }
-.slabel::before {
-  content: ''; width: 18px; height: 1px;
-  background: var(--gold);
+
+.page {
+  padding: 16px 16px 0;   /* tight horizontal padding */
 }
 ```
 
-### Two-Column Section Head
+### Responsive Rules
 
 ```css
-/* Left = kicker + headline, Right = subtitle paragraph */
-.shead2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  margin-bottom: 52px;
-  align-items: end;
-}
-```
-
-### Statement Break
-
-```css
-/* Full-width centered quote between sections */
-.statement-break {
-  padding: 80px 44px;
-  text-align: center;
-  border-bottom: 1px solid var(--rule);
-  position: relative; overflow: hidden;
-}
-.statement-break::before {
-  /* Radial navy glow behind text */
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(11,54,96,0.2) 0%, transparent 70%);
-  pointer-events: none;
-}
-/* Vertical gold rule above */
-.sb-rule { width: 1px; height: 44px; background: var(--gold-line); margin: 0 auto 32px; }
-```
-
-### Compliance Badge
-
-```css
-.cbadge {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid var(--gold-line);
-  background: var(--gold-dim);
-  padding: 5px 11px; border-radius: 3px;
-  white-space: nowrap;
-}
-```
-
-### Navigation (Fixed, Frosted)
-
-```css
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-  height: 62px;
-  background: rgba(7,16,28,0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--rule);
-  padding: 0 44px;
-}
-```
-
-### Logo Mark
-
-```css
-/* Anchor icon inside a gold-bordered circle */
-.lmark {
-  width: 26px; height: 26px;
-  border: 1.5px solid var(--gold);
-  border-radius: 50%;
-  display: grid; place-items: center;
-}
-.lmark svg { width: 13px; height: 13px; color: var(--gold); }
-```
-
-### Scroll Reveal Animations
-
-```css
-/* Three-stage staggered reveal */
-.r   { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
-.rd  { opacity: 0; transform: translateY(18px); transition: opacity .7s .13s ease, transform .7s .13s ease; }
-.r2  { opacity: 0; transform: translateY(18px); transition: opacity .7s .25s ease, transform .7s .25s ease; }
-.r.v, .rd.v, .r2.v { opacity: 1; transform: none; }
-```
-
-**Trigger:** IntersectionObserver at 6% threshold, rootMargin `0px 0px -24px 0px`.
-
-### Ticker Strip
-
-```css
-.ticker {
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  background: rgba(184,136,42,0.04);
-  overflow: hidden; padding: 13px 0; white-space: nowrap;
-}
-.titem {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--text-dim); padding: 0 36px;
-}
-.titem::after { content: '·'; color: var(--gold); opacity: 0.6; }
-
-@keyframes tick { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-.ttrack { display: inline-flex; animation: tick 32s linear infinite; }
-```
-
-### Pricing Card (Star Variant)
-
-```css
-/* Standard plan */
-.plan { background: var(--ink2); padding: 30px 24px; transition: background .2s; }
-.plan:hover { background: rgba(184,136,42,0.04); }
-
-/* Featured plan (gold border + navy glow) */
-.plan.star {
-  background: rgba(11,54,96,0.3);
-  border: 1px solid var(--gold-line);
+/* Tablets and up (768px+) */
+@media (min-width: 768px) {
+  /* Consider side navigation for tablet landscape */
+  /* Max-width remains 520px for consistency */
 }
 
-/* Price display */
-.pprice {
-  font-family: var(--serif);
-  font-size: 48px; font-weight: 700;
-  color: var(--white); letter-spacing: -0.03em;
+/* All screens */
+@media (max-width: 520px) {
+  /* Full width, no centering */
+  body { max-width: 100%; }
 }
-
-/* CTA — Standard */
-.pg { background: transparent; color: var(--text); border: 1px solid var(--rule); }
-/* CTA — Gold (featured) */
-.pgold { background: var(--gold); color: var(--ink); }
-.pgold:hover { background: var(--gold-hi); }
-```
-
-### Button Styles (Homepage)
-
-```css
-/* Primary gold CTA */
-.bgold {
-  font-family: var(--sans); font-size: 14px; font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--ink); background: var(--gold);
-  padding: 14px 32px; border-radius: 3px; border: none;
-  transition: background .2s, transform .15s;
-}
-.bgold:hover { background: var(--gold-hi); transform: translateY(-1px); }
-
-/* Outline secondary */
-.boutl {
-  font-size: 14px; font-weight: 400;
-  color: var(--text);
-  padding: 14px 26px; border-radius: 3px;
-  border: 1px solid rgba(255,255,255,0.18);
-}
-.boutl:hover { color: var(--white); border-color: rgba(255,255,255,0.4); }
-```
-
----
-
-## Homepage — Responsive Breakpoints
-
-```css
-@media (max-width: 1080px) {
-  /* Nav collapses: mid links + trip finder hidden */
-  /* Hero goes single-column, right panel stacks below */
-  /* Grids: 3/4-col → 2-col */
-  /* Two-column layouts → single-column */
-  /* Padding: 44px → 20px */
-}
-
-@media (max-width: 600px) {
-  /* All grids → single-column */
-  /* CTAs stack vertically, full-width */
-}
-```
-
----
-
-## Icon System — Lucide React
-
-**Library:** [`lucide-react`](https://lucide.dev/) (MIT, tree-shakeable, 1000+ icons)
-
-```bash
-# Already installed — import individual icons:
-import { Ship, Anchor, Users } from "lucide-react";
-```
-
-### Sizing Rules
-
-```
-size={14}  — micro:   inline with text-micro / text-caption
-size={16}  — small:   inline with text-label / form field icons
-size={18}  — card:    stat cards, info cards, action bar
-size={20}  — nav:     sidebar items, bottom nav, button icons
-size={28}  — hero:    page headers, detail page icons
-size={32}  — feature: empty states, success screens
-size={40}  — jumbo:   empty state illustrations
-size={48}  — display: completion screens (StepComplete)
-```
-
-### Colour Rules
-
-```
-text-navy       — active nav, primary icons, CTAs
-text-mid-blue   — secondary emphasis
-text-grey-text  — inactive nav, helper icons, chevrons
-text-dark-text  — inline with headings
-text-white      — on navy backgrounds (hero, CTAs)
-text-error-text — destructive actions (Trash2, X)
-text-[#2E7D32]  — success icons (Check on green bg)
-text-[#1D9E75]  — teal accents (USCG CSV, boarded status)
-text-[#B8882A]  — gold accents (homepage icon chips)
-```
-
-### Icon Chip Pattern
-
-```tsx
-{/* Standard icon chip — used in info cards, stat cards */}
-<div className="w-10 h-10 rounded-[10px] bg-[#E8F2FB]
-                flex items-center justify-center shrink-0">
-  <Ship size={20} className="text-[#0C447C]" />
-</div>
-
-{/* Circular icon chip — boat detail, avatars */}
-<div className="w-14 h-14 rounded-full bg-light-blue
-                flex items-center justify-center shrink-0">
-  <Ship size={28} className="text-navy" />
-</div>
-```
-
-### Icon Registry — By Category
-
-#### Navigation (Sidebar + BottomNav)
-
-| Icon | Import | Where Used |
-|------|--------|------------|
-| 🏠 Home | `Home` | Dashboard home |
-| 🚢 Boats | `Ship` | Boats list, boat cards, boat detail |
-| ⚓ Trips | `Anchor` | Trips list, trip creation, USCG CSV |
-| 📈 Revenue | `TrendingUp` | Revenue dashboard |
-| 👥 Guests | `Users` | Guest list, max guests field |
-| ⚙️ Settings | `Settings` | Settings page |
-| 🚪 Sign out | `LogOut` | Sidebar sign-out |
-| 📱 Scan | `Camera` | QR boarding scanner |
-
-#### Actions
-
-| Icon | Import | Where Used |
-|------|--------|------------|
-| ➕ Add | `Plus` | Add boat CTA, add item buttons |
-| ✕ Remove | `X` | Remove tag, close modal |
-| ✓ Confirm | `Check` | Toggle on, copy confirmed, success |
-| 📋 Copy | `Copy` | Copy trip link |
-| ✏️ Edit | `Pencil` | Edit rule, edit item |
-| 🗑️ Delete | `Trash2` | Delete photo, delete rule |
-| ← Back | `ChevronLeft` | Wizard back, breadcrumb back |
-| → Forward | `ChevronRight` | Boat card arrow, list item |
-| ↓ Expand | `ChevronDown` | Collapsible sections |
-| ↑ Collapse | `ChevronUp` | Collapsible sections |
-| ☰ Drag | `GripVertical` | Drag handle for reorder |
-| ⚓ USCG | `Anchor` | USCG CSV manifest button |
-| ⌨️ Manual | `Keyboard` | QR scanner manual mode toggle |
-
-#### Status & Feedback
-
-| Icon | Import | Where Used |
-|------|--------|------------|
-| ✅ Success | `CheckCircle` | Password reset success |
-| ⚠️ Alert | `AlertCircle` | Error messages |
-| ⚠ Warning | `AlertTriangle` | Validation warnings |
-| 🛡️ Safety | `Shield` | Safety section header |
-| ℹ️ Info | `Info` | Helper tooltips, info sections |
-
----
-
-## Dashboard — Component Reference
-
-### Primary Button
-```tsx
-<button className="
-  w-full h-[52px] bg-[#0C447C] text-white
-  font-medium text-[15px] rounded-xl
-  active:scale-[0.97] transition-transform duration-100
-  disabled:opacity-40 disabled:cursor-not-allowed
-">
-  {loading ? <AnchorLoader size="sm" color="white" /> : label}
-</button>
-```
-
-### Secondary Button
-```tsx
-<button className="
-  w-full h-[52px] bg-white text-[#0C447C]
-  border-2 border-[#0C447C] font-medium text-[15px]
-  rounded-xl active:bg-[#E8F2FB]
-  transition-colors duration-150
-">
-  {label}
-</button>
-```
-
-### Ghost Button (Skip, Cancel, Back)
-```tsx
-<button className="
-  text-[#0C447C] underline text-[15px]
-  font-normal py-2 px-4
-  min-h-[44px] flex items-center
-">
-  {label}
-</button>
-```
-
-### Info Card
-```tsx
-<div className="
-  bg-white rounded-2xl border border-[#D0E2F3]
-  p-5 shadow-[0_1px_4px_rgba(12,68,124,0.08)]
-">
-  <div className="flex items-center gap-3 mb-4">
-    <div className="w-10 h-10 rounded-[10px] bg-[#E8F2FB]
-                    flex items-center justify-center flex-shrink-0">
-      <Icon size={20} className="text-[#0C447C]" />
-    </div>
-    <h2 className="text-[18px] font-semibold text-[#0D1B2A]">
-      {title}
-    </h2>
-  </div>
-  {children}
-</div>
-```
-
-### Status Badge
-```tsx
-const variants = {
-  signed:    'bg-[#E8F9F4] text-[#1D9E75]',
-  pending:   'bg-[#FEF3DC] text-[#E5910A]',
-  cancelled: 'bg-[#FDEAEA] text-[#D63B3B]',
-  upcoming:  'bg-[#E8F2FB] text-[#0C447C]',
-}
-
-<span className={`
-  inline-flex items-center px-2.5 py-1
-  rounded-full text-[11px] font-medium
-  ${variants[variant]}
-`}>
-  {label}
-</span>
-```
-
-### Compliance Block Banner (Phase 2+)
-```tsx
-{/* Red pulsing compliance violation */}
-<div className="bg-[#FDEAEA] border-2 border-[#D63B3B] rounded-[12px] p-4 animate-pulse">
-  <p className="text-[#D63B3B] font-bold text-[14px]">⛔ COMPLIANCE BLOCK</p>
-  <p className="text-[#7F1D1D] text-[13px]">{message}</p>
-</div>
-
-{/* Yellow attestation panel (Texas Party Boat) */}
-<div className="bg-[#FFFBEB] border border-[#F59E0B] rounded-[12px] p-4">
-  <label className="flex items-start gap-3">
-    <input type="checkbox" className="mt-1 accent-[#F59E0B]" />
-    <span className="text-[#92400E] text-[13px]">{attestationText}</span>
-  </label>
-</div>
-```
-
-### QR Scanner Overlay (Phase 3)
-```tsx
-{/* Full-screen dark scanner */}
-<div className="fixed inset-0 z-[60] bg-black flex flex-col">
-  {/* Header: white on black/80 */}
-  {/* Progress bar: 1px green (#1D9E75) */}
-  {/* Success toast: green bg border, 48px emoji, 22px BOARDED text */}
-  {/* Error toast: red bg border */}
-  {/* Already-boarded: amber bg border, ⚠️ icon */}
-</div>
-```
-
-### Action Bar (4-Column Grid)
-```tsx
-{/* TripActionBar — fixed bottom on mobile, inline on desktop */}
-<div className="grid grid-cols-4 gap-2">
-  {/* Manifest PDF: bg-[#F5F8FC] border-[#D0E2F3] text-[#0C447C] */}
-  {/* USCG CSV:     bg-[#E8F9F4] border-[#1D9E75]/30 text-[#1D9E75] — teal accent */}
-  {/* WhatsApp:     bg-[#F5F8FC] border-[#D0E2F3] text-[#0C447C] */}
-  {/* Captain link: bg-[#0C447C] text-white (or bg-[#D63B3B] for renew) */}
-</div>
-```
-
-### Bottom Sheet
-```tsx
-<div className="
-  fixed inset-0 z-50
-  bg-[rgba(12,68,124,0.15)]
-  flex items-end
-">
-  <div className="
-    w-full bg-white
-    rounded-t-[20px]
-    px-5 pb-8 pt-3
-    max-h-[90vh] overflow-y-auto
-  ">
-    {/* Handle bar */}
-    <div className="w-10 h-1 bg-[#D0E2F3] rounded-full mx-auto mb-4" />
-    {children}
-  </div>
-</div>
-```
-
-### Step Progress Bar (with Fast-Track)
-```tsx
-{/* Progress bar adapts: 6 steps normal, 4 steps fast-track */}
-<div className="h-1 bg-[#D0E2F3] rounded-full overflow-hidden">
-  <div className="h-full bg-[#0C447C] rounded-full transition-all"
-       style={{ width: `${progressPercent}%` }} />
-</div>
-<p className="text-[11px] text-[#6B7C93] mt-1">
-  Step {current} of {total}
-  {isFastTrack && ' · Fast-Track'}
-</p>
-```
-
----
-
-## Hero Section (Trip Page)
-
-```tsx
-<section className="bg-[#0C447C] px-4 pt-4 pb-8">
-  {/* Top row */}
-  <div className="flex items-center justify-between mb-4">
-    <span className="text-white font-bold text-[16px]">BoatCheckin</span>
-    <button className="text-[24px]">🇬🇧</button>
-  </div>
-
-  {/* Boat name */}
-  <h1 className="text-white text-[28px] font-bold mb-3">
-    Conrad's Yacht Miami
-  </h1>
-
-  {/* Trip meta chips */}
-  <div className="flex items-center gap-2 flex-wrap mb-3">
-    {['📅 Sat Oct 21', '⏰ 2:00 PM', '⏳ 2 hours'].map(chip => (
-      <span key={chip}
-        className="bg-white/20 text-white text-[13px]
-                   px-3 py-1 rounded-full">
-        {chip}
-      </span>
-    ))}
-  </div>
-
-  {/* Marina */}
-  <p className="text-white/70 text-[13px] flex items-center gap-1">
-    📍 Miami Beach Marina
-  </p>
-</section>
-```
-
----
-
-## Boarding Pass Design
-
-```tsx
-<div className="
-  bg-white rounded-2xl mx-4
-  shadow-[0_4px_24px_rgba(12,68,124,0.12)]
-  overflow-hidden
-">
-  {/* Top half */}
-  <div className="px-5 pt-5 pb-4">
-    <p className="text-[11px] font-medium text-[#6B7C93]
-                  tracking-widest uppercase mb-2">
-      DOCKPASS
-    </p>
-    <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-4">
-      Conrad's Yacht Miami
-    </h2>
-  </div>
-
-  {/* Dashed divider */}
-  <div className="flex items-center px-4">
-    <div className="flex-1 border-t-2 border-dashed border-[#D0E2F3]" />
-    <span className="px-2 text-[#D0E2F3] text-lg">✂</span>
-    <div className="flex-1 border-t-2 border-dashed border-[#D0E2F3]" />
-  </div>
-
-  {/* Bottom half — QR */}
-  <div className="px-5 pt-4 pb-5 flex flex-col items-center">
-    <div className="bg-[#0D1B2A] p-3 rounded-xl mb-3">
-      <QRCodeSVG value={qrToken} size={160} fgColor="#FFFFFF"
-                 bgColor="#0D1B2A" />
-    </div>
-  </div>
-</div>
 ```
 
 ---
@@ -744,12 +823,13 @@ const variants = {
 
 ```css
 /* Used in lib/pdf/manifest.ts (pdf-lib) */
-NAVY:  rgb(0.047, 0.267, 0.486)   /* #0C447C — header band */
-TEAL:  rgb(0.114, 0.620, 0.459)   /* #1D9E75 — signed status */
-CORAL: rgb(0.910, 0.349, 0.235)   /* #E8593C — pending, alerts */
-GREY:  rgb(0.419, 0.486, 0.576)   /* #6B7C93 — labels */
-DARK:  rgb(0.051, 0.106, 0.165)   /* #0D1B2A — body text */
-LIGHT: rgb(0.961, 0.973, 0.988)   /* #F5F8FC — section headers */
+NAVY:  rgb(0.043, 0.114, 0.227)   /* #0B1D3A — header band */
+GOLD:  rgb(0.722, 0.533, 0.165)   /* #B8882A — accent      */
+TEAL:  rgb(0.114, 0.620, 0.459)   /* #1D9E75 — signed      */
+WARN:  rgb(0.831, 0.525, 0.039)   /* #D4860A — pending      */
+GREY:  rgb(0.361, 0.431, 0.510)   /* #5C6E82 — labels       */
+DARK:  rgb(0.118, 0.165, 0.227)   /* #1E2A3A — body text    */
+LIGHT: rgb(0.961, 0.969, 0.980)   /* #F5F7FA — section bg   */
 ```
 
 ---
@@ -757,18 +837,93 @@ LIGHT: rgb(0.961, 0.973, 0.988)   /* #F5F8FC — section headers */
 ## Do Not
 
 ```
+✗ No emojis in UI — use Lucide icons exclusively
+✗ No sidebar navigation — bottom nav only (app screens)
 ✗ No gradients in the dashboard UI
-✗ No drop shadows (except card: 0 1px 4px)
-✗ No border radius > 20px (dashboard) or > 5px (homepage)
+✗ No drop shadows (except card:hover elevation)
+✗ No border radius > 14px (cards) or > 12px (action buttons)
 ✗ No font weight > 700
-✗ No font size < 10px (homepage badges) or < 11px (dashboard)
+✗ No font size < 10.5px
 ✗ No colours outside the palette
-✗ No decorative animations (only functional — scroll reveals, hover transitions)
+✗ No decorative animations (only functional — hover transitions, state changes)
 ✗ No light backgrounds on homepage sections (always ink/ink2/ink3)
-✗ No dark backgrounds on dashboard containers
 ✗ No red for anything except genuine errors or compliance blocks
-✗ No ALL CAPS text in dashboard UI
-✗ Uppercase text on homepage is ONLY for kickers, badges, and labels — never body copy
-✗ Never mix serif and sans in the same text block
-✗ No inline SVG colours — always use CSS variables or Tailwind classes
+✗ No Google Fonts — use BL Melody exclusively (except Satisfy for signatures)
+✗ No inconsistent card padding — always 16px (var(--card-pad))
+✗ No inline style colours — always use CSS variables
+✗ No large dead space — max 10px between cards, 16px page padding
+✗ No table layouts on mobile — use row-based lists
 ```
+
+---
+
+## Migration Strategy
+
+### How to Apply This Design Language to the Entire Codebase
+
+#### Phase 1: Token Layer (Day 1)
+
+1. **Create `apps/web/app/globals.css`** — add all CSS variables from this document under `:root`
+2. **Copy fonts** from `packages/resource/fonts/` to `apps/web/public/fonts/`
+3. **Add `@font-face` declarations** to `globals.css`
+4. **Install `lucide-react`** if not already: `npm install lucide-react`
+
+```
+files to create/update:
+  apps/web/app/globals.css      ← CSS variables + @font-face
+  apps/web/public/fonts/        ← BL Melody .otf files
+```
+
+#### Phase 2: Shared Components (Day 2–3)
+
+Build reusable React components that enforce the design system:
+
+```
+components/ui/Card.tsx          ← .card base + .warn/.error/.info variants
+components/ui/Button.tsx        ← .btn-gold, .btn-sm, .btn-outline
+components/ui/Badge.tsx         ← .badge + role variants, .status-pill
+components/ui/Avatar.tsx        ← .avatar + size/role variants
+components/ui/BottomNav.tsx     ← 5-tab bottom nav with active state
+components/ui/TopBar.tsx        ← navy top bar with logo + avatar
+components/ui/SectionLabel.tsx  ← section title + count + gold bar
+components/ui/AlertCard.tsx     ← warning/error/info alert component
+components/ui/ActionGrid.tsx    ← 4-column action buttons
+components/layout/AppShell.tsx  ← TopBar + page content + BottomNav wrapper
+```
+
+#### Phase 3: Page-by-Page Migration (Day 4+)
+
+Migrate screens in priority order — most-used first:
+
+```
+1. Layout (AppShell)     — wrap all /dashboard/* pages
+2. Trips list + detail   — highest usage, most complex
+3. Crew roster           — recently built, easy alignment
+4. Boats list + detail   — boat cards, boat wizard
+5. Home / Dashboard      — stat cards, quick actions
+6. Settings              — forms, account
+7. Guest flows           — trip join, waiver, boarding pass
+```
+
+#### Phase 4: Search-and-Replace Cleanup
+
+```bash
+# Find all hardcoded old colours and replace with CSS variables:
+grep -rn "#0C447C" apps/web/        # old navy → var(--navy)
+grep -rn "#0D1B2A" apps/web/        # old dark → var(--text)
+grep -rn "#6B7C93" apps/web/        # old grey → var(--text-mid)
+grep -rn "#D0E2F3" apps/web/        # old border → var(--border)
+grep -rn "#E8F2FB" apps/web/        # old light-blue → remove/var(--bg)
+grep -rn "#F5F8FC" apps/web/        # old off-white → var(--bg)
+
+# Find all emoji usage and replace with Lucide imports:
+grep -rn "🚢\|⚓\|👥\|📈\|⚙️\|🏠" apps/web/components/
+```
+
+#### Key Principles for Migration
+
+1. **Never do a big-bang rewrite** — migrate one page at a time
+2. **AppShell first** — once the layout wrapper is in place, every page gets TopBar + BottomNav for free
+3. **CSS variables are the bridge** — old pages keep working while you swap values incrementally
+4. **Component composition** — replace inline JSX with `<Card>`, `<Badge>`, `<Avatar>` components
+5. **Test at 390px** — every migrated page must look correct on iPhone viewport before moving to the next

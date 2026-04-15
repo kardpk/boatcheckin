@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Send, X } from 'lucide-react'
+import { Send, X, Check, CloudRain, CloudLightning, AlertTriangle, CloudSun } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { evaluateWeatherAlert } from '@/lib/weather/alertRules'
 import type { WeatherData } from '@/lib/trip/getWeatherData'
@@ -11,6 +11,12 @@ interface WeatherAlertCardProps {
   weather: WeatherData
   guestCount: number
   onDismiss?: () => void
+}
+
+const weatherIcons: Record<string, typeof CloudSun> = {
+  dangerous: AlertTriangle,
+  poor: CloudLightning,
+  marginal: CloudRain,
 }
 
 export function WeatherAlertCard({
@@ -25,6 +31,8 @@ export function WeatherAlertCard({
   const alert = evaluateWeatherAlert(weather)
 
   if (!alert.shouldAlert || dismissed) return null
+
+  const Icon = weatherIcons[alert.severity] ?? CloudSun
 
   // Default message operator can customise
   const defaultMessage = alert.severity === 'dangerous'
@@ -65,23 +73,28 @@ export function WeatherAlertCard({
   return (
     <div
       className={cn(
-        'rounded-[20px] border overflow-hidden',
-        'shadow-[0_1px_4px_rgba(12,68,124,0.06)]',
+        'rounded-[14px] border overflow-hidden relative',
         alert.severity === 'dangerous'
-          ? 'border-[#D63B3B]'
+          ? 'border-error'
           : alert.severity === 'poor'
           ? 'border-[#E8593C]'
-          : 'border-[#E5910A]'
+          : 'border-warn'
       )}
     >
+      {/* Top bar */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[3px]"
+        style={{ background: alert.colour }}
+      />
+
       {/* Alert header */}
       <div
         style={{ background: alert.bgColour }}
-        className="px-5 py-4"
+        className="px-card py-[14px]"
       >
         <div className="flex items-start justify-between">
-          <div className="flex items-start gap-3">
-            <span className="text-[28px] flex-shrink-0">{alert.emoji}</span>
+          <div className="flex items-start gap-[10px]">
+            <Icon size={22} style={{ color: alert.colour }} className="shrink-0 mt-[2px]" />
             <div>
               <h3
                 className="text-[15px] font-bold leading-tight"
@@ -89,21 +102,21 @@ export function WeatherAlertCard({
               >
                 {alert.headline}
               </h3>
-              <p className="text-[13px] text-[#0D1B2A] mt-1 leading-relaxed">
+              <p className="text-[13px] text-text mt-[4px] leading-relaxed">
                 {alert.detail}
               </p>
             </div>
           </div>
           <button
             onClick={() => { setDismissed(true); onDismiss?.() }}
-            className="text-[#6B7C93] hover:text-[#0D1B2A] flex-shrink-0 ml-2"
+            className="text-text-dim hover:text-text flex-shrink-0 ml-[8px]"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Recommended action */}
-        <div className="mt-3 pt-3 border-t border-black/10">
+        <div className="mt-[10px] pt-[10px] border-t border-black/10">
           <p className="text-[13px] font-medium" style={{ color: alert.colour }}>
             → {alert.operatorAction}
           </p>
@@ -112,17 +125,17 @@ export function WeatherAlertCard({
 
       {/* Notify guests section */}
       {guestCount > 0 && (
-        <div className="bg-white px-5 py-4">
+        <div className="bg-white px-card py-[14px]">
           {sent ? (
-            <div className="flex items-center gap-2 text-[#1D9E75]">
-              <span className="text-[18px]">✓</span>
+            <div className="flex items-center gap-[8px] text-teal">
+              <Check size={18} />
               <p className="text-[14px] font-semibold">
                 Notification sent to {guestCount} guest{guestCount !== 1 ? 's' : ''}
               </p>
             </div>
           ) : (
             <>
-              <p className="text-[13px] font-medium text-[#0D1B2A] mb-2">
+              <p className="text-[13px] font-semibold text-navy mb-[8px]">
                 Notify all {guestCount} guests:
               </p>
               <textarea
@@ -132,29 +145,29 @@ export function WeatherAlertCard({
                 placeholder={defaultMessage}
                 maxLength={200}
                 className="
-                  w-full px-3 py-2 rounded-[10px] text-[13px] resize-none
-                  border border-[#D0E2F3] text-[#0D1B2A] mb-3
-                  placeholder:text-[#6B7C93]
-                  focus:outline-none focus:border-[#0C447C]
+                  w-full px-[12px] py-[10px] rounded-[10px] text-[13px] resize-none
+                  border border-border text-text mb-[10px]
+                  placeholder:text-text-dim
+                  focus:outline-none focus:border-gold
                 "
               />
               {error && (
-                <p className="text-[12px] text-[#D63B3B] mb-2">{error}</p>
+                <p className="text-[12px] text-error mb-[8px]">{error}</p>
               )}
               <button
                 onClick={notifyGuests}
                 disabled={sending}
                 className="
-                  flex items-center gap-2 h-[44px] px-5 rounded-[12px]
-                  bg-[#0C447C] text-white font-semibold text-[14px]
-                  hover:bg-[#093a6b] transition-colors
+                  flex items-center gap-[6px] h-[42px] px-[18px] rounded-[10px]
+                  bg-gold text-white font-semibold text-[14px]
+                  hover:bg-gold-hi transition-colors
                   disabled:opacity-40
                 "
               >
                 <Send size={15} />
                 {sending ? 'Sending...' : 'Send to all guests'}
               </button>
-              <p className="text-[11px] text-[#6B7C93] mt-2">
+              <p className="text-[11px] text-text-dim mt-[8px] font-medium">
                 Sent via push notification + chat message
               </p>
             </>

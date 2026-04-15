@@ -4,7 +4,7 @@
   "description": "Your charter trip, all in one link",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0C447C",
+  "theme_color": "#0B1D3A",
   "background_color": "#FFFFFF",
   "orientation": "portrait",
   "icons": [

@@ -113,7 +113,7 @@ export function StartTripFlow({
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* Header */}
-      <div className="bg-[#1D9E75] px-5 pt-6 pb-5 text-white">
+      <div className="bg-teal px-5 pt-6 pb-5 text-white">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={onCancel}
@@ -135,29 +135,29 @@ export function StartTripFlow({
 
         {/* Unsigned waiver warning */}
         {unsignedGuests.length > 0 && (
-          <div className="p-4 bg-[#FEF3DC] rounded-[16px] border border-[#E5910A] border-opacity-30">
-            <p className="text-[14px] font-semibold text-[#E5910A] mb-2">
-              ⚠️ {unsignedGuests.length} guest{unsignedGuests.length !== 1 ? 's' : ''} has not signed the waiver
+          <div className="p-4 bg-warn-dim rounded-[14px] border border-[#E5910A] border-opacity-30">
+            <p className="text-[14px] font-semibold text-warn mb-2">
+              {unsignedGuests.length} guest{unsignedGuests.length !== 1 ? 's' : ''} has not signed the waiver
             </p>
             <div className="space-y-1">
               {unsignedGuests.map(g => (
-                <p key={g.id} className="text-[13px] text-[#0D1B2A]">
+                <p key={g.id} className="text-[13px] text-navy">
                   · {g.fullName}
                 </p>
               ))}
             </div>
-            <p className="text-[12px] text-[#6B7C93] mt-2">
+            <p className="text-[12px] text-text-mid mt-2">
               You may still proceed. Record this in your log.
             </p>
           </div>
         )}
 
         {/* Pre-departure checklist */}
-        <div className="bg-[#F5F8FC] rounded-[20px] p-5">
-          <h2 className="text-[16px] font-semibold text-[#0D1B2A] mb-4">
+        <div className="bg-bg rounded-[14px] p-5">
+          <h2 className="text-[16px] font-semibold text-navy mb-4">
             Pre-departure checklist
           </h2>
-          <p className="text-[13px] text-[#6B7C93] mb-4">
+          <p className="text-[13px] text-text-mid mb-4">
             Confirm each item before sliding to start.
           </p>
           <div className="space-y-1">
@@ -165,7 +165,7 @@ export function StartTripFlow({
               <label
                 key={item.id}
                 className="flex items-center gap-3 py-3 cursor-pointer min-h-[48px]
-                           border-b border-[#D0E2F3] last:border-0"
+                           border-b border-border last:border-0"
               >
                 <div
                   onClick={() => toggleCheck(item.id)}
@@ -173,8 +173,8 @@ export function StartTripFlow({
                     'w-6 h-6 rounded-[6px] border-2 flex items-center justify-center',
                     'transition-all duration-150 flex-shrink-0',
                     checked.has(item.id)
-                      ? 'bg-[#1D9E75] border-[#1D9E75]'
-                      : 'bg-white border-[#D0E2F3]'
+                      ? 'bg-teal border-[#1D9E75]'
+                      : 'bg-white border-border'
                   )}
                 >
                   {checked.has(item.id) && (
@@ -187,8 +187,8 @@ export function StartTripFlow({
                 <span className={cn(
                   'text-[15px] leading-tight',
                   checked.has(item.id)
-                    ? 'text-[#6B7C93] line-through'
-                    : 'text-[#0D1B2A]'
+                    ? 'text-text-mid line-through'
+                    : 'text-navy'
                 )}>
                   {item.label}
                 </span>
@@ -197,24 +197,24 @@ export function StartTripFlow({
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-[13px] text-[#6B7C93]">
+            <span className="text-[13px] text-text-mid">
               {checked.size} / {CHECKLIST_ITEMS.length} confirmed
             </span>
             {allChecked && (
-              <span className="text-[13px] font-semibold text-[#1D9E75]">
-                ✓ All confirmed
+              <span className="text-[13px] font-semibold text-teal">
+                All confirmed
               </span>
             )}
           </div>
         </div>
 
         {/* Guest count */}
-        <div className="bg-[#E8F2FB] rounded-[16px] px-5 py-4">
+        <div className="bg-[#EBF0F7] rounded-[14px] px-5 py-4">
           <div className="flex items-center justify-between">
-            <p className="text-[15px] font-semibold text-[#0D1B2A]">
+            <p className="text-[15px] font-semibold text-navy">
               Passengers on board
             </p>
-            <span className="text-[22px] font-black text-[#0C447C]">
+            <span className="text-[22px] font-black text-[var(--color-navy)]">
               {snapshot.guests.length}
             </span>
           </div>
@@ -222,7 +222,7 @@ export function StartTripFlow({
 
         {/* ── Texas Party Boat Act Attestation ────────────────────── */}
         {partyBoatTriggered && (
-          <div className="p-5 bg-[#FFFBEB] rounded-[16px] border-2 border-[#F59E0B] border-opacity-40">
+          <div className="p-5 bg-[#FFFBEB] rounded-[14px] border-2 border-[#F59E0B] border-opacity-40">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-[20px]">🤠</span>
               <h4 className="text-[14px] font-bold text-[#92400E] uppercase tracking-wider">
@@ -263,8 +263,8 @@ export function StartTripFlow({
 
         {/* Error */}
         {startError && (
-          <div className="p-4 bg-[#FDEAEA] rounded-[12px]">
-            <p className="text-[14px] text-[#D63B3B] font-medium">
+          <div className="p-4 bg-error-dim rounded-[12px]">
+            <p className="text-[14px] text-error font-medium">
               {startError}
             </p>
           </div>
@@ -272,7 +272,7 @@ export function StartTripFlow({
       </div>
 
       {/* Slider CTA */}
-      <div className="px-5 pb-10 pt-4 bg-white border-t border-[#D0E2F3]">
+      <div className="px-5 pb-10 pt-4 bg-white border-t border-border">
         {canSlide ? (
           <SlideToConfirm
             label="SLIDE TO START TRIP"
@@ -282,10 +282,10 @@ export function StartTripFlow({
           />
         ) : (
           <div className="
-            w-full h-[64px] rounded-[16px]
-            bg-[#D0E2F3] flex items-center justify-center
+            w-full h-[64px] rounded-[14px]
+            bg-border flex items-center justify-center
           ">
-            <span className="text-[15px] font-semibold text-[#6B7C93]">
+            <span className="text-[15px] font-semibold text-text-mid">
               {!allChecked
                 ? 'Complete checklist to continue'
                 : 'Complete compliance attestation above'}
@@ -304,33 +304,33 @@ export function StartTripFlow({
             w-full bg-white rounded-t-[24px]
             px-6 py-6 pb-10
           ">
-            <div className="w-10 h-1 bg-[#D0E2F3] rounded-full mx-auto mb-5" />
+            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-5" />
 
-            <h2 className="text-[22px] font-bold text-[#0D1B2A] mb-2">
+            <h2 className="text-[22px] font-bold text-navy mb-2">
               Starting trip
             </h2>
-            <p className="text-[15px] text-[#6B7C93] mb-1">
+            <p className="text-[15px] text-text-mid mb-1">
               {snapshot.boatName}
             </p>
-            <p className="text-[14px] text-[#6B7C93] mb-5">
+            <p className="text-[14px] text-text-mid mb-5">
               {formatTripDate(snapshot.tripDate)} · {formatTime(snapshot.departureTime)} · {snapshot.guests.length} passengers
             </p>
 
             <div className="space-y-2">
-              <div className="flex items-start gap-2 text-[13px] text-[#6B7C93]">
-                <span>✓</span>
+              <div className="flex items-start gap-2 text-[13px] text-text-mid">
+                <span className="text-teal">✓</span>
                 <span>Trip status set to Active</span>
               </div>
-              <div className="flex items-start gap-2 text-[13px] text-[#6B7C93]">
-                <span>✓</span>
+              <div className="flex items-start gap-2 text-[13px] text-text-mid">
+                <span className="text-teal">✓</span>
                 <span>Insurance policy activated via Buoy API</span>
               </div>
-              <div className="flex items-start gap-2 text-[13px] text-[#6B7C93]">
-                <span>✓</span>
+              <div className="flex items-start gap-2 text-[13px] text-text-mid">
+                <span className="text-teal">✓</span>
                 <span>Departure timestamp logged (USCG)</span>
               </div>
-              <div className="flex items-start gap-2 text-[13px] text-[#6B7C93]">
-                <span>✓</span>
+              <div className="flex items-start gap-2 text-[13px] text-text-mid">
+                <span className="text-teal">✓</span>
                 <span>Guests notified on their phones</span>
               </div>
             </div>
@@ -344,9 +344,9 @@ export function StartTripFlow({
                 disabled={isStarting}
                 className="
                   flex-1 h-[56px] rounded-[12px]
-                  border border-[#D0E2F3] text-[#6B7C93]
+                  border border-border text-text-mid
                   font-semibold text-[15px]
-                  hover:bg-[#F5F8FC] transition-colors
+                  hover:bg-bg transition-colors
                   disabled:opacity-40
                 "
               >
@@ -357,7 +357,7 @@ export function StartTripFlow({
                 disabled={isStarting}
                 className="
                   flex-1 h-[56px] rounded-[12px]
-                  bg-[#1D9E75] text-white
+                  bg-teal text-white
                   font-bold text-[16px]
                   flex items-center justify-center gap-2
                   hover:bg-[#178a64] transition-colors
@@ -367,7 +367,7 @@ export function StartTripFlow({
                 {isStarting ? (
                   <AnchorLoader size="sm" color="white" />
                 ) : (
-                  '⚓ Start now'
+                  'Start now'
                 )}
               </button>
             </div>

@@ -47,7 +47,7 @@ export function MarinaMap({ lat, lng, marinaName, slipNumber }: MarinaMapProps) 
         display: flex; align-items: center; justify-content: center;
         font-size: 14px;
       `
-      el.innerHTML = '⚓'
+      el.innerHTML = 'u25C9'
 
       const popup = new mapboxgl.Popup({ offset: 20 }).setHTML(
         `<strong>${marinaName}</strong>${slipNumber ? `<br>Slip ${slipNumber}` : ''}`,
@@ -71,13 +71,13 @@ export function MarinaMap({ lat, lng, marinaName, slipNumber }: MarinaMapProps) 
   // Fallback when no Mapbox token
   if (!token) {
     return (
-      <div className="h-[200px] bg-[#E8F2FB] flex flex-col items-center justify-center gap-2">
-        <span className="text-[32px]">📍</span>
+      <div className="h-[200px] bg-gold-dim flex flex-col items-center justify-center gap-2">
+        
         <a
           href={`https://maps.google.com/?q=${lat},${lng}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[14px] text-[#0C447C] font-medium underline"
+          className="text-[14px] text-navy font-medium underline"
         >
           Open marina in Google Maps →
         </a>

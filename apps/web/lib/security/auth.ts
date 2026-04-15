@@ -104,3 +104,37 @@ export async function requireOperator() {
 
   return { user, operator, supabase };
 }
+
+// ─── Admin guard ──────────────────────────────────────────────────────────────
+
+export type AdminRole = 'founder' | 'admin' | 'member' | 'support'
+
+const ROLE_RANK: Record<AdminRole, number> = {
+  founder: 4,
+  admin: 3,
+  member: 2,
+  support: 1,
+}
+
+/**
+ * Require an admin role on the operator. Redirects to /dashboard if the
+ * operator doesn't have a sufficient admin_role.
+ *
+ * @param minRole - Minimum role required (default: 'member')
+ *   - 'member'  → any admin role can access
+ *   - 'admin'   → admin + founder only
+ *   - 'founder' → founder only
+ */
+export async function requireAdmin(minRole: AdminRole = 'member') {
+  const { user, operator, supabase } = await requireOperator()
+
+  const userRole = (operator.admin_role as AdminRole) ?? null
+  const userRank = userRole ? (ROLE_RANK[userRole] ?? 0) : 0
+  const requiredRank = ROLE_RANK[minRole] ?? 0
+
+  if (userRank < requiredRank) {
+    redirect('/dashboard')
+  }
+
+  return { user, operator, supabase, adminRole: userRole! }
+}

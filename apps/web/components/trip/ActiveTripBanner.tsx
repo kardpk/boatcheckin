@@ -15,7 +15,7 @@ export function ActiveTripBanner({
 }: ActiveTripBannerProps) {
   return (
     <div className="bg-[#1D9E75] text-white py-3 px-5 text-center">
-      <p className="text-[14px] font-semibold">⚓ {tr.activeBanner}</p>
+      <p className="text-[14px] font-semibold">{tr.activeBanner}</p>
       <p className="text-[13px] text-white/90 mt-0.5">
         {tr.headTo} {slipNumber ? `Slip ${slipNumber} · ` : ''}{marinaName}
       </p>

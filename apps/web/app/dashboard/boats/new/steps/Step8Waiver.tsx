@@ -312,7 +312,7 @@ export function Step8Waiver({ data, onNext, template }: Step8Props) {
           {/* Upload error */}
           {uploadError && (
             <div className="p-standard bg-error-bg rounded-chip text-[13px] text-error-text">
-              ⚠️ {uploadError}
+              {uploadError}
               <button
                 onClick={() => pdfFile && uploadAndCreateTemplate(pdfFile)}
                 className="ml-2 underline"

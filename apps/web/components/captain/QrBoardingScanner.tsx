@@ -145,7 +145,7 @@ export function QrBoardingScanner({
       <div className="flex items-center justify-between px-5 py-4 bg-black/80">
         <div>
           <h2 className="text-white text-[18px] font-bold">
-            📱 Scan Mode
+            Scan Mode
           </h2>
           <p className="text-white/60 text-[13px]">
             {boardedCount} / {guests.length} boarded
@@ -170,7 +170,7 @@ export function QrBoardingScanner({
       {/* Progress bar */}
       <div className="h-1 bg-white/10">
         <div
-          className="h-full bg-[#1D9E75] transition-all duration-500"
+          className="h-full bg-teal transition-all duration-500"
           style={{ width: guests.length > 0 ? `${(boardedCount / guests.length) * 100}%` : '0%' }}
         />
       </div>
@@ -210,7 +210,7 @@ export function QrBoardingScanner({
               disabled={!manualToken.trim() || isProcessing}
               className="
                 w-full h-[56px] rounded-[12px] mt-4
-                bg-[#1D9E75] text-white font-bold
+                bg-teal text-white font-bold
                 text-[16px] disabled:opacity-40
               "
             >
@@ -222,19 +222,19 @@ export function QrBoardingScanner({
         {/* Success toast */}
         {lastResult && (
           <div className={cn(
-            'absolute inset-x-4 bottom-8 p-6 rounded-[20px]',
+            'absolute inset-x-4 bottom-8 p-6 rounded-[14px]',
             'flex items-center gap-4 animate-pulse',
             lastResult.alreadyBoarded
               ? 'bg-[#FFFBEB] border-2 border-[#F59E0B]'
               : 'bg-[#E8F9F4] border-2 border-[#1D9E75]'
           )}>
             <span className="text-[48px]">
-              {lastResult.alreadyBoarded ? '⚠️' : '✅'}
+              {lastResult.alreadyBoarded ? 'ℹ' : '✓'}
             </span>
             <div>
               <p className={cn(
                 'text-[22px] font-black',
-                lastResult.alreadyBoarded ? 'text-[#92400E]' : 'text-[#1D9E75]'
+                lastResult.alreadyBoarded ? 'text-[#92400E]' : 'text-teal'
               )}>
                 {lastResult.alreadyBoarded ? 'ALREADY BOARDED' : 'BOARDED'}
               </p>
@@ -250,9 +250,9 @@ export function QrBoardingScanner({
 
         {/* Error toast */}
         {error && (
-          <div className="absolute inset-x-4 bottom-8 p-6 rounded-[20px] bg-[#FEE2E2] border-2 border-[#DC2626]">
+          <div className="absolute inset-x-4 bottom-8 p-6 rounded-[14px] bg-[#FEE2E2] border-2 border-[#DC2626]">
             <div className="flex items-center gap-4">
-              <span className="text-[48px]">❌</span>
+              <span className="text-error text-[24px] font-bold">✕</span>
               <div>
                 <p className="text-[22px] font-black text-[#DC2626]">INVALID</p>
                 <p className="text-[14px] text-[#7F1D1D]">{error}</p>

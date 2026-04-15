@@ -22,8 +22,8 @@ export function RouteSection({
   tr,
 }: RouteSectionProps) {
   return (
-    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-[#D0E2F3] overflow-hidden">
-      <p className="text-[11px] font-semibold text-[#6B7C93] uppercase tracking-wider px-5 pt-5 mb-3">
+    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-border overflow-hidden">
+      <p className="text-[11px] font-semibold text-text-mid uppercase tracking-wider px-5 pt-5 mb-3">
         {tr.route}
       </p>
 
@@ -37,19 +37,19 @@ export function RouteSection({
 
       {/* Below-map info */}
       <div className="px-5 py-4 space-y-2">
-        <p className="text-[15px] font-semibold text-[#0D1B2A]">{marinaName}</p>
+        <p className="text-[15px] font-semibold text-navy">{marinaName}</p>
 
         {routeDescription && (
-          <p className="text-[14px] text-[#6B7C93] italic leading-relaxed">
+          <p className="text-[14px] text-text-mid italic leading-relaxed">
             {routeDescription}
           </p>
         )}
 
         {routeStops.length > 0 && (
-          <div className="flex items-center flex-wrap gap-1 text-[13px] text-[#6B7C93]">
+          <div className="flex items-center flex-wrap gap-1 text-[13px] text-text-mid">
             {routeStops.map((stop, idx) => (
               <span key={idx} className="flex items-center gap-1">
-                <span className="font-medium text-[#0D1B2A]">{stop.name}</span>
+                <span className="font-medium text-navy">{stop.name}</span>
                 {idx < routeStops.length - 1 && (
                   <span className="text-[#D0E2F3]">→</span>
                 )}

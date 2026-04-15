@@ -2,14 +2,14 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle } from 'lucide-react'
 import { CaptainCard } from '@/components/dashboard/CaptainCard'
 import { CaptainFormSheet } from '@/components/dashboard/CaptainFormSheet'
+import { SectionLabel } from '@/components/ui/SectionLabel'
+import { AlertCard } from '@/components/ui/AlertCard'
 import type { CaptainProfile, CrewRole } from '@/types'
 
-interface BoatOption {
-  id: string
-  name: string
-}
+interface BoatOption { id: string; name: string }
 
 interface CrewRosterClientProps {
   initialCaptains: CaptainProfile[]
@@ -18,11 +18,11 @@ interface CrewRosterClientProps {
 }
 
 const ROLE_ORDER: CrewRole[] = ['captain', 'first_mate', 'crew', 'deckhand']
-const ROLE_SECTION_LABELS: Record<CrewRole, string> = {
-  captain: '👨‍✈️ Captains',
-  first_mate: '⚓ First Mates',
-  crew: '🧑‍🤝‍🧑 Crew',
-  deckhand: '🪢 Deckhands',
+const ROLE_SECTION: Record<CrewRole, { label: string; Icon: typeof Shield }> = {
+  captain: { label: 'Captains', Icon: Shield },
+  first_mate: { label: 'First Mates', Icon: Anchor },
+  crew: { label: 'Crew', Icon: Users },
+  deckhand: { label: 'Deckhands', Icon: HardHat },
 }
 
 export function CrewRosterClient({
@@ -94,53 +94,57 @@ export function CrewRosterClient({
   // Group by role
   const grouped = ROLE_ORDER.map(role => ({
     role,
-    label: ROLE_SECTION_LABELS[role],
+    config: ROLE_SECTION[role],
     members: captains.filter(c => c.defaultRole === role),
   })).filter(g => g.members.length > 0)
 
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-[16px]">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#0D1B2A]">
-            👥 Crew Roster
+          <h1 className="text-[22px] font-bold text-navy">
+            Crew Roster
           </h1>
-          <p className="text-[14px] text-[#6B7C93] mt-1">
+          <p className="text-[14px] text-text-mid mt-[3px] font-medium">
             {captains.length} crew member{captains.length !== 1 ? 's' : ''} in your roster
           </p>
         </div>
         <button
           onClick={() => { setEditingCaptain(null); setShowForm(true) }}
-          className="h-[40px] px-4 rounded-[10px] bg-[#0C447C] text-white text-[14px] font-semibold hover:bg-[#093a6b] transition-colors flex items-center gap-2"
+          className="
+            h-[42px] px-[18px] rounded-[10px]
+            bg-gold text-white text-[14px] font-semibold
+            hover:bg-gold-hi transition-colors
+            flex items-center gap-[6px]
+          "
         >
-          + Add Crew
+          <UserPlus size={16} />
+          Add Crew
         </button>
       </div>
 
       {/* License expiry alerts */}
       {expiringCaptains.length > 0 && (
-        <div className="p-4 mb-4 rounded-[14px] bg-[#FEF3DC] border border-[#E5910A]/30">
-          <p className="text-[13px] font-bold text-[#92400E] mb-1">
-            ⚠️ License Alert
-          </p>
-          <p className="text-[13px] text-[#78350F]">
+        <div className="mb-[14px]">
+          <AlertCard variant="warn" title="License Alert">
             {expiringCaptains.length} crew member{expiringCaptains.length !== 1 ? 's have' : ' has a'} license{expiringCaptains.length !== 1 ? 's' : ''} expiring
             within 30 days: {expiringCaptains.map(c => c.fullName).join(', ')}
-          </p>
+          </AlertCard>
         </div>
       )}
 
       {/* Grouped crew cards */}
       {captains.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-[20px]">
           {grouped.map(group => (
             <div key={group.role}>
-              <h2 className="text-[14px] font-bold text-[#6B7C93] uppercase tracking-wider mb-3">
-                {group.label}
-                <span className="ml-1.5 text-[12px] font-normal">({group.members.length})</span>
-              </h2>
-              <div className="space-y-3">
+              <SectionLabel
+                title={group.config.label}
+                count={group.members.length}
+                icon={<group.config.Icon size={16} className="text-text-dim" />}
+              />
+              <div className="space-y-[10px] mt-[10px]">
                 {group.members.map(captain => (
                   <CaptainCard
                     key={captain.id}
@@ -157,17 +161,19 @@ export function CrewRosterClient({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <p className="text-[40px] mb-4">👥</p>
-          <h2 className="text-[18px] font-semibold text-[#0D1B2A] mb-2">
+        <div className="text-center py-[48px]">
+          <div className="w-[64px] h-[64px] mx-auto mb-[14px] rounded-full bg-gold-dim border border-gold-line flex items-center justify-center">
+            <Users size={28} className="text-gold" />
+          </div>
+          <h2 className="text-[18px] font-bold text-navy mb-[6px]">
             No crew members yet
           </h2>
-          <p className="text-[14px] text-[#6B7C93] max-w-xs mx-auto mb-6">
+          <p className="text-[14px] text-text-mid max-w-xs mx-auto mb-[20px]">
             Add your first crew member to start assigning them to trips. Their profile will appear on guest trip pages.
           </p>
           <button
             onClick={() => { setEditingCaptain(null); setShowForm(true) }}
-            className="h-[48px] px-6 rounded-[12px] bg-[#0C447C] text-white font-semibold hover:bg-[#093a6b] transition-colors"
+            className="h-[48px] px-[24px] rounded-[10px] bg-gold text-white font-semibold hover:bg-gold-hi transition-colors"
           >
             + Add Your First Crew Member
           </button>

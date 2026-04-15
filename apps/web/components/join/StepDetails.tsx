@@ -141,19 +141,19 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
     <div className="pt-2 space-y-5">
       <button
         onClick={onBack}
-        className="flex items-center gap-1 text-[13px] text-[#6B7C93] -ml-1 min-h-[44px]"
+        className="flex items-center gap-1 text-[13px] text-text-mid -ml-1 min-h-[44px]"
       >
         <ChevronLeft size={16} /> Back
       </button>
 
       <div>
-        <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-1">Your details</h2>
-        <p className="text-[14px] text-[#6B7C93]">
+        <h2 className="text-[20px] font-bold text-navy mb-1">Your details</h2>
+        <p className="text-[14px] text-text-mid">
           {isRelaxedTrip ? 'For a safe day on the water' : 'Required for safety at sea'}
         </p>
         {isRelaxedTrip && (
-          <p className="text-[12px] text-[#0C447C] mt-1 bg-[#E8F2FB] px-3 py-1.5 rounded-lg inline-block">
-            🎉 This is a private trip — only your name is required
+          <p className="text-[12px] text-navy mt-1 bg-gold-dim px-3 py-1.5 rounded-lg inline-block">
+            This is a private trip — only your name is required
           </p>
         )}
       </div>
@@ -229,12 +229,12 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
               >
-                <div className="mt-4 p-4 bg-[#FEE2E2] border-2 border-[#DC2626] rounded-[14px] space-y-2">
+                <div className="mt-4 p-4 bg-error-dim border-2 border-error rounded-[14px] space-y-2">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle size={20} className="text-[#DC2626] flex-shrink-0 mt-0.5 animate-pulse" />
+                    <AlertTriangle size={20} className="text-error flex-shrink-0 mt-0.5 animate-pulse" />
                     <div>
-                      <p className="text-[14px] font-bold text-[#DC2626]">
-                        ⛔ COMPLIANCE BLOCK
+                      <p className="text-[14px] font-bold text-error">
+                        COMPLIANCE BLOCK
                       </p>
                       <p className="text-[13px] text-[#7F1D1D] leading-relaxed mt-1">
                         State law requires the primary operator to be at least{' '}
@@ -264,10 +264,10 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                   <div className="flex items-start gap-3">
                     <AlertTriangle size={20} className="text-[#F59E0B] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-[14px] font-semibold text-[#92400E]">
+                      <p className="text-[14px] font-semibold text-warn">
                         FWC Boater Safety ID Required
                       </p>
-                      <p className="text-[13px] text-[#92400E]/80 mt-1 leading-relaxed">
+                      <p className="text-[13px] text-warn/80 mt-1 leading-relaxed">
                         Florida law (Chapter 327) requires boaters born on or after
                         January 1, 1988 to hold an approved Boating Safety Education ID
                         to operate a vessel.
@@ -277,20 +277,20 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
 
                   {state.fwcLicenseUrl ? (
                     /* ── Upload Success ── */
-                    <div className="flex items-center gap-3 p-3 bg-[#ECFDF5] border border-[#6EE7B7] rounded-[10px]">
-                      <CheckCircle size={20} className="text-[#059669] flex-shrink-0" />
+                    <div className="flex items-center gap-3 p-3 bg-teal-dim border border-teal rounded-[10px]">
+                      <CheckCircle size={20} className="text-teal flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium text-[#065F46]">
+                        <p className="text-[13px] font-medium text-teal">
                           FWC Boater Safety ID uploaded
                         </p>
-                        <p className="text-[12px] text-[#6B7C93] truncate">
+                        <p className="text-[12px] text-text-mid truncate">
                           Will be verified by marina staff on arrival
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => onUpdate({ fwcLicenseUrl: null })}
-                        className="text-[12px] text-[#6B7C93] underline"
+                        className="text-[12px] text-text-mid underline"
                       >
                         Replace
                       </button>
@@ -309,13 +309,13 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                         {state.fwcLicenseUploading ? (
                           <>
                             <Loader2 size={18} className="animate-spin text-[#F59E0B]" />
-                            <span className="text-[14px] font-medium text-[#92400E]">Uploading…</span>
+                            <span className="text-[14px] font-medium text-warn">Uploading…</span>
                           </>
                         ) : (
                           <>
                             <Upload size={18} className="text-[#F59E0B]" />
-                            <span className="text-[14px] font-medium text-[#92400E]">
-                              📸 Upload photo of your card
+                            <span className="text-[14px] font-medium text-warn">
+                              Upload photo of your card
                             </span>
                           </>
                         )}
@@ -332,16 +332,16 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                       </label>
 
                       {errors.fwcLicense && (
-                        <p className="text-[12px] text-[#D63B3B]">{errors.fwcLicense}</p>
+                        <p className="text-[12px] text-error">{errors.fwcLicense}</p>
                       )}
 
-                      <p className="text-[12px] text-[#92400E]/70 text-center">
+                      <p className="text-[12px] text-warn/70 text-center">
                         No card?{' '}
                         <a
                           href="https://myfwc.com/boating/safety-education/courses/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#0C447C] underline"
+                          className="text-navy underline"
                         >
                           Complete the free FWC course →
                         </a>
@@ -359,7 +359,7 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
       <button
         type="button"
         onClick={() => setShowOptional(o => !o)}
-        className="text-[13px] text-[#0C447C] font-medium underline min-h-[44px]"
+        className="text-[13px] text-navy font-medium underline min-h-[44px]"
       >
         {showOptional ? '− Hide optional info' : '+ Add optional info'}
       </button>
@@ -407,17 +407,17 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
           {/* Flags */}
           <div className="space-y-3">
             {[
-              { key: 'isNonSwimmer' as const, icon: '🏊', label: "I'm a non-swimmer" },
-              { key: 'isSeaSicknessProne' as const, icon: '🌊', label: 'I get seasick easily' },
+              { key: 'isNonSwimmer' as const, icon: 'swim', label: "I'm a non-swimmer" },
+              { key: 'isSeaSicknessProne' as const, icon: 'wave', label: 'I get seasick easily' },
             ].map(flag => (
               <label key={flag.key} className="flex items-center gap-3 min-h-[48px] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={state[flag.key]}
                   onChange={e => onUpdate({ [flag.key]: e.target.checked })}
-                  className="w-5 h-5 rounded accent-[#0C447C]"
+                  className="w-5 h-5 rounded accent-gold"
                 />
-                <span className="text-[14px] text-[#0D1B2A]">
+                <span className="text-[14px] text-navy">
                   {flag.icon} {flag.label}
                 </span>
               </label>
@@ -426,8 +426,8 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
 
           {/* GDPR (EU only) */}
           {state.isEU && (
-            <div className="p-4 bg-[#F5F8FC] rounded-[12px] space-y-3">
-              <p className="text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider">
+            <div className="p-4 bg-bg rounded-[12px] space-y-3">
+              <p className="text-[12px] font-semibold text-text-mid uppercase tracking-wider">
                 Data consent (EU)
               </p>
               <label className="flex items-start gap-3 cursor-pointer">
@@ -436,12 +436,12 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                   required
                   checked={state.gdprConsent}
                   onChange={e => onUpdate({ gdprConsent: e.target.checked })}
-                  className="w-5 h-5 mt-0.5 rounded accent-[#0C447C] flex-shrink-0"
+                  className="w-5 h-5 mt-0.5 rounded accent-gold flex-shrink-0"
                 />
-                <span className="text-[13px] text-[#0D1B2A] leading-relaxed">
+                <span className="text-[13px] text-navy leading-relaxed">
                   I consent to BoatCheckin processing my personal data for this charter trip as
                   described in the{' '}
-                  <a href="/privacy" className="text-[#0C447C] underline" target="_blank">
+                  <a href="/privacy" className="text-navy underline" target="_blank">
                     Privacy Policy
                   </a>
                   .
@@ -452,9 +452,9 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                   type="checkbox"
                   checked={state.marketingConsent}
                   onChange={e => onUpdate({ marketingConsent: e.target.checked })}
-                  className="w-5 h-5 mt-0.5 rounded accent-[#0C447C] flex-shrink-0"
+                  className="w-5 h-5 mt-0.5 rounded accent-gold flex-shrink-0"
                 />
-                <span className="text-[13px] text-[#6B7C93]">
+                <span className="text-[13px] text-text-mid">
                   I agree to receive occasional offers from this operator.
                 </span>
               </label>
@@ -469,8 +469,8 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
         className={cn(
           'w-full h-[56px] rounded-[12px] font-semibold text-[16px] transition-all active:scale-[0.98]',
           !canContinue && fwcRequired
-            ? 'bg-[#D0E2F3] text-[#6B7C93] cursor-not-allowed'
-            : 'bg-[#0C447C] text-white hover:bg-[#093a6b]'
+            ? 'bg-border text-text-mid cursor-not-allowed'
+            : 'bg-gold text-white hover:bg-gold-hi'
         )}
       >
         Continue →
@@ -490,13 +490,13 @@ function FormField({
 }) {
   return (
     <div>
-      <label className="block text-[13px] font-medium text-[#6B7C93] mb-1.5">
+      <label className="block text-[13px] font-medium text-text-mid mb-1.5">
         {label}
-        {required && <span className="text-[#D63B3B] ml-0.5">*</span>}
-        {helper && <span className="font-normal ml-1 text-[#6B7C93]">— {helper}</span>}
+        {required && <span className="text-error ml-0.5">*</span>}
+        {helper && <span className="font-normal ml-1 text-text-mid">— {helper}</span>}
       </label>
       {children}
-      {error && <p className="text-[12px] text-[#D63B3B] mt-1">{error}</p>}
+      {error && <p className="text-[12px] text-error mt-1">{error}</p>}
     </div>
   )
 }
@@ -504,9 +504,9 @@ function FormField({
 function inputClass(hasError: boolean) {
   return cn(
     'w-full h-[52px] px-4 rounded-[10px] text-[15px]',
-    'border bg-white text-[#0D1B2A]',
-    'placeholder:text-[#6B7C93]',
-    'focus:outline-none focus:ring-2 focus:ring-[#0C447C]/30 focus:border-[#0C447C]',
-    hasError ? 'border-[#D63B3B] bg-[#FDEAEA]' : 'border-[#D0E2F3]'
+    'border bg-white text-navy',
+    'placeholder:text-text-mid',
+    'focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold',
+    hasError ? 'border-[#D63B3B] bg-error-dim' : 'border-border'
   )
 }

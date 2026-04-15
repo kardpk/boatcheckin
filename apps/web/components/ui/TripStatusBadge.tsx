@@ -4,19 +4,19 @@ import type { TripStatus } from '@/types'
 const STATUS_CONFIG: Record<TripStatus, { label: string; className: string }> = {
   upcoming: {
     label: 'Upcoming',
-    className: 'bg-[#E8F2FB] text-[#0C447C]',
+    className: 'bg-gold-dim text-gold border border-gold-line',
   },
   active: {
     label: 'Active ●',
-    className: 'bg-[#E8F9F4] text-[#1D9E75]',
+    className: 'bg-teal-dim text-teal border border-teal-line',
   },
   completed: {
     label: 'Completed',
-    className: 'bg-[#F5F8FC] text-[#6B7C93]',
+    className: 'bg-[#F0F2F5] text-text-mid',
   },
   cancelled: {
     label: 'Cancelled',
-    className: 'bg-[#FDEAEA] text-[#D63B3B]',
+    className: 'bg-error-dim text-error',
   },
 }
 
@@ -25,8 +25,8 @@ export function TripStatusBadge({ status }: { status: TripStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center px-3 py-1',
-        'text-[12px] font-semibold rounded-full',
+        'inline-flex items-center px-[10px] py-[4px]',
+        'text-[10px] font-bold uppercase tracking-[0.05em] rounded-[5px]',
         config.className,
       )}
     >

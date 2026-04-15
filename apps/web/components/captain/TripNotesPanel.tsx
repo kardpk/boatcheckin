@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { ChevronDown, Save } from 'lucide-react'
+import { ChevronDown, Save, FileText, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 interface TripNotesPanelProps {
@@ -68,22 +68,22 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
   }, [notes])
 
   return (
-    <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden">
+    <div className="bg-white rounded-[14px] border border-border overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-4 flex items-center justify-between"
+        className="w-full px-card py-[14px] flex items-center justify-between"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-[16px]">📝</span>
-          <span className="text-[15px] font-semibold text-[#0D1B2A]">
+        <div className="flex items-center gap-[8px]">
+          <FileText size={16} className="text-text-dim" />
+          <span className="text-[15px] font-bold text-navy">
             Trip Log
           </span>
           {isDirty && (
-            <span className="w-2 h-2 rounded-full bg-[#E5910A] animate-pulse" />
+            <span className="w-[6px] h-[6px] rounded-full bg-warn animate-pulse" />
           )}
           {lastSaved && !isDirty && (
-            <span className="text-[11px] text-[#6B7C93]">
+            <span className="text-[11px] text-text-dim font-medium">
               Saved {lastSaved}
             </span>
           )}
@@ -91,15 +91,15 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
         <ChevronDown
           size={16}
           className={cn(
-            'text-[#6B7C93] transition-transform',
+            'text-text-dim transition-transform',
             isOpen && 'rotate-180'
           )}
         />
       </button>
 
       {isOpen && (
-        <div className="px-4 pb-4 border-t border-[#F5F8FC]">
-          <p className="text-[12px] text-[#6B7C93] mt-3 mb-2">
+        <div className="px-card pb-card border-t border-border">
+          <p className="text-[12px] text-text-mid mt-[10px] mb-[8px] font-medium">
             Log weather changes, incidents, fuel readings, or observations. Auto-saves after 3s.
           </p>
 
@@ -109,28 +109,29 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
             onChange={e => setNotes(e.target.value)}
             maxLength={5000}
             rows={5}
-            placeholder="10:15 — Wind picked up to 15kt NE&#10;10:45 — Moved to lee side of island&#10;11:30 — Guest reported mild nausea"
+            placeholder={"10:15 — Wind picked up to 15kt NE\n10:45 — Moved to lee side of island\n11:30 — Guest reported mild nausea"}
             className="
-              w-full px-4 py-3 rounded-[12px] text-[14px]
-              border border-[#D0E2F3] bg-[#F5F8FC] text-[#0D1B2A]
-              placeholder:text-[#6B7C93]/50
+              w-full px-[12px] py-[10px] rounded-[10px] text-[14px]
+              border border-border bg-bg text-navy
+              placeholder:text-text-dim/50
               resize-none
-              focus:outline-none focus:border-[#0C447C] focus:bg-white
+              focus:outline-none focus:border-gold focus:bg-white
               transition-colors
             "
           />
 
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-[8px]">
             <button
               type="button"
               onClick={addTimestampedEntry}
-              className="text-[12px] font-medium text-[#0C447C] hover:underline"
+              className="text-[12px] font-semibold text-gold hover:underline flex items-center gap-[4px]"
             >
-              + Add timestamped entry
+              <Plus size={12} />
+              Add timestamped entry
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#6B7C93]">
+            <div className="flex items-center gap-[8px]">
+              <span className="text-[11px] text-text-dim font-medium">
                 {notes.length} / 5000
               </span>
               <button
@@ -138,10 +139,10 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
                 onClick={saveNotes}
                 disabled={!isDirty || saving}
                 className="
-                  flex items-center gap-1.5 px-3 py-1.5 rounded-[8px]
+                  flex items-center gap-[5px] px-[12px] py-[6px] rounded-[8px]
                   text-[12px] font-semibold
-                  bg-[#0C447C] text-white
-                  hover:bg-[#093a6b] transition-colors
+                  bg-gold text-white
+                  hover:bg-gold-hi transition-colors
                   disabled:opacity-40
                 "
               >

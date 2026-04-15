@@ -75,6 +75,7 @@ export interface TripPageData {
     customDonts: string[]
     customRuleSections: CustomRuleSection[]
     safetyPoints: SafetyPoint[]
+    safetyCards: GuestSafetyCardData[]
     waiverText: string
     cancellationPolicy: string | null
     selectedEquipment: string[]
@@ -159,7 +160,7 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
         captain_license, captain_languages,
         captain_years_exp, captain_trip_count, captain_rating,
         what_to_bring, house_rules, prohibited_items,
-        safety_briefing, waiver_text, cancellation_policy,
+        safety_briefing, safety_cards, waiver_text, cancellation_policy,
         onboard_info, photo_urls,
         addons (
           id, name, description, emoji,
@@ -231,7 +232,8 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
       customDos: [],
       customDonts: [],
       customRuleSections: [],
-      safetyPoints: (boat.safety_briefing as string) ? [{ id: '1', text: boat.safety_briefing as string }] : [],
+      safetyPoints: [],  // Legacy — replaced by safetyCards (populated below)
+      safetyCards: [],    // Populated after DB query via getGuestSafetyCards()
       waiverText: boat.waiver_text ?? '',
       cancellationPolicy: boat.cancellation_policy ?? null,
       selectedEquipment: [],
@@ -263,6 +265,15 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
     },
     guestCount: 0, // overwritten below
     isFull: false,
+  }
+
+  // ── Populate safety cards (merges captain photos + dictionary text) ────────
+  try {
+    const safetyCards = await getGuestSafetyCards(boat.id, 'en')
+    data.boat.safetyCards = safetyCards
+  } catch (e) {
+    console.error('[getTripPageData] Failed to load safety cards:', e)
+    // Non-fatal — data.boat.safetyCards stays as empty array
   }
 
   // ── Cache to Redis (exclude live counts) ──────────────────────────────────
@@ -416,7 +427,7 @@ export async function getGuestSafetyCards(
         title: dict?.title ?? card.custom_title ?? card.topic_key,
         instructions: dict?.instructions ?? card.instructions ?? '',
         audio_url: dict?.audio_url ?? null,
-        emoji: dict?.emoji ?? '📋',
+        emoji: dict?.emoji ?? '',
         sort_order: card.sort_order,
         compliance_target: card.compliance_target ?? 'all',
         max_length_ft: card.max_length_ft,

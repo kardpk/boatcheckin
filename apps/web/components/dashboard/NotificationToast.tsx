@@ -10,13 +10,13 @@ interface NotificationToastProps {
 }
 
 const TOAST_ICONS: Record<string, string> = {
-  guest_registered: '👤',
-  trip_started: '⚓',
+  guest_registered: '○',
+  trip_started: '▶',
   trip_ended: '✓',
-  positive_review: '⭐',
-  chat_message: '💬',
-  waiver_signed: '📝',
-  default: '🔔',
+  positive_review: '★',
+  chat_message: '✉',
+  waiver_signed: '≡',
+  default: '⚠',
 }
 
 export function NotificationToasts({
@@ -34,10 +34,10 @@ export function NotificationToasts({
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
             className="
               pointer-events-auto
-              flex items-start gap-3
-              bg-white border border-[#D0E2F3]
-              rounded-[16px] p-4 pr-3
-              shadow-[0_4px_20px_rgba(12,68,124,0.15)]
+              flex items-start gap-[10px]
+              bg-white border border-border
+              rounded-[14px] p-[14px] pr-[10px]
+              shadow-[0_4px_20px_rgba(11,29,58,0.12)]
               max-w-[320px]
             "
           >
@@ -45,10 +45,10 @@ export function NotificationToasts({
               {TOAST_ICONS[toast.type] ?? TOAST_ICONS.default}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-[#0D1B2A] leading-tight">
+              <p className="text-[14px] font-bold text-navy leading-tight">
                 {toast.title}
               </p>
-              <p className="text-[13px] text-[#6B7C93] mt-0.5 leading-snug">
+              <p className="text-[13px] text-text-mid mt-[3px] leading-snug">
                 {toast.body}
               </p>
             </div>
@@ -57,7 +57,7 @@ export function NotificationToasts({
               className="
                 w-6 h-6 rounded-full flex-shrink-0 mt-0.5
                 flex items-center justify-center
-                text-[#6B7C93] hover:bg-[#F5F8FC] transition-colors
+                text-text-dim hover:bg-bg transition-colors
               "
             >
               <X size={12} />

@@ -141,7 +141,7 @@ export function Step2Marina({ data, onNext }: Step2Props) {
         {!lat && !lng && marinaAddress.length > 4 && (
           <div className="mt-tight p-standard bg-warning-bg rounded-chip">
             <p className="text-[12px] text-warning-text">
-              ⚠️ No location set — guests may have trouble finding your dock.
+              No location set — guests may have trouble finding your dock.
             </p>
           </div>
         )}

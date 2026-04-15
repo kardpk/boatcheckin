@@ -46,14 +46,14 @@ export function SplitBookingEditor({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-[13px] font-medium text-[#6B7C93]">Split bookings</p>
+        <p className="text-[13px] font-medium text-text-mid">Split bookings</p>
         {totalAllocated > 0 && (
           <span
             className={cn(
               'text-[12px] font-medium px-2 py-0.5 rounded-[8px]',
               remaining < 0
-                ? 'bg-[#FDEAEA] text-[#D63B3B]'
-                : 'bg-[#E8F2FB] text-[#0C447C]',
+                ? 'bg-error-dim text-error'
+                : 'bg-gold-dim text-navy',
             )}
           >
             {totalAllocated} / {maxTotalGuests} allocated
@@ -64,16 +64,16 @@ export function SplitBookingEditor({
       {entries.map((entry, i) => (
         <div
           key={entry.id}
-          className="p-4 border border-[#D0E2F3] rounded-[12px] space-y-3"
+          className="p-4 border border-border rounded-[12px] space-y-3"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[12px] font-semibold text-[#6B7C93]">
+            <span className="text-[12px] font-semibold text-text-mid">
               Group {i + 1}
             </span>
             <button
               type="button"
               onClick={() => removeEntry(entry.id)}
-              className="text-[#6B7C93] hover:text-[#D63B3B] transition-colors p-1"
+              className="text-text-mid hover:text-error transition-colors p-1"
               aria-label="Remove booking"
             >
               <Trash2 size={15} />
@@ -85,7 +85,7 @@ export function SplitBookingEditor({
             placeholder="Organiser name *"
             value={entry.organiserName}
             onChange={(e) => updateEntry(entry.id, 'organiserName', e.target.value)}
-            className="w-full h-[48px] px-3 rounded-[10px] text-[14px] border border-[#D0E2F3] bg-white text-[#0D1B2A] placeholder:text-[#6B7C93] focus:outline-none focus:ring-2 focus:ring-[#0C447C]"
+            className="w-full h-[48px] px-3 rounded-[10px] text-[14px] border border-border bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-gold"
           />
 
           <div className="grid grid-cols-2 gap-2">
@@ -94,7 +94,7 @@ export function SplitBookingEditor({
               placeholder="Email (optional)"
               value={entry.organiserEmail}
               onChange={(e) => updateEntry(entry.id, 'organiserEmail', e.target.value)}
-              className="h-[48px] px-3 rounded-[10px] text-[14px] border border-[#D0E2F3] bg-white text-[#0D1B2A] placeholder:text-[#6B7C93] focus:outline-none focus:ring-2 focus:ring-[#0C447C]"
+              className="h-[48px] px-3 rounded-[10px] text-[14px] border border-border bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-gold"
             />
             <div className="flex items-center gap-2">
               <input
@@ -105,9 +105,9 @@ export function SplitBookingEditor({
                 onChange={(e) =>
                   updateEntry(entry.id, 'maxGuests', Number(e.target.value))
                 }
-                className="w-20 h-[48px] px-3 rounded-[10px] text-[14px] text-center border border-[#D0E2F3] bg-white text-[#0D1B2A] focus:outline-none focus:ring-2 focus:ring-[#0C447C]"
+                className="w-20 h-[48px] px-3 rounded-[10px] text-[14px] text-center border border-border bg-white text-navy focus:outline-none focus:ring-2 focus:ring-gold"
               />
-              <span className="text-[13px] text-[#6B7C93]">guests</span>
+              <span className="text-[13px] text-text-mid">guests</span>
             </div>
           </div>
         </div>
@@ -122,14 +122,14 @@ export function SplitBookingEditor({
           'flex items-center justify-center gap-2',
           'text-[14px] font-medium transition-colors',
           remaining <= 0
-            ? 'border-[#D0E2F3] text-[#D0E2F3] cursor-not-allowed'
-            : 'border-dashed border-[#A8C4E0] text-[#0C447C] hover:bg-[#E8F2FB]',
+            ? 'border-border text-border cursor-not-allowed'
+            : 'border-dashed border-[#A8C4E0] text-navy hover:bg-gold-dim',
         )}
       >
         <Plus size={16} />
         Add group
         {remaining > 0 && (
-          <span className="text-[12px] text-[#6B7C93]">
+          <span className="text-[12px] text-text-mid">
             ({remaining} guests remaining)
           </span>
         )}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Check, ArrowLeft } from 'lucide-react'
 import { AnchorLoader } from '@/components/ui/AnchorLoader'
 import { SlideToConfirm } from '@/components/ui/SlideToConfirm'
 
@@ -67,7 +68,7 @@ export function EndTripFlow({
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F8FC] flex flex-col">
+    <div className="min-h-screen bg-bg flex flex-col">
       {/* Header */}
       <div className="bg-[#E8593C] px-5 pt-6 pb-5 text-white">
         <button onClick={onCancel} className="text-white/70 mb-3 text-[14px]">
@@ -81,15 +82,15 @@ export function EndTripFlow({
 
         {/* Duration */}
         {elapsed && (
-          <div className="bg-white rounded-[16px] p-5 border border-[#D0E2F3]">
-            <p className="text-[13px] text-[#6B7C93] mb-1">Time since departure</p>
-            <p className="text-[28px] font-black text-[#0D1B2A]">{elapsed}</p>
+          <div className="bg-white rounded-[14px] p-5 border border-border">
+            <p className="text-[13px] text-text-mid mb-1">Time since departure</p>
+            <p className="text-[28px] font-black text-navy">{elapsed}</p>
           </div>
         )}
 
         {/* What happens */}
-        <div className="bg-white rounded-[16px] p-5 border border-[#D0E2F3]">
-          <p className="text-[14px] font-semibold text-[#0D1B2A] mb-3">
+        <div className="bg-white rounded-[14px] p-5 border border-border">
+          <p className="text-[14px] font-semibold text-navy mb-3">
             On ending:
           </p>
           <div className="space-y-2">
@@ -99,23 +100,23 @@ export function EndTripFlow({
               'Guests sent review request (2hr delay)',
               'Trip postcards unlocked for guests',
             ].map(item => (
-              <div key={item} className="flex items-center gap-2">
-                <span className="text-[#1D9E75]">✓</span>
-                <span className="text-[14px] text-[#6B7C93]">{item}</span>
+              <div key={item} className="flex items-center gap-[6px]">
+                <Check size={14} className="text-teal" />
+                <span className="text-[14px] text-text-mid">{item}</span>
               </div>
             ))}
           </div>
         </div>
 
         {error && (
-          <div className="p-4 bg-[#FDEAEA] rounded-[12px]">
-            <p className="text-[14px] text-[#D63B3B]">{error}</p>
+          <div className="p-4 bg-error-dim rounded-[12px]">
+            <p className="text-[14px] text-error">{error}</p>
           </div>
         )}
       </div>
 
       {/* Slider */}
-      <div className="px-5 pb-10 pt-4 bg-white border-t border-[#D0E2F3]">
+      <div className="px-5 pb-10 pt-4 bg-white border-t border-border">
         <SlideToConfirm
           label="SLIDE TO END TRIP"
           onComplete={() => setShowConfirm(true)}
@@ -125,20 +126,20 @@ export function EndTripFlow({
 
       {/* Confirm overlay */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 bg-[rgba(12,68,124,0.5)] flex items-end">
-          <div className="w-full bg-white rounded-t-[24px] px-6 py-6 pb-10">
-            <div className="w-10 h-1 bg-[#D0E2F3] rounded-full mx-auto mb-5" />
-            <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-2">
+        <div className="fixed inset-0 z-50 bg-navy/50 flex items-end">
+          <div className="w-full bg-white rounded-t-[24px] px-[20px] py-[20px] pb-[32px]">
+            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-[18px]" />
+            <h2 className="text-[20px] font-bold text-navy mb-2">
               End charter?
             </h2>
-            <p className="text-[14px] text-[#6B7C93] mb-6">
+            <p className="text-[14px] text-text-mid mb-6">
               This cannot be undone. The trip will be marked as completed.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={isEnding}
-                className="flex-1 h-[56px] rounded-[12px] border border-[#D0E2F3] text-[#6B7C93] font-semibold text-[15px] disabled:opacity-40"
+                className="flex-1 h-[56px] rounded-[12px] border border-border text-text-mid font-semibold text-[15px] disabled:opacity-40"
               >
                 Cancel
               </button>

@@ -151,7 +151,7 @@ export function TripStatusBar({
 
       {/* Connection status */}
       <div className="flex items-center justify-between">
-        <h3 className="text-[14px] font-semibold text-[#0D1B2A]">Trip Control</h3>
+        <h3 className="text-[14px] font-semibold text-navy">Trip Control</h3>
         <RealtimeIndicator status={connectionStatus} />
       </div>
 
@@ -160,26 +160,26 @@ export function TripStatusBar({
         isReadyToDepart ? (
           <div className="p-4 rounded-[16px] bg-[#E8F9F4] border-2 border-[#1D9E75]">
             <div className="flex items-center gap-3">
-              <span className="text-[24px]">✅</span>
+              
               <div>
-                <p className="text-[15px] font-bold text-[#1D9E75]">
+                <p className="text-[15px] font-bold text-teal">
                   ALL CLEAR — Ready for departure
                 </p>
-                <p className="text-[12px] text-[#6B7C93] mt-0.5">
+                <p className="text-[12px] text-text-mid mt-0.5">
                   {guests.length} guest{guests.length !== 1 ? 's' : ''} · All waivers signed · Safety briefing complete
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-[16px] bg-[#FEF3DC] border-2 border-[#E5910A]">
+          <div className="p-4 rounded-[16px] bg-warn-dim border-2 border-[#E5910A]">
             <div className="flex items-center gap-3">
-              <span className="text-[24px]">⚠️</span>
+              
               <div>
                 <p className="text-[15px] font-bold text-[#E5910A]">
                   WAITING ON GUESTS
                 </p>
-                <p className="text-[12px] text-[#6B7C93] mt-0.5">
+                <p className="text-[12px] text-text-mid mt-0.5">
                   {nonCompliantCount} guest{nonCompliantCount !== 1 ? 's' : ''} still need to sign the waiver or complete the safety briefing
                 </p>
               </div>
@@ -190,10 +190,10 @@ export function TripStatusBar({
 
       {/* Active trip indicator */}
       {status === 'active' && startedAt && (
-        <div className="p-3 rounded-[12px] bg-[#E8F2FB] border border-[#D0E2F3]">
+        <div className="p-3 rounded-[12px] bg-gold-dim border border-border">
           <div className="flex items-center gap-2">
-            <span className="text-[16px]">⚓</span>
-            <p className="text-[13px] font-medium text-[#0C447C]">
+            
+            <p className="text-[13px] font-medium text-navy">
               Trip active since {new Date(startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
           </div>
@@ -202,8 +202,8 @@ export function TripStatusBar({
 
       {/* Error message */}
       {error && (
-        <div className="p-3 rounded-[12px] bg-[#FDEAEA] border border-[#D63B3B]/30">
-          <p className="text-[13px] text-[#D63B3B]">{error}</p>
+        <div className="p-3 rounded-[12px] bg-error-dim border border-[#D63B3B]/30">
+          <p className="text-[13px] text-error">{error}</p>
         </div>
       )}
 
@@ -211,8 +211,8 @@ export function TripStatusBar({
       {showStartConfirm && status === 'upcoming' && (
         <div className="rounded-[16px] border-2 border-[#0C447C] bg-white overflow-hidden shadow-lg">
           {/* Panel header */}
-          <div className="bg-[#0C447C] px-4 py-3 flex items-center gap-2">
-            <span className="text-[18px]">🛡️</span>
+          <div className="bg-navy px-4 py-3 flex items-center gap-2">
+            
             <p className="text-[14px] font-bold text-white">
               Pre-Departure Confirmation
             </p>
@@ -221,21 +221,21 @@ export function TripStatusBar({
           <div className="px-4 py-4 space-y-3">
             {/* Summary */}
             <div className="flex items-center justify-between text-[13px]">
-              <span className="text-[#6B7C93]">Passengers</span>
-              <span className="font-bold text-[#0D1B2A]">{guests.length}</span>
+              <span className="text-text-mid">Passengers</span>
+              <span className="font-bold text-navy">{guests.length}</span>
             </div>
             <div className="flex items-center justify-between text-[13px]">
-              <span className="text-[#6B7C93]">Waivers signed</span>
-              <span className="font-bold text-[#1D9E75]">
+              <span className="text-text-mid">Waivers signed</span>
+              <span className="font-bold text-teal">
                 {guests.filter(g => g.waiverSigned || g.waiverTextHash === 'firma_template').length} / {guests.length}
               </span>
             </div>
 
-            <hr className="border-[#D0E2F3]" />
+            <hr className="border-border" />
 
             {/* Safety briefing attestation */}
-            <div className="p-3 bg-[#F5F8FC] rounded-[12px] space-y-3">
-              <p className="text-[12px] font-bold text-[#6B7C93] uppercase tracking-wider">
+            <div className="p-3 bg-bg rounded-[12px] space-y-3">
+              <p className="text-[12px] font-bold text-text-mid uppercase tracking-wider">
                 46 CFR §185.506 — Safety Briefing
               </p>
 
@@ -246,8 +246,8 @@ export function TripStatusBar({
                     'w-5 h-5 rounded-[5px] border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
                     'transition-all duration-150',
                     captainBriefedAll
-                      ? 'bg-[#0C447C] border-[#0C447C]'
-                      : 'bg-white border-[#D0E2F3]'
+                      ? 'bg-navy border-[#0C447C]'
+                      : 'bg-white border-border'
                   )}
                 >
                   {captainBriefedAll && (
@@ -257,7 +257,7 @@ export function TripStatusBar({
                     </svg>
                   )}
                 </div>
-                <span className="text-[13px] text-[#0D1B2A] leading-relaxed">
+                <span className="text-[13px] text-navy leading-relaxed">
                   The captain has verbally briefed all passengers on life jacket locations,
                   emergency exits, and safety procedures
                 </span>
@@ -270,8 +270,8 @@ export function TripStatusBar({
                     'w-5 h-5 rounded-[5px] border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
                     'transition-all duration-150',
                     briefingConfirmed
-                      ? 'bg-[#0C447C] border-[#0C447C]'
-                      : 'bg-white border-[#D0E2F3]'
+                      ? 'bg-navy border-[#0C447C]'
+                      : 'bg-white border-border'
                   )}
                 >
                   {briefingConfirmed && (
@@ -281,7 +281,7 @@ export function TripStatusBar({
                     </svg>
                   )}
                 </div>
-                <span className="text-[13px] text-[#0D1B2A] leading-relaxed">
+                <span className="text-[13px] text-navy leading-relaxed">
                   Insurance will be activated and passengers will be notified
                 </span>
               </label>
@@ -296,7 +296,7 @@ export function TripStatusBar({
                   setCaptainBriefedAll(false)
                 }}
                 disabled={loading}
-                className="flex-1 h-[44px] rounded-[10px] border border-[#D0E2F3] text-[#6B7C93] font-semibold text-[14px] hover:bg-[#F5F8FC] transition-colors disabled:opacity-40"
+                className="flex-1 h-[44px] rounded-[10px] border border-border text-text-mid font-semibold text-[14px] hover:bg-bg transition-colors disabled:opacity-40"
               >
                 Cancel
               </button>
@@ -307,10 +307,10 @@ export function TripStatusBar({
                   'flex-1 h-[44px] rounded-[10px] font-bold text-[14px] transition-all',
                   briefingConfirmed && captainBriefedAll
                     ? 'bg-[#1D9E75] text-white hover:bg-[#178a64] active:scale-[0.98]'
-                    : 'bg-[#D0E2F3] text-[#6B7C93] cursor-not-allowed'
+                    : 'bg-border text-text-mid cursor-not-allowed'
                 )}
               >
-                {loading ? 'Starting...' : '⚓ Confirm & Start'}
+                {loading ? 'Starting...' : 'Confirm & Start'}
               </button>
             </div>
           </div>
@@ -332,7 +332,7 @@ export function TripStatusBar({
             disabled:hover:bg-[#1D9E75]
           "
         >
-          {loading ? 'Starting...' : isReadyToDepart ? '🛡️ Start Trip' : '🔒 Waiting on compliance...'}
+          {loading ? 'Starting...' : isReadyToDepart ? 'Start Trip' : 'Waiting on compliance...'}
         </button>
       )}
 
@@ -358,7 +358,7 @@ export function TripStatusBar({
           bg-[#E8F9F4] border border-[#1D9E75]/30
           flex items-center justify-center
         ">
-          <span className="text-[15px] font-semibold text-[#1D9E75]">
+          <span className="text-[15px] font-semibold text-teal">
             ✓ Trip completed
           </span>
         </div>

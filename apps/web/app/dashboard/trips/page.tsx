@@ -1,6 +1,7 @@
 import { requireOperator } from '@/lib/security/auth'
 import { createServiceClient } from '@/lib/supabase/service'
 import { TripCard } from '@/components/dashboard/TripCard'
+import { Anchor, Plus } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -29,38 +30,51 @@ export default async function TripsPage() {
   const upcomingTrips = trips ?? []
 
   return (
-    <div className="max-w-[640px] mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-page py-[16px]">
+      <div className="flex items-center justify-between mb-[16px]">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#0D1B2A]">Trips</h1>
-          <p className="text-[14px] text-[#6B7C93] mt-0.5">
+          <h1 className="text-[22px] font-bold text-navy">Trips</h1>
+          <p className="text-[14px] text-text-mid mt-[3px] font-medium">
             {upcomingTrips.length} upcoming
           </p>
         </div>
         <Link
           href="/dashboard/trips/new"
-          className="h-[44px] px-5 rounded-[12px] bg-[#0C447C] text-white font-semibold text-[14px] flex items-center gap-2 hover:bg-[#093a6b] transition-colors"
+          className="
+            h-[42px] px-[18px] rounded-[10px]
+            bg-gold text-white font-semibold text-[14px]
+            flex items-center gap-[6px]
+            hover:bg-gold-hi transition-colors
+          "
         >
-          + New trip
+          <Plus size={16} />
+          New trip
         </Link>
       </div>
 
       {upcomingTrips.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-[48px] mb-4">⚓</div>
-          <h2 className="text-[18px] font-semibold text-[#0D1B2A] mb-2">No trips yet</h2>
-          <p className="text-[15px] text-[#6B7C93] mb-6">
+        <div className="text-center py-[48px]">
+          <div className="w-[64px] h-[64px] mx-auto mb-[14px] rounded-full bg-gold-dim border border-gold-line flex items-center justify-center">
+            <Anchor size={28} className="text-gold" />
+          </div>
+          <h2 className="text-[18px] font-bold text-navy mb-[6px]">No trips yet</h2>
+          <p className="text-[15px] text-text-mid mb-[20px]">
             Create your first trip and share the link with guests
           </p>
           <Link
             href="/dashboard/trips/new"
-            className="inline-flex h-[52px] px-8 rounded-[12px] bg-[#0C447C] text-white font-semibold text-[15px] items-center hover:bg-[#093a6b] transition-colors"
+            className="
+              inline-flex items-center justify-center gap-[6px]
+              h-[48px] px-[24px] rounded-[10px]
+              bg-gold text-white font-semibold text-[15px]
+              hover:bg-gold-hi transition-colors
+            "
           >
             Create my first trip →
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-[10px]">
           {upcomingTrips.map((trip) => {
             const guests = (trip.guests as { id: string; waiver_signed: boolean }[]) ?? []
             return (

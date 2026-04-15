@@ -42,8 +42,8 @@ export function CaptainSection({
   ].filter(Boolean) as { value: number | string; label: string }[]
 
   return (
-    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-[#D0E2F3] p-5">
-      <p className="text-[11px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-4">
+    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-border p-5">
+      <p className="text-[11px] font-semibold text-text-mid uppercase tracking-wider mb-4">
         {tr.captain}
       </p>
 
@@ -60,7 +60,7 @@ export function CaptainSection({
               className="w-[72px] h-[72px] rounded-full object-cover"
             />
           ) : (
-            <div className="w-[72px] h-[72px] rounded-full bg-[#E8F2FB] flex items-center justify-center text-[22px] font-bold text-[#0C447C]">
+            <div className="w-[72px] h-[72px] rounded-full bg-gold-dim flex items-center justify-center text-[22px] font-bold text-navy">
               {initials}
             </div>
           )}
@@ -68,17 +68,17 @@ export function CaptainSection({
 
         {/* Name + badges */}
         <div className="flex-1 min-w-0">
-          <p className="text-[17px] font-semibold text-[#0D1B2A] truncate">
+          <p className="text-[17px] font-semibold text-navy truncate">
             {captainName}
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-1.5">
             {captainLicense && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#E8F2FB] text-[#0C447C] text-[11px] font-medium">
-                ⚓ {tr.uscgLicensed}
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gold-dim text-navy text-[11px] font-medium">
+                {tr.uscgLicensed}
               </span>
             )}
             {captainTripCount != null && (
-              <span className="text-[12px] text-[#6B7C93]">
+              <span className="text-[12px] text-text-mid">
                 {captainTripCount} {tr.trips}
               </span>
             )}
@@ -97,12 +97,12 @@ export function CaptainSection({
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col items-center bg-[#F5F8FC] rounded-[10px] py-2.5 px-2"
+              className="flex flex-col items-center bg-bg rounded-[10px] py-2.5 px-2"
             >
-              <span className="text-[17px] font-bold text-[#0C447C]">
+              <span className="text-[17px] font-bold text-navy">
                 {stat.value}
               </span>
-              <span className="text-[11px] text-[#6B7C93] text-center mt-0.5">
+              <span className="text-[11px] text-text-mid text-center mt-0.5">
                 {stat.label}
               </span>
             </div>
@@ -113,7 +113,7 @@ export function CaptainSection({
       {/* Languages */}
       {captainLanguages.length > 0 && (
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[12px] text-[#6B7C93]">{tr.languages}:</span>
+          <span className="text-[12px] text-text-mid">{tr.languages}:</span>
           <div className="flex gap-1.5">
             {captainLanguages.map((lang) => (
               <span key={lang} className="text-[18px]">
@@ -133,7 +133,7 @@ export function CaptainSection({
           {captainCertifications.map((cert) => (
             <span
               key={cert}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F5F8FC] text-[#6B7C93] text-[12px]"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-bg text-text-mid text-[12px]"
             >
               ✓ {cert}
             </span>

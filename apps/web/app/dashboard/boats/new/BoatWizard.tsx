@@ -291,7 +291,7 @@ export function BoatWizard() {
       {saveError && (
         <div className="max-w-[640px] mx-auto px-page mb-standard">
           <div className="p-standard bg-error-bg rounded-chip text-[13px] text-error-text">
-            ⚠️ {saveError}
+            {saveError}
           </div>
         </div>
       )}

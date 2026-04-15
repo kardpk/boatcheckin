@@ -95,10 +95,10 @@ export function StepCode({ tripSlug, state, onUpdate, onValidated }: StepCodePro
 
   return (
     <div className="pt-2">
-      <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-1">
+      <h2 className="text-[20px] font-bold text-navy mb-1">
         Enter your trip code
       </h2>
-      <p className="text-[14px] text-[#6B7C93] mb-8">
+      <p className="text-[14px] text-text-mid mb-8">
         Check the message from your trip organiser
       </p>
 
@@ -119,14 +119,14 @@ export function StepCode({ tripSlug, state, onUpdate, onValidated }: StepCodePro
           className={cn(
             'w-48 h-20 text-center text-[40px] font-mono font-black',
             'tracking-[0.3em] uppercase',
-            'border-2 rounded-[16px] bg-white outline-none',
+            'border-2 rounded-[14px] bg-white outline-none',
             'transition-all duration-150',
             state.codeError
-              ? 'border-[#D63B3B] bg-[#FDEAEA]'
+              ? 'border-[#D63B3B] bg-error-dim'
               : state.tripCode.length === 4
               ? 'border-[#1D9E75]'
-              : 'border-[#D0E2F3]',
-            'focus:border-[#0C447C] focus:ring-2 focus:ring-[#0C447C]/20',
+              : 'border-border',
+            'focus:border-gold focus:ring-2 focus:ring-gold/20',
             'disabled:opacity-50 disabled:cursor-not-allowed'
           )}
           aria-label="Trip code"
@@ -134,14 +134,14 @@ export function StepCode({ tripSlug, state, onUpdate, onValidated }: StepCodePro
         />
 
         {state.codeError && (
-          <p id="code-error" className="text-[14px] text-[#D63B3B] text-center font-medium" role="alert">
+          <p id="code-error" className="text-[14px] text-error text-center font-medium" role="alert">
             {state.codeError}
           </p>
         )}
 
         {state.codeLocked && lockCountdown > 0 && (
           <div className="px-4 py-3 rounded-[12px] bg-[#FEF3DC] text-[14px] text-[#E5910A] text-center">
-            🔒 Try again in {Math.floor(lockCountdown / 60)}m {lockCountdown % 60}s
+            Try again in {Math.floor(lockCountdown / 60)}m {lockCountdown % 60}s
           </div>
         )}
       </div>
@@ -164,14 +164,14 @@ export function StepCode({ tripSlug, state, onUpdate, onValidated }: StepCodePro
           'flex items-center justify-center gap-2',
           'transition-all duration-150',
           'disabled:opacity-40 disabled:cursor-not-allowed',
-          'bg-[#0C447C] text-white hover:bg-[#093a6b]',
+          'bg-gold text-white hover:bg-gold-hi',
           'active:scale-[0.98]'
         )}
       >
         {isLoading ? <AnchorLoader size="sm" color="white" /> : 'Join this trip →'}
       </button>
 
-      <p className="text-[12px] text-[#6B7C93] text-center mt-4">
+      <p className="text-[12px] text-text-mid text-center mt-4">
         Your information is kept private and secure
       </p>
 

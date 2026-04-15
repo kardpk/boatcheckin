@@ -14,7 +14,7 @@ export function ReferralSection({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://boatcheckin.com'
   const referralUrl = `${appUrl}?ref=${tripSlug}&boat=${encodeURIComponent(boatName)}`
 
-  const shareMessage = `Just had an amazing charter on ${boatName} 🛥️ Book your own with BoatCheckin — digital check-in, no paperwork: ${referralUrl}`
+  const shareMessage = `Just had an amazing charter on ${boatName} Book your own with BoatCheckin — digital check-in, no paperwork: ${referralUrl}`
 
   async function copyLink() {
     try {
@@ -33,14 +33,14 @@ export function ReferralSection({
   }
 
   return (
-    <div className="bg-[#E8F2FB] rounded-[20px] p-5 border border-[#D0E2F3]">
+    <div className="bg-gold-dim rounded-[14px] p-5 border border-border">
       <div className="flex items-start gap-3">
         <span className="text-[28px] flex-shrink-0">🎁</span>
         <div className="flex-1">
-          <h2 className="text-[16px] font-semibold text-[#0D1B2A] mb-1">
+          <h2 className="text-[16px] font-semibold text-navy mb-1">
             Share with a friend
           </h2>
-          <p className="text-[14px] text-[#6B7C93] mb-4">
+          <p className="text-[14px] text-text-mid mb-4">
             Know someone planning a charter?
             Share BoatCheckin with them.
           </p>
@@ -51,7 +51,7 @@ export function ReferralSection({
               'flex items-center gap-2 transition-colors',
               copied
                 ? 'bg-[#1D9E75] text-white'
-                : 'bg-[#0C447C] text-white hover:bg-[#093a6b]'
+                : 'bg-gold text-white hover:bg-gold-hi'
             )}
           >
             {copied ? '✓ Copied!' : '📤 Share the link'}

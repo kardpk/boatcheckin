@@ -19,8 +19,8 @@ export function WeatherWidget({ weather, tr }: WeatherWidgetProps) {
   const message = tr[messageKey] as string
 
   return (
-    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-[#D0E2F3] p-5">
-      <p className="text-[11px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-3">
+    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-border p-5">
+      <p className="text-[11px] font-semibold text-text-mid uppercase tracking-wider mb-3">
         {tr.weather}
       </p>
 
@@ -33,8 +33,8 @@ export function WeatherWidget({ weather, tr }: WeatherWidgetProps) {
           {weather.icon}
         </div>
         <div>
-          <p className="text-[15px] font-semibold text-[#0D1B2A]">{weather.label}</p>
-          <p className="text-[13px] text-[#6B7C93] mt-0.5">
+          <p className="text-[15px] font-semibold text-navy">{weather.label}</p>
+          <p className="text-[13px] text-text-mid mt-0.5">
             {tr.feels} {weather.temperature}°F
           </p>
         </div>
@@ -49,11 +49,11 @@ export function WeatherWidget({ weather, tr }: WeatherWidgetProps) {
         ].map((item) => (
           <div
             key={item.sublabel}
-            className="flex flex-col items-center gap-0.5 bg-[#F5F8FC] rounded-[10px] p-2.5"
+            className="flex flex-col items-center gap-0.5 bg-bg rounded-[10px] p-2.5"
           >
             <span className="text-[16px]">{item.icon}</span>
-            <span className="text-[13px] font-semibold text-[#0D1B2A]">{item.label}</span>
-            <span className="text-[11px] text-[#6B7C93]">{item.sublabel}</span>
+            <span className="text-[13px] font-semibold text-navy">{item.label}</span>
+            <span className="text-[11px] text-text-mid">{item.sublabel}</span>
           </div>
         ))}
       </div>

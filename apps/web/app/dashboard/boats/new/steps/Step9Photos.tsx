@@ -191,7 +191,7 @@ export function Step9Photos({ data, onNext, saving, template }: Step9Props) {
 
         {/* Tips */}
         <div className="mt-standard p-standard bg-light-blue rounded-chip">
-          <p className="text-[12px] text-navy font-semibold">📸 Photo tips that work best:</p>
+          <p className="text-[12px] text-navy font-semibold">Photo tips that work best:</p>
           <div className="mt-micro text-[12px] text-dark-text space-y-[2px]">
             <p>✓ Deck and seating area</p>
             <p>✓ Interior/cabin (if applicable)</p>

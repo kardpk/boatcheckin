@@ -60,17 +60,17 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
   const isPublic = selectedRating >= 4
 
   return (
-    <div className="bg-white rounded-[20px] p-6 border border-[#D0E2F3] shadow-[0_4px_24px_rgba(12,68,124,0.06)] relative overflow-hidden">
+    <div className="bg-white rounded-[14px] p-6 border border-border shadow-[0_4px_24px_rgba(12,68,124,0.06)] relative overflow-hidden">
       {!isLocked && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1D9E75] to-[#E5910A]" />
       )}
 
       {selectedRating === 0 ? (
         <div className="text-center">
-          <h2 className="text-[18px] font-bold text-[#0D1B2A] mb-2">
+          <h2 className="text-[18px] font-bold text-navy mb-2">
             How was your trip?
           </h2>
-          <p className="text-[14px] text-[#6B7C93] mb-6">
+          <p className="text-[14px] text-text-mid mb-6">
             Help {data.operatorCompanyName || 'the operator'} by sharing your experience.
           </p>
 
@@ -111,7 +111,7 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
           </div>
 
           <div className="bg-[#FFF4E5] rounded-[12px] p-4 mb-4 flex items-start gap-3">
-            <span className="text-[20px]">🔒</span>
+            
             <div>
               <p className="text-[14px] font-semibold text-[#B36B00] mb-1">
                 Private Feedback
@@ -127,13 +127,13 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
             onChange={e => setFeedback(e.target.value)}
             disabled={isSubmitting}
             placeholder="What could have been better?"
-            className="w-full h-[120px] rounded-[12px] border border-[#D0E2F3] p-4 text-[15px] resize-none mb-4 focus:outline-none focus:border-[#0C447C] focus:ring-1 focus:ring-[#0C447C]"
+            className="w-full h-[120px] rounded-[12px] border border-border p-4 text-[15px] resize-none mb-4 focus:outline-none focus:border-gold focus:ring-1 focus:ring-[#0C447C]"
           />
 
           <button
             onClick={() => submitReview(selectedRating, feedback)}
             disabled={isSubmitting || !feedback.trim()}
-            className="w-full h-[52px] bg-[#0C447C] text-white rounded-[12px] font-semibold text-[16px] disabled:opacity-50"
+            className="w-full h-[52px] bg-gold text-white rounded-[12px] font-semibold text-[16px] disabled:opacity-50"
           >
             {isSubmitting ? 'Sending...' : 'Send private feedback'}
           </button>
@@ -143,10 +143,10 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
           <div className="w-[64px] h-[64px] bg-[#E8F9F4] rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-[32px]">✓</span>
           </div>
-          <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-2">
+          <h2 className="text-[20px] font-bold text-navy mb-2">
             Thank you for the kind words!
           </h2>
-          <p className="text-[14px] text-[#6B7C93] mb-6">
+          <p className="text-[14px] text-text-mid mb-6">
             Small businesses run on reviews.
             If you have a moment, it would mean everything if you shared this publicly.
           </p>
@@ -157,7 +157,7 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
                 href={data.googleReviewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-[52px] border-2 border-[#D0E2F3] rounded-[12px] flex items-center justify-center gap-2 font-semibold text-[15px] hover:bg-[#F5F8FC] transition-colors"
+                className="w-full h-[52px] border-2 border-border rounded-[12px] flex items-center justify-center gap-2 font-semibold text-[15px] hover:bg-bg transition-colors"
               >
                 <img src="https://www.google.com/favicon.ico" alt="Google" className="w-[20px] h-[20px]" />
                 Review on Google
@@ -169,14 +169,14 @@ export function ReviewGate({ data, guestId, onReviewSubmitted }: ReviewGateProps
                 href={data.boatsetterReviewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-[52px] border-2 border-[#D0E2F3] rounded-[12px] flex items-center justify-center gap-2 font-semibold text-[15px] hover:bg-[#F5F8FC] transition-colors"
+                className="w-full h-[52px] border-2 border-border rounded-[12px] flex items-center justify-center gap-2 font-semibold text-[15px] hover:bg-bg transition-colors"
               >
-                ⚓ Review on Boatsetter
+                Review on Boatsetter
               </a>
             )}
             
             {(!data.googleReviewUrl && !data.boatsetterReviewUrl) && (
-              <p className="text-[13px] text-[#6B7C93] italic">
+              <p className="text-[13px] text-text-mid italic">
                 Your review has been saved to the operator's dashboard.
               </p>
             )}

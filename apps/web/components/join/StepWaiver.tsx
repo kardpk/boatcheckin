@@ -198,15 +198,15 @@ export function StepWaiver({
       <button
         onClick={onBack}
         disabled={state.isSubmitting}
-        className="flex items-center gap-1 text-[13px] text-[#6B7C93] -ml-1 mb-4 min-h-[44px]"
+        className="flex items-center gap-1 text-[13px] text-text-mid -ml-1 mb-4 min-h-[44px]"
       >
         <ChevronLeft size={16} /> Back
       </button>
 
-      <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-1">
+      <h2 className="text-[20px] font-bold text-navy mb-1">
         {isRelaxedTrip ? 'Acknowledgment' : 'Sign the liability waiver'}
       </h2>
-      <p className="text-[14px] text-[#6B7C93] mb-4">
+      <p className="text-[14px] text-text-mid mb-4">
         {isRelaxedTrip ? 'A quick note for your safety' : 'Please read carefully before signing'}
       </p>
 
@@ -228,19 +228,19 @@ export function StepWaiver({
             })
           }}
           disabled={state.isSubmitting}
-          className="w-full mb-4 py-3 px-4 rounded-[12px] border border-[#D0E2F3] bg-[#F5F8FC] text-[14px] text-[#0C447C] font-medium hover:bg-[#E8F2FB] transition-colors"
+          className="w-full mb-4 py-3 px-4 rounded-[12px] border border-border bg-bg text-[14px] text-navy font-medium hover:bg-gold-dim transition-colors"
         >
-          🎉 Skip waiver — this is a private trip
+          Skip waiver — this is a private trip
         </button>
       )}
 
       {/* Embedded Firma Editor */}
       {firmaTemplateId ? (
-        <div className="w-full h-[400px] bg-[#F5F8FC] border border-[#D0E2F3] rounded-[16px] overflow-hidden flex flex-col items-center justify-center relative">
+        <div className="w-full h-[400px] bg-bg border border-border rounded-[14px] overflow-hidden flex flex-col items-center justify-center relative">
            {firmaLoading && (
              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                  <AnchorLoader size="md" color="navy" />
-                 <p className="text-[12px] text-[#6B7C93]">Securing document...</p>
+                 <p className="text-[12px] text-text-mid">Securing document...</p>
              </div>
            )}
            {firmaUrl && (
@@ -252,20 +252,20 @@ export function StepWaiver({
              />
            )}
            {!firmaLoading && !firmaUrl && (
-              <p className="text-[13px] text-[#D63B3B]">Failed to load digital waiver. Please see Captain.</p>
+              <p className="text-[13px] text-error">Failed to load digital waiver. Please see Captain.</p>
            )}
         </div>
       ) : (
         <>
           {/* Scroll progress bar (Only for non-Firma legacy mode) */}
-          <div className="w-full h-1 bg-[#E8F2FB] rounded-full mb-3 overflow-hidden">
+          <div className="w-full h-1 bg-gold-dim rounded-full mb-3 overflow-hidden">
             <div
-              className="h-full bg-[#0C447C] rounded-full transition-all"
+              className="h-full bg-navy rounded-full transition-all"
               style={{ width: `${scrollProgress * 100}%` }}
             />
           </div>
           {!state.waiverScrolled && (
-            <p className="text-[12px] text-[#6B7C93] mb-3 text-center">
+            <p className="text-[12px] text-text-mid mb-3 text-center">
               ↓ Scroll to read the full waiver
             </p>
           )}
@@ -274,7 +274,7 @@ export function StepWaiver({
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="h-56 overflow-y-auto rounded-[12px] border border-[#D0E2F3] bg-[#F5F8FC] p-4 mb-4 text-[13px] text-[#0D1B2A] leading-relaxed whitespace-pre-wrap"
+            className="h-56 overflow-y-auto rounded-[12px] border border-border bg-bg p-4 mb-4 text-[13px] text-navy leading-relaxed whitespace-pre-wrap"
             tabIndex={0}
             role="region"
             aria-label="Waiver text"
@@ -289,16 +289,16 @@ export function StepWaiver({
               checked={state.waiverAgreed}
               onChange={e => onUpdate({ waiverAgreed: e.target.checked })}
               disabled={!state.waiverScrolled}
-              className="w-5 h-5 mt-0.5 rounded accent-[#0C447C] flex-shrink-0"
+              className="w-5 h-5 mt-0.5 rounded accent-gold flex-shrink-0"
             />
-            <span className={cn('text-[14px] leading-relaxed', state.waiverScrolled ? 'text-[#0D1B2A]' : 'text-[#6B7C93]')}>
+            <span className={cn('text-[14px] leading-relaxed', state.waiverScrolled ? 'text-navy' : 'text-text-mid')}>
               I have read and agree to the liability waiver
             </span>
           </label>
 
           {/* Signature field — Satisfy cursive font */}
           <div className="mb-5">
-            <label className="block text-[13px] font-medium text-[#6B7C93] mb-2">
+            <label className="block text-[13px] font-medium text-text-mid mb-2">
               Type your full name as your signature
             </label>
             <input
@@ -307,12 +307,12 @@ export function StepWaiver({
               value={state.signatureText}
               onChange={e => onUpdate({ signatureText: e.target.value })}
               disabled={!state.waiverAgreed || state.isSubmitting}
-              style={{ fontFamily: 'var(--font-satisfy, cursive)', fontSize: '22px', color: '#0C447C' }}
-              className="w-full h-[56px] px-4 rounded-[10px] border border-[#D0E2F3] placeholder:text-[#D0E2F3] focus:outline-none focus:border-[#0C447C] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ fontFamily: 'var(--font-satisfy, cursive)', fontSize: '22px', color: 'var(--color-navy)' }}
+              className="w-full h-[56px] px-4 rounded-[10px] border border-border placeholder:text-text-dim focus:outline-none focus:border-gold disabled:opacity-50 disabled:cursor-not-allowed"
               autoComplete="off"
               spellCheck={false}
             />
-            <p className="text-[11px] text-[#6B7C93] mt-1">
+            <p className="text-[11px] text-text-mid mt-1">
               By typing your name, you agree this constitutes your legal signature
             </p>
           </div>
@@ -321,8 +321,8 @@ export function StepWaiver({
 
       {/* Error */}
       {state.submitError && (
-        <div className="p-4 rounded-[12px] bg-[#FDEAEA] mb-4">
-          <p className="text-[14px] text-[#D63B3B] font-medium">{state.submitError}</p>
+        <div className="p-4 rounded-[12px] bg-error-dim mb-4">
+          <p className="text-[14px] text-error font-medium">{state.submitError}</p>
         </div>
       )}
 
@@ -337,7 +337,7 @@ export function StepWaiver({
           'flex items-center justify-center gap-2',
           'transition-all duration-150',
           'disabled:opacity-40 disabled:cursor-not-allowed',
-          'bg-[#0C447C] text-white hover:bg-[#093a6b]'
+          'bg-gold text-white hover:bg-gold-hi'
         )}
       >
         {state.isSubmitting ? <AnchorLoader size="sm" color="white" /> : '✓ Sign and check in'}

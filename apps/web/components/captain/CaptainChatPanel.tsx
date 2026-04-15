@@ -42,15 +42,15 @@ export function CaptainChatPanel({
   }
 
   return (
-    <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden mt-3">
+    <div className="bg-white rounded-[14px] border border-border overflow-hidden mt-3">
       {/* Panel header */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-5 py-4 flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
-          <MessageCircle size={18} className="text-[#0C447C]" />
-          <span className="text-[15px] font-semibold text-[#0D1B2A]">
+          <MessageCircle size={18} className="text-[var(--color-navy)]" />
+          <span className="text-[15px] font-semibold text-navy">
             Guest messages
           </span>
           {chat.unreadCount > 0 && (
@@ -66,7 +66,7 @@ export function CaptainChatPanel({
         <ChevronDown
           size={16}
           className={cn(
-            'text-[#6B7C93] transition-transform',
+            'text-text-mid transition-transform',
             isOpen && 'rotate-180'
           )}
         />
@@ -75,9 +75,9 @@ export function CaptainChatPanel({
       {isOpen && (
         <>
           {/* Messages */}
-          <div className="px-4 pb-2 max-h-[320px] overflow-y-auto space-y-2 border-t border-[#F5F8FC]">
+          <div className="px-4 pb-2 max-h-[320px] overflow-y-auto space-y-2 border-t border-border">
             {chat.messages.length === 0 ? (
-              <p className="text-center text-[14px] text-[#6B7C93] py-6">
+              <p className="text-center text-[14px] text-text-mid py-6">
                 No messages yet. Guests will appear here.
               </p>
             ) : (
@@ -92,19 +92,19 @@ export function CaptainChatPanel({
                   )}
                 >
                   {msg.senderType !== 'captain' && (
-                    <span className="text-[11px] text-[#6B7C93] mb-0.5 px-1">
+                    <span className="text-[11px] text-text-mid mb-0.5 px-1">
                       {msg.senderName}
                     </span>
                   )}
                   <div className={cn(
-                    'px-4 py-2.5 rounded-[16px] text-[14px] leading-relaxed',
+                    'px-4 py-2.5 rounded-[14px] text-[14px] leading-relaxed',
                     msg.senderType === 'captain'
-                      ? 'bg-[#0C447C] text-white rounded-tr-[4px]'
-                      : 'bg-[#F5F8FC] text-[#0D1B2A] rounded-tl-[4px]'
+                      ? 'bg-[var(--color-navy)] text-white rounded-tr-[4px]'
+                      : 'bg-bg text-navy rounded-tl-[4px]'
                   )}>
                     {msg.body}
                   </div>
-                  <span className="text-[10px] text-[#6B7C93] mt-0.5 px-1">
+                  <span className="text-[10px] text-text-mid mt-0.5 px-1">
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: '2-digit', minute: '2-digit',
                     })}
@@ -113,7 +113,7 @@ export function CaptainChatPanel({
               ))
             )}
             {chat.isTyping && (
-              <p className="text-[12px] text-[#6B7C93] italic">
+              <p className="text-[12px] text-text-mid italic">
                 A guest is typing...
               </p>
             )}
@@ -121,7 +121,7 @@ export function CaptainChatPanel({
           </div>
 
           {/* Reply input */}
-          <div className="px-4 py-3 border-t border-[#F5F8FC] flex gap-2">
+          <div className="px-4 py-3 border-t border-border flex gap-2">
             <input
               type="text"
               value={input}
@@ -136,18 +136,18 @@ export function CaptainChatPanel({
               maxLength={500}
               className="
                 flex-1 h-[44px] px-4 rounded-full text-[14px]
-                border border-[#D0E2F3] bg-white text-[#0D1B2A]
-                placeholder:text-[#6B7C93]
-                focus:outline-none focus:border-[#0C447C]
+                border border-border bg-white text-navy
+                placeholder:text-text-mid
+                focus:outline-none focus:border-[var(--color-navy)]
               "
             />
             <button
               onClick={sendReply}
               disabled={!input.trim()}
               className="
-                w-11 h-11 rounded-full bg-[#0C447C] text-white
+                w-11 h-11 rounded-full bg-[var(--color-navy)] text-white
                 flex items-center justify-center
-                hover:bg-[#093a6b] transition-colors
+                hover:bg-[var(--color-navy)] transition-colors
                 disabled:opacity-40
               "
             >

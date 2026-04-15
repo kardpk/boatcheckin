@@ -88,7 +88,7 @@ export function Step4Equipment({ data, onNext, template }: Step4Props) {
                 type="checkbox"
                 checked={selectedEquipment.includes(item)}
                 onChange={() => toggleEquipment(item)}
-                className="w-4 h-4 rounded border-border text-navy focus:ring-navy accent-[#0C447C]"
+                className="w-4 h-4 rounded border-border text-navy focus:ring-navy accent-gold"
               />
               <span className="text-body text-dark-text">{item}</span>
             </label>
@@ -116,7 +116,7 @@ export function Step4Equipment({ data, onNext, template }: Step4Props) {
                   type="checkbox"
                   checked={selectedEquipment.includes(item)}
                   onChange={() => toggleEquipment(item)}
-                  className="w-4 h-4 rounded border-border text-navy focus:ring-navy accent-[#0C447C]"
+                  className="w-4 h-4 rounded border-border text-navy focus:ring-navy accent-gold"
                 />
                 <span className="text-body text-dark-text">{item}</span>
               </label>
@@ -215,7 +215,7 @@ export function Step4Equipment({ data, onNext, template }: Step4Props) {
                               type="checkbox"
                               checked={selected}
                               onChange={() => toggleMultiselect(field.key, opt.value)}
-                              className="w-4 h-4 rounded accent-[#0C447C]"
+                              className="w-4 h-4 rounded accent-gold"
                             />
                             <span className="text-body text-dark-text">{opt.label}</span>
                           </label>

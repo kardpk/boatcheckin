@@ -138,13 +138,13 @@ export function JoinFlowSheet({
       >
         {/* Handle bar + close + progress */}
         <div className="flex-shrink-0 pt-3 pb-2 px-5">
-          <div className="w-10 h-1 bg-[#D0E2F3] rounded-full mx-auto mb-3" />
+          <div className="w-10 h-1 bg-border rounded-full mx-auto mb-3" />
           <div className="flex items-center justify-between">
             <div className="flex-1" />
             {canClose && (
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-[#F5F8FC] flex items-center justify-center text-[#6B7C93] hover:bg-[#E8F2FB] transition-colors"
+                className="w-8 h-8 rounded-full bg-bg flex items-center justify-center text-text-mid hover:bg-gold-dim transition-colors"
                 aria-label="Close"
               >
                 <X size={16} />
@@ -155,13 +155,13 @@ export function JoinFlowSheet({
           {/* Progress bar — hidden on boarding step */}
           {state.step !== 'boarding' && (
             <div className="mt-3">
-              <div className="w-full h-1 bg-[#E8F2FB] rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-gold-dim rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#0C447C] rounded-full transition-all duration-400"
+                  className="h-full bg-navy rounded-full transition-all duration-400"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <p className="text-[11px] text-[#6B7C93] mt-1">
+              <p className="text-[11px] text-text-mid mt-1">
                 Step {Math.max(1, stepIndex + 1)} of {activeSteps.length}
                 {isFastTrack && ' · Fast-Track'}
               </p>
@@ -170,7 +170,7 @@ export function JoinFlowSheet({
         </div>
 
         {/* Scrollable step content */}
-        <div id="join-sheet-content" className="flex-1 overflow-y-auto px-5 pb-8">
+        <div id="join-sheet-content" className="flex-1 overflow-y-auto px-5 pb-8" dir={state.languagePreference === 'ar' ? 'rtl' : 'ltr'}>
           <AnimatePresence mode="wait">
             <motion.div
               key={state.step}

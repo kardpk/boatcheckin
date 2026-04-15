@@ -12,20 +12,20 @@ import { ContinueButton } from "@/components/ui/ContinueButton";
 import type { WizardData, BoatTypeKey, CharterType } from "../types";
 
 const BOAT_TYPES: { key: BoatTypeKey; emoji: string; label: string; desc: string }[] = [
-  { key: "motor_yacht", emoji: "🛥️", label: "Motor Yacht", desc: "Luxury captained vessel" },
-  { key: "fishing_charter", emoji: "🎣", label: "Fishing Charter", desc: "Sportfishing experiences" },
+  { key: "motor_yacht", emoji: "", label: "Motor Yacht", desc: "Luxury captained vessel" },
+  { key: "fishing_charter", emoji: "", label: "Fishing Charter", desc: "Sportfishing experiences" },
   { key: "catamaran", emoji: "⛵", label: "Catamaran (Sailing)", desc: "Stable sailing multihull" },
-  { key: "power_catamaran", emoji: "🛥️", label: "Catamaran (Power)", desc: "Engine-powered multihull" },
-  { key: "pontoon", emoji: "🎉", label: "Pontoon / Party", desc: "High-capacity leisure" },
+  { key: "power_catamaran", emoji: "", label: "Catamaran (Power)", desc: "Engine-powered multihull" },
+  { key: "pontoon", emoji: "", label: "Pontoon / Party", desc: "High-capacity leisure" },
   { key: "snorkel_dive", emoji: "🤿", label: "Snorkel / Dive", desc: "Reef & diving experiences" },
   { key: "sailing_yacht", emoji: "🌬️", label: "Sailing Yacht", desc: "Classic sailing experience" },
   { key: "speedboat", emoji: "💨", label: "Speedboat", desc: "Speed & day trips" },
   { key: "wake_sports", emoji: "🏄", label: "Wake Sports", desc: "Wakeboard & wakesurf" },
-  { key: "sunset_cruise", emoji: "🌅", label: "Sunset Cruise", desc: "Tours & sightseeing" },
-  { key: "center_console", emoji: "🚤", label: "Center Console", desc: "Versatile fishing & cruising" },
-  { key: "houseboat", emoji: "🏠", label: "Houseboat", desc: "Live-aboard multi-day charter" },
+  { key: "sunset_cruise", emoji: "", label: "Sunset Cruise", desc: "Tours & sightseeing" },
+  { key: "center_console", emoji: "", label: "Center Console", desc: "Versatile fishing & cruising" },
+  { key: "houseboat", emoji: "", label: "Houseboat", desc: "Live-aboard multi-day charter" },
   { key: "pwc", emoji: "🏍️", label: "Jet Ski / PWC", desc: "Personal watercraft rentals" },
-  { key: "other", emoji: "🚢", label: "Other", desc: "Custom vessel type" },
+  { key: "other", emoji: "", label: "Other", desc: "Custom vessel type" },
 ];
 
 const CHARTER_OPTIONS: {
@@ -34,9 +34,9 @@ const CHARTER_OPTIONS: {
   title: string;
   body: string;
 }[] = [
-  { value: "captained", emoji: "👨‍✈️", title: "Captained", body: "You or a captain drives" },
-  { value: "bareboat", emoji: "🎯", title: "Bareboat", body: "Guests operate the boat" },
-  { value: "both", emoji: "🔄", title: "Both options", body: "Offer either type" },
+  { value: "captained", emoji: "", title: "Captained", body: "You or a captain drives" },
+  { value: "bareboat", emoji: "", title: "Bareboat", body: "Guests operate the boat" },
+  { value: "both", emoji: "", title: "Both options", body: "Offer either type" },
 ];
 
 const US_STATES = [
@@ -165,8 +165,8 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
               className={cn(
                 "h-[90px] rounded-[12px] p-standard text-left transition-all",
                 boatType === t.key
-                  ? "border-2 border-navy bg-[#E8F2FB]"
-                  : "border border-[#D0E2F3] bg-white hover:bg-[#F5F8FC]"
+                  ? "border-2 border-navy bg-gold-dim"
+                  : "border border-border bg-white hover:bg-bg"
               )}
             >
               <span className="text-[32px] block leading-none">{t.emoji}</span>

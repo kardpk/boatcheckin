@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BoatCheckin — Crew Roster</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-ExtraLight.otf'); font-weight: 200; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Light.otf'); font-weight: 300; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Regular.otf'); font-weight: 400; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Book.otf'); font-weight: 450; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Medium.otf'); font-weight: 500; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-SemiBold.otf'); font-weight: 600; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Bold.otf'); font-weight: 700; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg:         #F5F7FA;
+    --white:      #FFFFFF;
+    --navy:       #0B1D3A;
+    --navy-mid:   #1A3A5C;
+    --gold:       #B8882A;
+    --gold-hi:    #D4A84B;
+    --gold-dim:   rgba(184,136,42,0.06);
+    --gold-line:  rgba(184,136,42,0.22);
+    --text:       #1E2A3A;
+    --text-mid:   #5C6E82;
+    --text-dim:   #8E9EB0;
+    --border:     #E2E8F0;
+    --teal:       #1D9E75;
+    --teal-dim:   rgba(29,158,117,0.06);
+    --warn:       #D4860A;
+    --warn-dim:   rgba(212,134,10,0.05);
+    --error:      #C93030;
+    --error-dim:  rgba(201,48,48,0.05);
+    --font:       'BL Melody', system-ui, -apple-system, sans-serif;
+    --card-radius: 14px;
+    --card-pad:    16px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 520px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 80px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--navy);
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-brand {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .topbar-logo {
+    width: 30px; height: 30px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--gold);
+  }
+  .topbar-title {
+    font-size: 17px; font-weight: 700;
+    color: #FFF;
+    letter-spacing: -0.01em;
+  }
+  .topbar-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: grid; place-items: center;
+    color: #FFF; font-size: 14px; font-weight: 600;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 6px 0 env(safe-area-inset-bottom, 8px);
+  }
+  .nav-tab {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    padding: 8px 0;
+    font-size: 10.5px; font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .nav-tab:hover { color: var(--navy-mid); }
+  .nav-tab.active { color: var(--gold); font-weight: 700; }
+  .nav-tab i { width: 22px; height: 22px; stroke-width: 2; }
+  .nav-tab.active i { stroke-width: 2.5; }
+
+  /* ── PAGE ── */
+  .page { padding: 16px 16px 0; }
+
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-size: 26px; font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+  }
+  .page-subtitle {
+    font-size: 14px; color: var(--text-mid);
+    margin-top: 3px; font-weight: 400;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-gold {
+    font-family: var(--font);
+    font-size: 14px; font-weight: 600;
+    color: #FFF;
+    background: var(--gold);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-gold:hover { background: var(--gold-hi); }
+  .btn-gold i { width: 16px; height: 16px; }
+
+  .btn-outline {
+    font-family: var(--font);
+    font-size: 13px; font-weight: 500;
+    color: var(--navy-mid);
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+  .btn-danger {
+    font-family: var(--font);
+    font-size: 13px; font-weight: 500;
+    color: var(--error);
+    background: var(--white);
+    border: 1px solid rgba(201,48,48,0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* ── STANDARD CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: var(--card-pad);
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Warning state: gold top bar */
+  .card.warn::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--warn);
+  }
+  /* Error state: red top bar */
+  .card.error::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--error);
+  }
+  /* Info state: teal top bar */
+  .card.info::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--teal);
+  }
+
+  /* ── ALERT CARD ── */
+  .alert-card {
+    background: var(--warn-dim);
+    border: 1px solid rgba(212,134,10,0.15);
+    border-radius: var(--card-radius);
+    padding: 14px var(--card-pad);
+    margin-bottom: 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .alert-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--warn);
+  }
+  .alert-card i { width: 18px; height: 18px; color: var(--warn); flex-shrink: 0; margin-top: 2px; }
+  .alert-title { font-size: 13px; font-weight: 700; color: var(--warn); }
+  .alert-body { font-size: 14px; color: var(--text); margin-top: 3px; line-height: 1.5; }
+  .alert-body a { color: var(--gold); font-weight: 600; text-decoration: none; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 18px; font-weight: 700;
+    color: var(--navy);
+    margin: 18px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label .count {
+    font-weight: 400; font-size: 14px; color: var(--text-dim);
+  }
+  .section-bar {
+    width: 28px; height: 2px;
+    background: var(--gold);
+    border-radius: 1px;
+    margin-bottom: 12px;
+  }
+
+  /* ── CREW CARD ── */
+  .crew-row {
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .crew-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: grid; place-items: center;
+    font-size: 17px; font-weight: 700;
+    color: #FFF;
+    flex-shrink: 0;
+  }
+  .crew-avatar.mate { background: #1D6B50; }
+  .crew-avatar.deckhand { background: #5A4A7C; }
+
+  .crew-info { flex: 1; min-width: 0; }
+  .crew-name {
+    font-size: 18px; font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  .crew-badges { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+  .badge {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 5px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .badge i { width: 12px; height: 12px; }
+  .badge-captain { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-line); }
+  .badge-first-mate { color: var(--teal); background: var(--teal-dim); border: 1px solid rgba(29,158,117,0.2); }
+  .badge-deckhand { color: #6B4C93; background: rgba(107,76,147,0.06); border: 1px solid rgba(107,76,147,0.18); }
+  .badge-default { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-line); }
+
+  .crew-license {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-mid);
+    margin-top: 6px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .crew-license i { width: 14px; height: 14px; }
+
+  .crew-meta {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    margin-top: 6px;
+  }
+  .crew-meta span {
+    font-size: 13px; color: var(--text-mid); font-weight: 400;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .crew-meta i { width: 13px; height: 13px; }
+  .expiry-warn { color: var(--warn) !important; font-weight: 600 !important; }
+
+  /* Boats */
+  .crew-boats {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .boats-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 5px;
+    letter-spacing: 0.02em;
+  }
+  .boats-label i { width: 13px; height: 13px; }
+  .boat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .boat-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; color: var(--navy);
+    font-weight: 500;
+    background: #F4F7FA;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 8px;
+  }
+  .boat-chip i { width: 14px; height: 14px; color: var(--text-mid); }
+  .boat-chip .unlink {
+    width: 14px; height: 14px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .boat-chip .unlink:hover { color: var(--error); }
+  .boat-add {
+    font-size: 13px; color: var(--gold);
+    font-weight: 600;
+    background: var(--gold-dim);
+    border: 1px dashed var(--gold-line);
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .boat-add i { width: 13px; height: 13px; }
+
+  /* Card actions */
+  .card-actions {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo"><i data-lucide="anchor" style="width:16px;height:16px;"></i></div>
+    <span class="topbar-title">BoatCheckin</span>
+  </div>
+  <div class="topbar-avatar">CF</div>
+</div>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Crew Roster</h1>
+      <p class="page-subtitle">Manage your crew members</p>
+    </div>
+    <button class="btn-gold"><i data-lucide="plus"></i> Add Crew</button>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert-card">
+    <i data-lucide="alert-triangle"></i>
+    <div>
+      <div class="alert-title">License Expiring</div>
+      <div class="alert-body">Roberto Castillo's OUPV license expires in 18 days. <a href="#">Review →</a></div>
+    </div>
+  </div>
+
+  <!-- ═══ CAPTAINS ═══ -->
+  <div class="section-label">Captains <span class="count">2</span></div>
+  <div class="section-bar"></div>
+
+  <!-- Jake Morrison — default captain -->
+  <div class="card">
+    <div class="crew-row">
+      <div class="crew-avatar">JM</div>
+      <div class="crew-info">
+        <div class="crew-name">Jake Morrison</div>
+        <div class="crew-badges">
+          <span class="badge badge-captain"><i data-lucide="shield"></i> Captain</span>
+          <span class="badge badge-default"><i data-lucide="star"></i> Default</span>
+        </div>
+        <div class="crew-license"><i data-lucide="id-card"></i> Master 100 Ton · #MMC-4412</div>
+        <div class="crew-meta">
+          <span><i data-lucide="briefcase"></i> 12yr exp</span>
+          <span><i data-lucide="phone"></i> +1 (305) 555-0180</span>
+          <span><i data-lucide="mail"></i> jake@yachtcrew.com</span>
+        </div>
+      </div>
+    </div>
+    <div class="crew-boats">
+      <div class="boats-label"><i data-lucide="ship"></i> Linked Boats</div>
+      <div class="boat-chips">
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Conrad's Viking <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Sea Breeze <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-add"><i data-lucide="link"></i> Link Boat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roberto Castillo — expiring -->
+  <div class="card warn">
+    <div class="crew-row">
+      <div class="crew-avatar">RC</div>
+      <div class="crew-info">
+        <div class="crew-name">Roberto Castillo</div>
+        <div class="crew-badges">
+          <span class="badge badge-captain"><i data-lucide="shield"></i> Captain</span>
+        </div>
+        <div class="crew-license"><i data-lucide="id-card"></i> OUPV · #MMC-8837</div>
+        <div class="crew-meta">
+          <span><i data-lucide="briefcase"></i> 8yr exp</span>
+          <span class="expiry-warn"><i data-lucide="alert-triangle"></i> Expires in 18 days</span>
+        </div>
+      </div>
+    </div>
+    <div class="crew-boats">
+      <div class="boats-label"><i data-lucide="ship"></i> Linked Boats</div>
+      <div class="boat-chips">
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Day Tripper <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-add"><i data-lucide="link"></i> Link Boat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FIRST MATES ═══ -->
+  <div class="section-label">First Mates <span class="count">1</span></div>
+  <div class="section-bar"></div>
+
+  <div class="card">
+    <div class="crew-row">
+      <div class="crew-avatar mate">SL</div>
+      <div class="crew-info">
+        <div class="crew-name">Sarah Langford</div>
+        <div class="crew-badges">
+          <span class="badge badge-first-mate"><i data-lucide="anchor"></i> First Mate</span>
+        </div>
+        <div class="crew-license"><i data-lucide="id-card"></i> Master 25 Ton · #MMC-2210</div>
+        <div class="crew-meta">
+          <span><i data-lucide="briefcase"></i> 5yr exp</span>
+          <span><i data-lucide="phone"></i> +1 (305) 555-0221</span>
+          <span><i data-lucide="globe"></i> en, es</span>
+        </div>
+      </div>
+    </div>
+    <div class="crew-boats">
+      <div class="boats-label"><i data-lucide="ship"></i> Linked Boats</div>
+      <div class="boat-chips">
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Conrad's Viking <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-add"><i data-lucide="link"></i> Link Boat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DECKHANDS ═══ -->
+  <div class="section-label">Deckhands <span class="count">1</span></div>
+  <div class="section-bar"></div>
+
+  <div class="card">
+    <div class="crew-row">
+      <div class="crew-avatar deckhand">MP</div>
+      <div class="crew-info">
+        <div class="crew-name">Marco Perez</div>
+        <div class="crew-badges">
+          <span class="badge badge-deckhand"><i data-lucide="hard-hat"></i> Deckhand</span>
+        </div>
+        <div class="crew-meta">
+          <span><i data-lucide="briefcase"></i> 2yr exp</span>
+          <span><i data-lucide="phone"></i> +1 (786) 555-0094</span>
+        </div>
+      </div>
+    </div>
+    <div class="crew-boats">
+      <div class="boats-label"><i data-lucide="ship"></i> Linked Boats</div>
+      <div class="boat-chips">
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Sea Breeze <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-chip"><i data-lucide="sailboat"></i> Day Tripper <i data-lucide="x" class="unlink"></i></span>
+        <span class="boat-add"><i data-lucide="link"></i> Link Boat</span>
+      </div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-outline"><i data-lucide="pencil" style="width:14px;height:14px;"></i> Edit</button>
+      <button class="btn-danger">Remove</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="bottom-nav">
+  <a class="nav-tab" href="#"><i data-lucide="home"></i> Home</a>
+  <a class="nav-tab" href="#"><i data-lucide="ship"></i> Boats</a>
+  <a class="nav-tab" href="#"><i data-lucide="anchor"></i> Trips</a>
+  <a class="nav-tab active" href="#"><i data-lucide="users"></i> Crew</a>
+  <a class="nav-tab" href="#"><i data-lucide="settings"></i> More</a>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

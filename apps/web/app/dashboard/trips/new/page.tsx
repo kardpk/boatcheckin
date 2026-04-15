@@ -50,16 +50,16 @@ export default async function CreateTripPage() {
   if (boats.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-6">
-        <div className="text-4xl">⚓</div>
-        <h2 className="text-[18px] font-semibold text-[#0D1B2A]">
+        
+        <h2 className="text-[18px] font-semibold text-navy">
           Set up a boat first
         </h2>
-        <p className="text-[15px] text-[#6B7C93] text-center max-w-xs">
+        <p className="text-[15px] text-text-mid text-center max-w-xs">
           You need at least one boat profile before creating a trip.
         </p>
         <Link
           href="/dashboard/boats/new"
-          className="h-[52px] px-6 rounded-[12px] bg-[#0C447C] text-white font-semibold text-[15px] flex items-center justify-center hover:bg-[#093a6b] transition-colors"
+          className="h-[52px] px-6 rounded-[12px] bg-navy text-white font-semibold text-[15px] flex items-center justify-center hover:bg-navy/90 transition-colors"
         >
           Set up my boat →
         </Link>
@@ -70,10 +70,10 @@ export default async function CreateTripPage() {
   return (
     <div className="max-w-[560px] mx-auto px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-[22px] font-semibold text-[#0D1B2A]">
+        <h1 className="text-[22px] font-semibold text-navy">
           Create a trip
         </h1>
-        <p className="text-[15px] text-[#6B7C93] mt-1">
+        <p className="text-[15px] text-text-mid mt-1">
           Share one link with all your guests
         </p>
       </div>

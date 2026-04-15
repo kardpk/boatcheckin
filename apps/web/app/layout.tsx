@@ -1,12 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
+const blMelody = localFont({
+  src: [
+    { path: "../public/fonts/BLMelody-ExtraLight.otf", weight: "200" },
+    { path: "../public/fonts/BLMelody-Light.otf", weight: "300" },
+    { path: "../public/fonts/BLMelody-Regular.otf", weight: "400" },
+    { path: "../public/fonts/BLMelody-Book.otf", weight: "450" },
+    { path: "../public/fonts/BLMelody-Medium.otf", weight: "500" },
+    { path: "../public/fonts/BLMelody-SemiBold.otf", weight: "600" },
+    { path: "../public/fonts/BLMelody-Bold.otf", weight: "700" },
+  ],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-blmelody",
 });
 
 export const metadata: Metadata = {
@@ -18,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0C447C",
+  themeColor: "#0B1D3A",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -30,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={blMelody.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
         {children}
         <Script

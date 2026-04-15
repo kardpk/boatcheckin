@@ -52,7 +52,7 @@ export function WhatToBringSection({
   }
 
   return (
-    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-[#D0E2F3] p-5">
+    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-border p-5">
       {/* Tab switcher */}
       <div className="flex gap-2 mb-4">
         <button
@@ -60,8 +60,8 @@ export function WhatToBringSection({
           className={cn(
             'flex-1 h-[40px] rounded-[10px] text-[14px] font-medium border transition-colors',
             activeTab === 'bring'
-              ? 'bg-[#0C447C] text-white border-[#0C447C]'
-              : 'bg-white text-[#6B7C93] border-[#D0E2F3]',
+              ? 'bg-navy text-white border-[#0C447C]'
+              : 'bg-white text-text-mid border-border',
           )}
         >
           ✓ {tr.whatToBring}
@@ -72,7 +72,7 @@ export function WhatToBringSection({
             'flex-1 h-[40px] rounded-[10px] text-[14px] font-medium border transition-colors',
             activeTab === 'avoid'
               ? 'bg-[#D63B3B] text-white border-[#D63B3B]'
-              : 'bg-white text-[#6B7C93] border-[#D0E2F3]',
+              : 'bg-white text-text-mid border-border',
           )}
         >
           ✗ {tr.whatNotToBring}
@@ -83,7 +83,7 @@ export function WhatToBringSection({
       {activeTab === 'bring' && (
         <ul className="space-y-2">
           {bringItems.length === 0 && (
-            <li className="text-[14px] text-[#6B7C93]">No items listed.</li>
+            <li className="text-[14px] text-text-mid">No items listed.</li>
           )}
           {bringItems.map((item, idx) => (
             <li key={idx} className="flex items-center gap-3">
@@ -92,15 +92,15 @@ export function WhatToBringSection({
                 id={`bring-${idx}`}
                 checked={checked.has(idx)}
                 onChange={() => toggleItem(idx)}
-                className="w-[22px] h-[22px] accent-[#0C447C] shrink-0 cursor-pointer"
+                className="w-[22px] h-[22px] accent-gold shrink-0 cursor-pointer"
               />
               <label
                 htmlFor={`bring-${idx}`}
                 className={cn(
                   'text-[14px] cursor-pointer select-none',
                   checked.has(idx)
-                    ? 'line-through text-[#6B7C93]'
-                    : 'text-[#0D1B2A]',
+                    ? 'line-through text-text-mid'
+                    : 'text-navy',
                 )}
               >
                 {item}
@@ -114,11 +114,11 @@ export function WhatToBringSection({
       {activeTab === 'avoid' && (
         <ul className="space-y-2">
           {avoidItems.length === 0 && (
-            <li className="text-[14px] text-[#6B7C93]">No items listed.</li>
+            <li className="text-[14px] text-text-mid">No items listed.</li>
           )}
           {avoidItems.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="text-[#D63B3B] font-bold text-[14px] mt-0.5">✗</span>
+              <span className="text-error font-bold text-[14px] mt-0.5">✗</span>
               <span className="text-[14px] text-[#E8593C]">{item}</span>
             </li>
           ))}

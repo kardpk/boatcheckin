@@ -25,7 +25,7 @@ export function PostTripView({ data }: { data: PostTripPageData }) {
   const postcardUnlocked = rating > 0
 
   return (
-    <div className="min-h-screen bg-[#F5F8FC] pb-24">
+    <div className="min-h-screen bg-bg pb-24">
       <PostTripHero data={data} />
 
       <div className="max-w-[480px] mx-auto px-5 w-full -mt-6 relative z-10 flex flex-col gap-6">

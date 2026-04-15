@@ -9,12 +9,12 @@ interface NotificationBellProps {
 }
 
 const NOTIFICATION_ICONS: Record<string, string> = {
-  guest_registered: '👤',
-  trip_started: '⚓',
+  guest_registered: '○',
+  trip_started: '▶',
   trip_ended: '✓',
-  positive_review: '⭐',
-  chat_message: '💬',
-  default: '🔔',
+  positive_review: '★',
+  chat_message: '✉',
+  default: '⚠',
 }
 
 export function NotificationBell({ operatorId }: NotificationBellProps) {
@@ -31,7 +31,7 @@ export function NotificationBell({ operatorId }: NotificationBellProps) {
         className="
           relative w-10 h-10 rounded-full
           flex items-center justify-center
-          text-[#6B7C93] hover:bg-[#F5F8FC]
+          text-white/70 hover:bg-white/10
           transition-colors
         "
         aria-label="Notifications"
@@ -57,19 +57,19 @@ export function NotificationBell({ operatorId }: NotificationBellProps) {
           />
           <div className="
             absolute right-0 top-12 z-50
-            w-[320px] bg-white rounded-[16px]
-            border border-[#D0E2F3]
-            shadow-[0_8px_32px_rgba(12,68,124,0.15)]
+            w-[320px] bg-white rounded-[14px]
+            border border-border
+            shadow-[0_8px_32px_rgba(11,29,58,0.15)]
             overflow-hidden
           ">
-            <div className="px-4 py-3 border-b border-[#F5F8FC] flex items-center justify-between">
-              <span className="text-[14px] font-semibold text-[#0D1B2A]">
+            <div className="px-[14px] py-[10px] border-b border-border flex items-center justify-between">
+              <span className="text-[14px] font-bold text-navy">
                 Notifications
               </span>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="text-[12px] text-[#0C447C] hover:underline flex items-center gap-1"
+                  className="text-[12px] text-gold hover:underline flex items-center gap-[4px] font-medium"
                 >
                   <Check size={12} />
                   Mark all read
@@ -80,35 +80,35 @@ export function NotificationBell({ operatorId }: NotificationBellProps) {
             <div className="max-h-[320px] overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="px-4 py-8 text-center">
-                  <p className="text-[14px] text-[#6B7C93]">
-                    All caught up ✓
+                  <p className="text-[14px] text-text-mid">
+                    All caught up
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-[#F5F8FC]">
+                <div className="divide-y divide-border">
                   {notifications.map(n => (
                     <div
                       key={n.id}
-                      className="flex items-start gap-3 px-4 py-3 hover:bg-[#F5F8FC] cursor-pointer"
+                      className="flex items-start gap-[10px] px-[14px] py-[10px] hover:bg-bg cursor-pointer"
                       onClick={() => markRead(n.id)}
                     >
                       <span className="text-[18px] flex-shrink-0 mt-0.5">
                         {NOTIFICATION_ICONS[n.type] ?? NOTIFICATION_ICONS.default}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-semibold text-[#0D1B2A] leading-tight">
+                        <p className="text-[13px] font-semibold text-navy leading-tight">
                           {n.title}
                         </p>
-                        <p className="text-[12px] text-[#6B7C93] mt-0.5 leading-snug truncate">
+                        <p className="text-[12px] text-text-mid mt-[3px] leading-snug truncate">
                           {n.body}
                         </p>
-                        <p className="text-[11px] text-[#6B7C93] mt-1">
+                        <p className="text-[11px] text-text-dim mt-[3px]">
                           {new Date(n.createdAt).toLocaleTimeString([], {
                             hour: '2-digit', minute: '2-digit',
                           })}
                         </p>
                       </div>
-                      <div className="w-2 h-2 rounded-full bg-[#0C447C] flex-shrink-0 mt-2" />
+                      <div className="w-[6px] h-[6px] rounded-full bg-gold flex-shrink-0 mt-2" />
                     </div>
                   ))}
                 </div>

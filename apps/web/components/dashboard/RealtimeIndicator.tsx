@@ -14,10 +14,10 @@ export function RealtimeIndicator({
         'w-2 h-2 rounded-full',
         status === 'connected' && 'bg-[#1D9E75] animate-pulse',
         status === 'connecting' && 'bg-[#E5910A]',
-        status === 'disconnected' && 'bg-[#D0E2F3]',
+        status === 'disconnected' && 'bg-border',
         status === 'error' && 'bg-[#D63B3B]',
       )} />
-      <span className="text-[11px] text-[#6B7C93] hidden md:inline">
+      <span className="text-[11px] text-text-mid hidden md:inline">
         {status === 'connected' ? 'Live' : status}
       </span>
     </div>

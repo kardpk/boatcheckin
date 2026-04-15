@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils'
 const getHtml2Canvas = () => import('html2canvas').then(mod => mod.default)
 
 const STYLES: { key: PostcardStyle; label: string; emoji: string }[] = [
-  { key: 'classic', label: 'Classic', emoji: '⚓' },
+  { key: 'classic', label: 'Classic', emoji: 'u2693' },
   { key: 'minimal', label: 'Minimal', emoji: '□' },
-  { key: 'sunset', label: 'Sunset', emoji: '🌅' },
+  { key: 'sunset', label: 'Sunset', emoji: '' },
 ]
 
 const STYLE_THEMES: Record<PostcardStyle, any> = {
@@ -113,7 +113,7 @@ export function PostcardSection({
           const file = new File([blob], 'my-charter.png', { type: 'image/png' })
           await navigator.share({
             title: `My charter on ${postcardData.boatName}`,
-            text: `Amazing day on the water ⚓ via @boatcheckin.com`,
+            text: `Amazing day on the water via @boatcheckin.com`,
             files: [file],
           })
 
@@ -136,17 +136,17 @@ export function PostcardSection({
   }
 
   return (
-    <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden shadow-[0_1px_4px_rgba(12,68,124,0.06)]">
+    <div className="bg-white rounded-[14px] border border-border overflow-hidden shadow-[0_1px_4px_rgba(12,68,124,0.06)]">
       <div className="p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-[10px] bg-[#E8F2FB] flex items-center justify-center text-[20px]">
-            📸
+          <div className="w-10 h-10 rounded-[10px] bg-gold-dim flex items-center justify-center text-[20px]">
+
           </div>
           <div>
-            <h2 className="text-[17px] font-semibold text-[#0D1B2A]">
-              Your trip postcard is ready 🎉
+            <h2 className="text-[17px] font-semibold text-navy">
+              Your trip postcard is ready
             </h2>
-            <p className="text-[13px] text-[#6B7C93]">
+            <p className="text-[13px] text-text-mid">
               Download and share to Instagram
             </p>
           </div>
@@ -161,8 +161,8 @@ export function PostcardSection({
               className={cn(
                 'flex-1 h-[44px] rounded-[10px] text-[13px] font-medium border transition-all duration-150',
                 style === s.key
-                  ? 'bg-[#0C447C] text-white border-[#0C447C]'
-                  : 'bg-white text-[#6B7C93] border-[#D0E2F3] hover:border-[#0C447C]'
+                  ? 'bg-gold text-white border-gold'
+                  : 'bg-white text-text-mid border-border hover:border-gold'
               )}
             >
               {s.emoji} {s.label}
@@ -201,20 +201,20 @@ export function PostcardSection({
           <button
             onClick={downloadPostcard}
             disabled={downloading}
-            className="flex-1 h-[52px] rounded-[12px] border-2 border-[#0C447C] text-[#0C447C] font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-[#E8F2FB] transition-colors disabled:opacity-40"
+            className="flex-1 h-[52px] rounded-[12px] border-2 border-gold text-navy font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-gold-dim transition-colors disabled:opacity-40"
           >
             {downloading ? '...' : downloaded ? '✓ Downloaded' : '⬇ Download'}
           </button>
           <button
             onClick={sharePostcard}
             disabled={downloading}
-            className="flex-1 h-[52px] rounded-[12px] bg-[#0C447C] text-white font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-[#093a6b] transition-colors disabled:opacity-40"
+            className="flex-1 h-[52px] rounded-[12px] bg-gold text-white font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-gold-hi transition-colors disabled:opacity-40"
           >
             {downloading ? '...' : '📤 Share'}
           </button>
         </div>
 
-        <p className="text-[11px] text-[#6B7C93] text-center mt-2">
+        <p className="text-[11px] text-text-mid text-center mt-2">
           Perfect for Instagram Stories or Feed (1:1)
         </p>
       </div>
@@ -236,7 +236,7 @@ function PostcardCanvas({ data, theme, size }: { data: PostcardData; theme: any,
     >
       <div style={{ backgroundColor: theme.headerBg, padding: '60px 80px 40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-          <span style={{ fontSize: 36 }}>⚓</span>
+          
           <span style={{ color: theme.headerText, fontSize: 24, fontWeight: 700, letterSpacing: '0.1em', opacity: 0.9 }}>
             BOATCHECKIN
           </span>
@@ -293,12 +293,12 @@ function PostcardCanvas({ data, theme, size }: { data: PostcardData; theme: any,
           boatcheckin.com
         </p>
         <p style={{ color: theme.text, opacity: 0.4, fontSize: 16, margin: 0 }}>
-          ⚓ Charter Experience
+          Charter Experience
         </p>
       </div>
 
       <div style={{ position: 'absolute', bottom: -80, right: -80, fontSize: 400, opacity: 0.04, lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
-        ⚓
+
       </div>
     </div>
   )

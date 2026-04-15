@@ -23,7 +23,7 @@ export default async function NewBoatPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-page">
         <div className="bg-white border border-border rounded-card p-large shadow-card text-center max-w-sm">
-          <p className="text-[32px] mb-page">⚓</p>
+          
           <h1 className="text-h2 text-dark-text">
             You&apos;ve reached your boat limit
           </h1>

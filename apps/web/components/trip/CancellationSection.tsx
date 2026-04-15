@@ -30,7 +30,7 @@ export function CancellationSection({ policy, tripDate, tr }: CancellationSectio
   const tiers = [
     {
       key: 'full' as CancellationTier,
-      dot: '🟢',
+      dot: '',
       label: '48+ hours before',
       refund: 'Full refund',
     },
@@ -49,10 +49,10 @@ export function CancellationSection({ policy, tripDate, tr }: CancellationSectio
   ]
 
   return (
-    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-[#D0E2F3] p-5">
+    <div className="mx-4 mt-3 bg-white rounded-[16px] border border-border p-5">
       <div className="flex items-center gap-2 mb-4">
-        <CalendarDays size={16} className="text-[#6B7C93]" />
-        <p className="text-[17px] font-semibold text-[#0D1B2A]">{tr.cancellation}</p>
+        <CalendarDays size={16} className="text-text-mid" />
+        <p className="text-[17px] font-semibold text-navy">{tr.cancellation}</p>
       </div>
 
       {/* Timeline (if policy mentions 48/24) */}
@@ -62,16 +62,16 @@ export function CancellationSection({ policy, tripDate, tr }: CancellationSectio
             <div
               key={tier.key}
               className={`flex items-center gap-3 p-3 rounded-[10px] transition-colors ${
-                activeTier === tier.key ? 'bg-[#F5F8FC]' : ''
+                activeTier === tier.key ? 'bg-bg' : ''
               }`}
             >
               <span className="text-[18px]">{tier.dot}</span>
               <div className="flex-1">
-                <p className={`text-[14px] ${activeTier === tier.key ? 'font-semibold text-[#0D1B2A]' : 'text-[#6B7C93]'}`}>
+                <p className={`text-[14px] ${activeTier === tier.key ? 'font-semibold text-navy' : 'text-text-mid'}`}>
                   {tier.label}
                 </p>
               </div>
-              <span className={`text-[13px] font-medium ${activeTier === tier.key ? 'text-[#0C447C]' : 'text-[#6B7C93]'}`}>
+              <span className={`text-[13px] font-medium ${activeTier === tier.key ? 'text-navy' : 'text-text-mid'}`}>
                 {tier.refund}
               </span>
             </div>
@@ -83,14 +83,14 @@ export function CancellationSection({ policy, tripDate, tr }: CancellationSectio
       {lines.length > 1 ? (
         <ul className="space-y-1.5">
           {lines.map((line, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-[14px] text-[#0D1B2A]">
-              <span className="text-[#6B7C93] mt-0.5">•</span>
+            <li key={idx} className="flex items-start gap-2 text-[14px] text-navy">
+              <span className="text-text-mid mt-0.5">•</span>
               {line}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-[14px] text-[#0D1B2A] leading-relaxed">{policy}</p>
+        <p className="text-[14px] text-navy leading-relaxed">{policy}</p>
       )}
     </div>
   )

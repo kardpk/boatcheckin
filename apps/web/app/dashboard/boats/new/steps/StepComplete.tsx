@@ -16,7 +16,7 @@ export function StepComplete({ boatName }: StepCompleteProps) {
         {/* Hero */}
         <Anchor size={48} className="text-white mx-auto mb-standard" strokeWidth={1.5} />
         <h1 className="text-[28px] font-bold text-white">
-          Your boat is ready! ⚓
+          Your boat is ready!
         </h1>
         <p className="text-[16px] text-white/70 mt-tight">{boatName}</p>
 

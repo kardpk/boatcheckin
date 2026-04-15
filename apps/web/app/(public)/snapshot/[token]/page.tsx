@@ -185,13 +185,13 @@ export default async function SnapshotPage({
 
 function TokenInvalidPage() {
   return (
-    <div className="min-h-screen bg-[#F5F8FC] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-6">
       <div className="text-center max-w-xs">
-        <div className="text-[48px] mb-4">🔒</div>
+        
         <h1 className="text-[20px] font-bold text-[#0D1B2A] mb-2">
           Invalid link
         </h1>
-        <p className="text-[15px] text-[#6B7C93]">
+        <p className="text-[15px] text-text-mid">
           This captain link is invalid or has been tampered with.
           Ask the operator for a new link.
         </p>
@@ -202,13 +202,13 @@ function TokenInvalidPage() {
 
 function TokenExpiredPage() {
   return (
-    <div className="min-h-screen bg-[#F5F8FC] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-6">
       <div className="text-center max-w-xs">
         <div className="text-[48px] mb-4">⏰</div>
         <h1 className="text-[20px] font-bold text-[#0D1B2A] mb-2">
           Link expired
         </h1>
-        <p className="text-[15px] text-[#6B7C93]">
+        <p className="text-[15px] text-text-mid">
           Captain links expire after 1 hour.
           Ask the operator to share a fresh link.
         </p>

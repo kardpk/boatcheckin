@@ -25,18 +25,18 @@ export function TripHero({
   tr,
 }: TripHeroProps) {
   const chips = [
-    { icon: '📅', label: formatTripDate(tripDate) },
+    { icon: '', label: formatTripDate(tripDate) },
     { icon: '⏰', label: formatTime(departureTime) },
     { icon: '⏳', label: formatDuration(durationHours) },
-    { icon: '🚢', label: tr.charterType[charterType] },
+    { icon: '', label: tr.charterType[charterType] },
   ]
 
   return (
-    <section className="bg-[#0C447C] px-5 pt-5 pb-8">
+    <section className="bg-navy px-5 pt-5 pb-8">
       {/* Top row */}
       <div className="flex items-center justify-between mb-5">
         <span className="text-white font-bold text-[17px] tracking-tight">
-          BoatCheckin ⚓
+          BoatCheckin
         </span>
         <LanguageSelector currentLang={currentLang} />
       </div>
@@ -59,7 +59,7 @@ export function TripHero({
       </div>
 
       {/* Marina */}
-      <p className="text-white/70 text-[13px]">📍 {marinaName}</p>
+      <p className="text-white/70 text-[13px]">{marinaName}</p>
     </section>
   )
 }

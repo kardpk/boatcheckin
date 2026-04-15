@@ -41,7 +41,7 @@ export function OfflineBanner() {
             py-2 px-4 text-[13px] font-medium
           "
         >
-          ⚠️ You&apos;re offline — some features unavailable
+          You&apos;re offline — some features unavailable
         </motion.div>
       ) : wasOffline ? (
         <motion.div

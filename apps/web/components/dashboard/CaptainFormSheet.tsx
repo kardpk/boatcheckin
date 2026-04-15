@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Shield, Anchor, Users, HardHat, X, Briefcase, UserPlus, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import type { CaptainProfile, CrewRole } from '@/types'
 
@@ -22,11 +23,11 @@ const LICENSE_TYPES = [
   'Other',
 ] as const
 
-const ROLE_OPTIONS: { value: CrewRole; label: string; emoji: string }[] = [
-  { value: 'captain', label: 'Captain', emoji: '👨‍✈️' },
-  { value: 'first_mate', label: 'First Mate', emoji: '⚓' },
-  { value: 'crew', label: 'Crew', emoji: '🧑‍🤝‍🧑' },
-  { value: 'deckhand', label: 'Deckhand', emoji: '🪢' },
+const ROLE_OPTIONS: { value: CrewRole; label: string; Icon: typeof Shield }[] = [
+  { value: 'captain', label: 'Captain', Icon: Shield },
+  { value: 'first_mate', label: 'First Mate', Icon: Anchor },
+  { value: 'crew', label: 'Crew', Icon: Users },
+  { value: 'deckhand', label: 'Deckhand', Icon: HardHat },
 ]
 
 export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormSheetProps) {
@@ -102,14 +103,14 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
-      <div className="w-full max-w-[520px] max-h-[90vh] bg-white rounded-t-[24px] sm:rounded-[20px] overflow-hidden flex flex-col">
+      <div className="w-full max-w-[520px] max-h-[90vh] bg-white rounded-t-[24px] sm:rounded-[14px] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-[#0C447C] px-5 py-4 flex items-center justify-between">
-          <h2 className="text-[17px] font-bold text-white">
-            {isEditing ? '✏️ Edit Crew Member' : '👥 Add Crew Member'}
+        <div className="bg-navy px-[18px] py-[14px] flex items-center justify-between">
+          <h2 className="text-[17px] font-bold text-white flex items-center gap-[6px]">
+            {isEditing ? <><Pencil size={16} /> Edit Crew Member</> : <><UserPlus size={16} /> Add Crew Member</>}
           </h2>
-          <button onClick={onCancel} className="text-white/70 hover:text-white text-[14px]">
-            ✕
+          <button onClick={onCancel} className="text-white/70 hover:text-white">
+            <X size={18} />
           </button>
         </div>
 
@@ -118,24 +119,24 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
 
           {/* Role selector */}
           <div>
-            <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-2">
+            <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[8px]">
               Role *
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-[8px]">
               {ROLE_OPTIONS.map(opt => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => update('defaultRole', opt.value)}
                   className={cn(
-                    'flex items-center gap-2 p-3 rounded-[10px] border-2 text-left transition-all',
+                    'flex items-center gap-[8px] p-[12px] rounded-[10px] border-2 text-left transition-all',
                     form.defaultRole === opt.value
-                      ? 'border-[#0C447C] bg-[#E8F2FB]'
-                      : 'border-[#D0E2F3] bg-white hover:border-[#A8C4E0]'
+                      ? 'border-gold bg-gold-dim'
+                      : 'border-border bg-white hover:border-gold/40'
                   )}
                 >
-                  <span className="text-[16px]">{opt.emoji}</span>
-                  <span className="text-[13px] font-medium text-[#0D1B2A]">{opt.label}</span>
+                  <opt.Icon size={16} className={form.defaultRole === opt.value ? 'text-gold' : 'text-text-dim'} />
+                  <span className="text-[13px] font-semibold text-navy">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -143,7 +144,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
 
           {/* Name */}
           <div>
-            <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+            <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[6px]">
               Full Name *
             </label>
             <input
@@ -151,7 +152,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
               value={form.fullName}
               onChange={e => update('fullName', e.target.value)}
               placeholder="John Smith"
-              className="w-full h-[44px] px-3 rounded-[10px] border border-[#D0E2F3] text-[15px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+              className="w-full h-[44px] px-[12px] rounded-[10px] border border-border text-[15px] text-navy focus:border-gold focus:outline-none"
               autoFocus
             />
           </div>
@@ -159,7 +160,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
           {/* Phone + Email */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+              <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[6px]">
                 Phone
               </label>
               <input
@@ -167,11 +168,11 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
                 value={form.phone}
                 onChange={e => update('phone', e.target.value)}
                 placeholder="+1 (555) 000-0000"
-                className="w-full h-[44px] px-3 rounded-[10px] border border-[#D0E2F3] text-[15px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                className="w-full h-[44px] px-[12px] rounded-[10px] border border-border text-[15px] text-navy focus:border-gold focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+              <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[6px]">
                 Email
               </label>
               <input
@@ -179,24 +180,24 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
                 value={form.email}
                 onChange={e => update('email', e.target.value)}
                 placeholder="email@example.com"
-                className="w-full h-[44px] px-3 rounded-[10px] border border-[#D0E2F3] text-[15px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                className="w-full h-[44px] px-[12px] rounded-[10px] border border-border text-[15px] text-navy focus:border-gold focus:outline-none"
               />
             </div>
           </div>
 
           {/* License section — only for captain/first_mate */}
           {showLicense && (
-            <div className="p-4 bg-[#F5F8FC] rounded-[14px] space-y-3">
-              <p className="text-[12px] font-bold text-[#6B7C93] uppercase tracking-wider">
-                🪪 USCG License
+            <div className="p-[14px] bg-bg rounded-[14px] space-y-[10px]">
+              <p className="text-[12px] font-bold text-text-dim uppercase tracking-[0.06em] flex items-center gap-[4px]">
+                <Briefcase size={12} /> USCG License
               </p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-[10px]">
                 <div>
-                  <label className="block text-[11px] text-[#6B7C93] mb-1">License Type</label>
+                  <label className="block text-[11px] text-text-dim mb-[4px]">License Type</label>
                   <select
                     value={form.licenseType}
                     onChange={e => update('licenseType', e.target.value)}
-                    className="w-full h-[40px] px-3 rounded-[8px] border border-[#D0E2F3] text-[14px] text-[#0D1B2A] bg-white focus:border-[#0C447C] focus:outline-none"
+                    className="w-full h-[40px] px-[12px] rounded-[8px] border border-border text-[14px] text-navy bg-white focus:border-gold focus:outline-none"
                   >
                     <option value="">Select...</option>
                     {LICENSE_TYPES.map(t => (
@@ -205,28 +206,28 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#6B7C93] mb-1">License Number</label>
+                  <label className="block text-[11px] text-text-dim mb-[4px]">License Number</label>
                   <input
                     type="text"
                     value={form.licenseNumber}
                     onChange={e => update('licenseNumber', e.target.value)}
                     placeholder="MMC #"
-                    className="w-full h-[40px] px-3 rounded-[8px] border border-[#D0E2F3] text-[14px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                    className="w-full h-[40px] px-[12px] rounded-[8px] border border-border text-[14px] text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-[10px]">
                 <div>
-                  <label className="block text-[11px] text-[#6B7C93] mb-1">Expiry Date</label>
+                  <label className="block text-[11px] text-text-dim mb-[4px]">Expiry Date</label>
                   <input
                     type="date"
                     value={form.licenseExpiry}
                     onChange={e => update('licenseExpiry', e.target.value)}
-                    className="w-full h-[40px] px-3 rounded-[8px] border border-[#D0E2F3] text-[14px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                    className="w-full h-[40px] px-[12px] rounded-[8px] border border-border text-[14px] text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[#6B7C93] mb-1">Years Experience</label>
+                  <label className="block text-[11px] text-text-dim mb-[4px]">Years Experience</label>
                   <input
                     type="number"
                     min="0"
@@ -234,7 +235,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
                     value={form.yearsExperience}
                     onChange={e => update('yearsExperience', e.target.value)}
                     placeholder="e.g. 10"
-                    className="w-full h-[40px] px-3 rounded-[8px] border border-[#D0E2F3] text-[14px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                    className="w-full h-[40px] px-[12px] rounded-[8px] border border-border text-[14px] text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
               </div>
@@ -244,7 +245,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
           {/* Years experience for non-captain roles */}
           {!showLicense && (
             <div>
-              <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+              <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[6px]">
                 Years Experience
               </label>
               <input
@@ -254,14 +255,14 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
                 value={form.yearsExperience}
                 onChange={e => update('yearsExperience', e.target.value)}
                 placeholder="e.g. 5"
-                className="w-full h-[44px] px-3 rounded-[10px] border border-[#D0E2F3] text-[15px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none"
+                className="w-full h-[44px] px-[12px] rounded-[10px] border border-border text-[15px] text-navy focus:border-gold focus:outline-none"
               />
             </div>
           )}
 
           {/* Bio */}
           <div>
-            <label className="block text-[12px] font-semibold text-[#6B7C93] uppercase tracking-wider mb-1.5">
+            <label className="block text-[12px] font-semibold text-text-dim uppercase tracking-[0.06em] mb-[6px]">
               Bio
             </label>
             <textarea
@@ -269,7 +270,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
               onChange={e => update('bio', e.target.value)}
               placeholder="Short bio shown on guest trip pages..."
               rows={3}
-              className="w-full px-3 py-2 rounded-[10px] border border-[#D0E2F3] text-[14px] text-[#0D1B2A] focus:border-[#0C447C] focus:outline-none resize-none"
+              className="w-full px-[12px] py-[10px] rounded-[10px] border border-border text-[14px] text-navy focus:border-gold focus:outline-none resize-none"
             />
           </div>
 
@@ -279,7 +280,7 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
               onClick={() => update('isDefault', !form.isDefault)}
               className={cn(
                 'w-10 h-6 rounded-full transition-colors relative',
-                form.isDefault ? 'bg-[#0C447C]' : 'bg-[#D0E2F3]'
+                form.isDefault ? 'bg-gold' : 'bg-border'
               )}
             >
               <div className={cn(
@@ -288,10 +289,10 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
               )} />
             </div>
             <div>
-              <p className="text-[14px] font-medium text-[#0D1B2A]">
+              <p className="text-[14px] font-medium text-navy">
                 Set as default
               </p>
-              <p className="text-[12px] text-[#6B7C93]">
+              <p className="text-[12px] text-text-mid">
                 Auto-selected when creating new trips
               </p>
             </div>
@@ -299,24 +300,24 @@ export function CaptainFormSheet({ captain, onSaved, onCancel }: CaptainFormShee
 
           {/* Error */}
           {error && (
-            <p className="text-[13px] text-[#D63B3B] bg-[#FDEAEA] p-3 rounded-[10px]">
+            <p className="text-[13px] text-error bg-error-dim p-[12px] rounded-[10px]">
               {error}
             </p>
           )}
         </form>
 
         {/* Footer */}
-        <div className="px-5 pb-8 pt-4 border-t border-[#D0E2F3] flex gap-3">
+        <div className="px-[18px] pb-[28px] pt-[14px] border-t border-border flex gap-[10px]">
           <button
             onClick={onCancel}
-            className="flex-1 h-[48px] rounded-[12px] border border-[#D0E2F3] text-[#6B7C93] font-semibold hover:bg-[#F5F8FC] transition-colors"
+            className="flex-1 h-[48px] rounded-[10px] border border-border text-text-mid font-semibold hover:bg-bg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={(e) => handleSubmit(e as unknown as React.FormEvent)}
             disabled={saving || !form.fullName.trim()}
-            className="flex-1 h-[48px] rounded-[12px] bg-[#0C447C] text-white font-bold hover:bg-[#093a6b] transition-colors disabled:opacity-40"
+            className="flex-1 h-[48px] rounded-[10px] bg-gold text-white font-bold hover:bg-gold-hi transition-colors disabled:opacity-40"
           >
             {saving ? 'Saving...' : isEditing ? 'Save Changes' : '+ Add Crew'}
           </button>

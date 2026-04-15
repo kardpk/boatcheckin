@@ -17,11 +17,11 @@ export default async function WaiversPage() {
   }
 
   return (
-    <div className="max-w-[800px] mx-auto px-4 py-5 space-y-4">
-      <h1 className="text-[24px] font-bold text-[#0D1B2A] mb-1">
+    <div className="px-page py-[16px] space-y-[14px]">
+      <h1 className="text-[22px] font-bold text-navy mb-[4px]">
         Digital Liability Waivers
       </h1>
-      <p className="text-[14px] text-[#6B7C93] mb-6">
+      <p className="text-[14px] text-text-mid mb-[16px]">
         Manage your default waiver template and specific boat waivers. Guests will automatically sign this during the join flow.
       </p>
 

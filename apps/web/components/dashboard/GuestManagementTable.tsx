@@ -102,23 +102,23 @@ export function GuestManagementTable({
 
   return (
     <div className="
-      bg-white rounded-[20px] border border-[#D0E2F3]
+      bg-white rounded-[14px] border border-border
       shadow-[0_1px_4px_rgba(12,68,124,0.06)]
       overflow-hidden
     ">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-[#F5F8FC]">
+      <div className="px-5 py-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-[#0D1B2A]">
+          <h2 className="text-[16px] font-semibold text-navy">
             Guests
           </h2>
           <div className="flex items-center gap-3">
-            <span className="text-[13px] font-semibold text-[#0C447C]">
+            <span className="text-[13px] font-semibold text-navy">
               {total} / {maxGuests}
             </span>
             <RealtimeIndicator status={connectionStatus} />
             {lastUpdated && (
-              <span className="text-[11px] text-[#6B7C93]">
+              <span className="text-[11px] text-text-mid">
                 Updated {lastUpdated.toLocaleTimeString([], {
                   hour: '2-digit', minute: '2-digit'
                 })}
@@ -127,7 +127,7 @@ export function GuestManagementTable({
             {pendingApproval > 0 && (
               <span className="
                 text-[11px] font-semibold px-2 py-0.5
-                rounded-full bg-[#FEF3DC] text-[#E5910A]
+                rounded-full bg-warn-dim text-[#E5910A]
               ">
                 {pendingApproval} pending approval
               </span>
@@ -137,21 +137,21 @@ export function GuestManagementTable({
                 text-[11px] font-semibold px-2 py-0.5
                 rounded-full bg-[#FFF8E1] text-[#92400E]
               ">
-                ⚓ {pendingLivery} livery briefing
+                {pendingLivery} livery briefing
               </span>
             )}
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="mt-3 w-full h-1.5 bg-[#E8F2FB] rounded-full overflow-hidden">
+        <div className="mt-3 w-full h-1.5 bg-gold-dim rounded-full overflow-hidden">
           <div
             className="h-full bg-[#1D9E75] rounded-full transition-all duration-500"
             style={{ width: `${Math.min((total / maxGuests) * 100, 100)}%` }}
           />
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[11px] text-[#6B7C93]">
+          <span className="text-[11px] text-text-mid">
             {signed} waiver{signed !== 1 ? 's' : ''} signed
           </span>
           {total - signed > 0 && (
@@ -165,15 +165,15 @@ export function GuestManagementTable({
       {/* Guest list */}
       {guests.length === 0 ? (
         <div className="px-5 py-10 text-center">
-          <p className="text-[15px] text-[#6B7C93]">
+          <p className="text-[15px] text-text-mid">
             No guests yet
           </p>
-          <p className="text-[13px] text-[#6B7C93] mt-1">
+          <p className="text-[13px] text-text-mid mt-1">
             Share the trip link to start receiving check-ins
           </p>
         </div>
       ) : (
-        <div className="divide-y divide-[#F5F8FC]">
+        <div className="divide-y divide-border">
           {guests.map(guest => (
             <div
               key={guest.id}
@@ -185,7 +185,7 @@ export function GuestManagementTable({
                   ? 'bg-[#FEF9EE]'
                   : guest.approvalStatus === 'declined'
                   ? 'bg-[#FFF4F4]'
-                  : 'bg-white hover:bg-[#F5F8FC]'
+                  : 'bg-white hover:bg-bg'
               )}
             >
               {/* Guest row */}
@@ -193,9 +193,9 @@ export function GuestManagementTable({
                 <div className="flex items-center gap-3">
                   {/* Avatar */}
                   <div className="
-                    w-9 h-9 rounded-full bg-[#E8F2FB]
+                    w-9 h-9 rounded-full bg-gold-dim
                     flex items-center justify-center
-                    text-[12px] font-bold text-[#0C447C]
+                    text-[12px] font-bold text-navy
                     flex-shrink-0
                   ">
                     {guest.fullName.split(' ')
@@ -206,7 +206,7 @@ export function GuestManagementTable({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="
-                        text-[14px] font-medium text-[#0D1B2A]
+                        text-[14px] font-medium text-navy
                         truncate
                       ">
                         {guest.fullName}
@@ -219,11 +219,11 @@ export function GuestManagementTable({
                     <div className="flex items-center gap-2 mt-0.5">
                       {/* Waiver status — Firma vs Legacy */}
                       {guest.waiverTextHash === 'firma_template' ? (
-                        <span className="text-[11px] font-medium text-[#0C447C]">
-                          📝 Firma
+                        <span className="text-[11px] font-medium text-navy">
+                          Firma
                         </span>
                       ) : guest.waiverSigned ? (
-                        <span className="text-[11px] font-medium text-[#1D9E75]">
+                        <span className="text-[11px] font-medium text-teal">
                           ✓ Signed
                         </span>
                       ) : (
@@ -235,9 +235,9 @@ export function GuestManagementTable({
                       {/* Safety card counter */}
                       <span className={cn(
                         'text-[11px] font-medium',
-                        (guest.safetyAcknowledgments?.length ?? 0) > 0 ? 'text-[#1D9E75]' : 'text-[#6B7C93]'
+                        (guest.safetyAcknowledgments?.length ?? 0) > 0 ? 'text-teal' : 'text-text-mid'
                       )}>
-                        🛡 {guest.safetyAcknowledgments?.length ?? 0} cards
+                        {guest.safetyAcknowledgments?.length ?? 0} cards
                       </span>
 
                       {/* Addon emojis */}
@@ -249,12 +249,12 @@ export function GuestManagementTable({
 
                       {/* Flags */}
                       {guest.isNonSwimmer && (
-                        <span className="text-[11px] bg-[#FDEAEA] text-[#D63B3B] px-1.5 py-0.5 rounded-full">
+                        <span className="text-[11px] bg-error-dim text-error px-1.5 py-0.5 rounded-full">
                           Non-swimmer
                         </span>
                       )}
                       {guest.dietaryRequirements && (
-                        <span className="text-[11px] bg-[#FEF3DC] text-[#E5910A] px-1.5 py-0.5 rounded-full truncate max-w-[80px]">
+                        <span className="text-[11px] bg-warn-dim text-[#E5910A] px-1.5 py-0.5 rounded-full truncate max-w-[80px]">
                           {guest.dietaryRequirements}
                         </span>
                       )}
@@ -271,7 +271,7 @@ export function GuestManagementTable({
                           className="
                             w-8 h-8 rounded-full bg-[#E8F9F4]
                             flex items-center justify-center
-                            text-[#1D9E75] hover:bg-[#1D9E75] hover:text-white
+                            text-teal hover:bg-[#1D9E75] hover:text-white
                             transition-colors disabled:opacity-40
                           "
                           aria-label="Approve"
@@ -282,9 +282,9 @@ export function GuestManagementTable({
                           onClick={() => decline(guest.id)}
                           disabled={actioning === guest.id}
                           className="
-                            w-8 h-8 rounded-full bg-[#FDEAEA]
+                            w-8 h-8 rounded-full bg-error-dim
                             flex items-center justify-center
-                            text-[#D63B3B] hover:bg-[#D63B3B] hover:text-white
+                            text-error hover:bg-[#D63B3B] hover:text-white
                             transition-colors disabled:opacity-40
                           "
                           aria-label="Decline"
@@ -318,8 +318,8 @@ export function GuestManagementTable({
 
                     {/* Show verified badge */}
                     {guest.approvalStatus === 'approved' && guest.liveryBriefingVerifiedAt && (
-                      <span className="text-[11px] font-medium text-[#1D9E75] bg-[#E8F9F4] px-2 py-1 rounded-full">
-                        ✅ Briefed by {guest.liveryBriefingVerifiedBy}
+                      <span className="text-[11px] font-medium text-teal bg-[#E8F9F4] px-2 py-1 rounded-full">
+                        Briefed by {guest.liveryBriefingVerifiedBy}
                       </span>
                     )}
 
@@ -331,7 +331,7 @@ export function GuestManagementTable({
                       className="
                         w-8 h-8 rounded-full
                         flex items-center justify-center
-                        text-[#6B7C93] hover:bg-[#F5F8FC]
+                        text-text-mid hover:bg-bg
                       "
                       aria-label="Toggle details"
                     >
@@ -348,19 +348,19 @@ export function GuestManagementTable({
                   <>
                   <div className="mt-3 pl-12 space-y-1.5">
                     {guest.dietaryRequirements && (
-                      <p className="text-[12px] text-[#6B7C93]">
+                      <p className="text-[12px] text-text-mid">
                         <span className="font-medium">Dietary:</span>{' '}
                         {guest.dietaryRequirements}
                       </p>
                     )}
                     {guest.waiverSignedAt && (
-                      <p className="text-[12px] text-[#6B7C93]">
+                      <p className="text-[12px] text-text-mid">
                         <span className="font-medium">Waiver signed:</span>{' '}
                         {new Date(guest.waiverSignedAt).toLocaleString()}
                       </p>
                     )}
                     {guest.addonOrders.length > 0 && (
-                      <div className="text-[12px] text-[#6B7C93]">
+                      <div className="text-[12px] text-text-mid">
                         <span className="font-medium">Add-ons:</span>{' '}
                         {guest.addonOrders.map(o =>
                           `${o.emoji} ${o.addonName} ×${o.quantity}`
@@ -372,7 +372,7 @@ export function GuestManagementTable({
                       disabled={actioning === guest.id}
                       className="
                         flex items-center gap-1.5 text-[12px]
-                        text-[#D63B3B] hover:underline mt-1
+                        text-error hover:underline mt-1
                         disabled:opacity-40
                       "
                     >
@@ -386,7 +386,7 @@ export function GuestManagementTable({
                         href={guest.fwcLicenseUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[12px] text-[#0C447C] hover:underline"
+                        className="flex items-center gap-1 text-[12px] text-navy hover:underline"
                       >
                         <ExternalLink size={10} />
                         View FWC Boater Safety ID
@@ -407,7 +407,7 @@ export function GuestManagementTable({
                         placeholder="Your name (Dockmaster / Operator)"
                         value={liveryVerifierName}
                         onChange={e => setLiveryVerifierName(e.target.value)}
-                        className="w-full h-[40px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-[#0D1B2A] placeholder:text-[#6B7C93] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                        className="w-full h-[40px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
                       />
                       <div className="flex gap-2">
                         <button
@@ -419,7 +419,7 @@ export function GuestManagementTable({
                         </button>
                         <button
                           onClick={() => setLiveryVerifyId(null)}
-                          className="h-[36px] px-4 rounded-[8px] bg-white border border-[#D0E2F3] text-[13px] text-[#6B7C93] hover:bg-[#F5F8FC]"
+                          className="h-[36px] px-4 rounded-[8px] bg-white border border-border text-[13px] text-text-mid hover:bg-bg"
                         >
                           Cancel
                         </button>

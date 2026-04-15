@@ -15,11 +15,11 @@ export default async function BoatsPage() {
   const hasBoats = activeBoats.length > 0;
 
   return (
-    <div className="px-page py-section max-w-[720px] mx-auto">
-      <div className="flex items-center justify-between mb-section">
+    <div className="px-page py-[16px]">
+      <div className="flex items-center justify-between mb-[16px]">
         <div>
-          <h1 className="text-h1 text-navy">Your boats</h1>
-          <p className="text-body text-grey-text mt-micro">
+          <h1 className="text-[22px] font-bold text-navy">Your boats</h1>
+          <p className="text-[14px] text-text-mid mt-[3px] font-medium">
             {hasBoats
               ? `${activeBoats.length} boat${activeBoats.length === 1 ? "" : "s"} registered`
               : "Get started by adding your first boat."}
@@ -27,7 +27,11 @@ export default async function BoatsPage() {
         </div>
         <Link
           href="/dashboard/boats/new"
-          className="flex items-center gap-micro h-[40px] px-standard bg-navy text-white text-label rounded-btn hover:bg-mid-blue transition-colors shrink-0"
+          className="
+            flex items-center gap-[6px] h-[42px] px-[18px]
+            bg-gold text-white text-[14px] font-semibold
+            rounded-[10px] hover:bg-gold-hi transition-colors shrink-0
+          "
         >
           <Plus size={16} />
           Add boat
@@ -35,39 +39,48 @@ export default async function BoatsPage() {
       </div>
 
       {hasBoats ? (
-        <div className="space-y-tight">
+        <div className="space-y-[8px]">
           {activeBoats.map((boat) => (
               <Link
                 key={boat.id}
                 href={`/dashboard/boats/${boat.id}`}
-                className="flex items-center gap-standard p-standard bg-white border border-border rounded-card hover:border-border-dark transition-colors"
+                className="
+                  flex items-center gap-[12px] p-[14px]
+                  bg-white border border-border rounded-[14px]
+                  hover:border-gold/40 transition-colors
+                "
               >
-                <div className="w-10 h-10 rounded-full bg-light-blue flex items-center justify-center shrink-0">
+                <div className="w-[42px] h-[42px] rounded-full bg-gold-dim border border-gold-line flex items-center justify-center shrink-0">
                   <Ship size={20} className="text-navy" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-label text-dark-text truncate">
+                  <p className="text-[14px] font-semibold text-navy truncate">
                     {boat.boat_name}
                   </p>
-                  <p className="text-caption text-grey-text">
+                  <p className="text-[12px] text-text-mid mt-[2px]">
                     {boat.boat_type?.replace(/_/g, " ")} ·{" "}
                     {boat.charter_type?.replace(/_/g, " ")} ·{" "}
                     {boat.max_capacity} guests
                   </p>
                 </div>
-                <ChevronRight size={16} className="text-grey-text shrink-0" />
+                <ChevronRight size={16} className="text-text-dim shrink-0" />
               </Link>
           ))}
         </div>
       ) : (
-        <div className="text-center py-[80px] border-2 border-dashed border-border rounded-card">
-          <Ship size={40} className="text-grey-text/30 mx-auto" />
-          <p className="text-label text-grey-text mt-standard">
+        <div className="text-center py-[48px] border-2 border-dashed border-border rounded-[14px]">
+          <Ship size={36} className="text-text-dim/30 mx-auto" />
+          <p className="text-[14px] text-text-mid mt-[12px] font-medium">
             No boats yet
           </p>
           <Link
             href="/dashboard/boats/new"
-            className="inline-flex items-center gap-micro mt-standard px-page py-tight bg-navy text-white rounded-btn text-label hover:bg-mid-blue transition-colors"
+            className="
+              inline-flex items-center gap-[6px] mt-[14px]
+              px-[18px] py-[10px] bg-gold text-white
+              rounded-[10px] text-[14px] font-semibold
+              hover:bg-gold-hi transition-colors
+            "
           >
             <Plus size={16} />
             Set up your first boat →

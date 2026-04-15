@@ -42,7 +42,7 @@ export function GuestSafetyCard({
     <div className="bg-white rounded-[16px] overflow-hidden shadow-sm border border-[#E5E7EB]">
       {/* Image section — Captain's boat-specific photo */}
       {imageUrl ? (
-        <div className="relative w-full aspect-[16/10] bg-[#0C447C]">
+        <div className="relative w-full aspect-[16/10] bg-navy">
           <Image
             src={imageUrl}
             alt={title}
@@ -57,14 +57,14 @@ export function GuestSafetyCard({
             {cardIndex} / {totalCards}
           </div>
           {/* USCG shield badge */}
-          <div className="absolute top-3 left-3 bg-[#0C447C] text-white text-[10px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+          <div className="absolute top-3 left-3 bg-navy text-white text-[10px] font-semibold px-2 py-1 rounded-full flex items-center gap-1">
             <ShieldCheck size={12} /> USCG
           </div>
         </div>
       ) : (
-        <div className="w-full aspect-[16/10] bg-[#E8F2FB] flex flex-col items-center justify-center gap-2">
+        <div className="w-full aspect-[16/10] bg-gold-dim flex flex-col items-center justify-center gap-2">
           <span className="text-[48px]">{emoji}</span>
-          <div className="bg-black/10 text-[#0D1B2A] text-[11px] font-medium px-2.5 py-1 rounded-full">
+          <div className="bg-black/10 text-navy text-[11px] font-medium px-2.5 py-1 rounded-full">
             {cardIndex} / {totalCards}
           </div>
         </div>
@@ -75,7 +75,7 @@ export function GuestSafetyCard({
         {/* Title row — emoji + title + audio player */}
         <div className="flex items-center gap-3">
           <span className="text-[24px] shrink-0">{emoji}</span>
-          <h3 className="text-[17px] font-semibold text-[#0D1B2A] flex-1 leading-snug">
+          <h3 className="text-[17px] font-semibold text-navy flex-1 leading-snug">
             {title}
           </h3>
           <SafetyAudioPlayer audioUrl={audioUrl} size="md" />
@@ -88,10 +88,10 @@ export function GuestSafetyCard({
 
         {/* Captain's custom note (only if different from dictionary) */}
         {captainNote && (
-          <div className="bg-[#F5F8FC] rounded-[12px] p-3.5 flex items-start gap-2.5">
-            <MessageSquareText size={16} className="text-[#0C447C] shrink-0 mt-0.5" />
+          <div className="bg-bg rounded-[12px] p-3.5 flex items-start gap-2.5">
+            <MessageSquareText size={16} className="text-navy shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] font-semibold text-[#0C447C] uppercase tracking-wider mb-1">
+              <p className="text-[11px] font-semibold text-navy uppercase tracking-wider mb-1">
                 Your captain&apos;s note
               </p>
               <p className="text-[13px] text-[#374151] leading-relaxed">
@@ -105,7 +105,7 @@ export function GuestSafetyCard({
         <button
           type="button"
           onClick={onAcknowledge}
-          className="w-full h-[48px] bg-[#0C447C] hover:bg-[#0A3A6B] text-white text-[15px] font-semibold rounded-[12px] transition-colors flex items-center justify-center gap-2"
+          className="w-full h-[48px] bg-navy hover:bg-[#0A3A6B] text-white text-[15px] font-semibold rounded-[12px] transition-colors flex items-center justify-center gap-2"
         >
           I Understand ✓
         </button>

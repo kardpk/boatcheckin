@@ -1,7 +1,10 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Anchor, Phone, ChevronDown } from 'lucide-react'
+import {
+  Anchor, Phone, ChevronDown, Check, FileText,
+  Clock, Shield, LifeBuoy, Utensils, Baby, User
+} from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 interface GuestRow {
@@ -81,22 +84,22 @@ export function SnapshotGuestList({
 
   return (
     <div className="
-      bg-white rounded-[20px] overflow-hidden
-      border border-[#D0E2F3]
+      bg-white rounded-[14px] overflow-hidden
+      border border-border
     ">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-[#F5F8FC]">
+      <div className="px-card py-[14px] border-b border-border">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-[#0D1B2A]">
+          <h2 className="text-[16px] font-semibold text-navy">
             Passengers
           </h2>
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-bold text-[#0C447C]">
+            <span className="text-[14px] font-bold text-[var(--color-navy)]">
               {guests.length} checked in · {signed} signed
             </span>
             {pendingLivery > 0 && (
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FFF8E1] text-[#92400E]">
-                ⚓ {pendingLivery} livery
+              <span className="text-[11px] font-semibold px-[6px] py-[2px] rounded-[5px] bg-warn-dim text-warn flex items-center gap-[3px]">
+                <Anchor size={10} /> {pendingLivery} livery
               </span>
             )}
           </div>
@@ -106,10 +109,10 @@ export function SnapshotGuestList({
       {/* Guest rows */}
       {guests.length === 0 ? (
         <div className="px-5 py-8 text-center">
-          <p className="text-[15px] text-[#6B7C93]">No guests yet</p>
+          <p className="text-[15px] text-text-mid">No guests yet</p>
         </div>
       ) : (
-        <div className="divide-y divide-[#F5F8FC]">
+        <div className="divide-y divide-border">
           {guests.map(guest => (
             <div
               key={guest.id}
@@ -120,7 +123,7 @@ export function SnapshotGuestList({
                   : guest.waiverSigned
                   ? ''
                   : 'bg-[#FEF9EE]',
-                expandedGuestId === guest.id && 'bg-[#F5F8FC]'
+                expandedGuestId === guest.id && 'bg-bg'
               )}
             >
               <div
@@ -131,9 +134,9 @@ export function SnapshotGuestList({
               >
                 {/* Avatar */}
                 <div className="
-                  w-9 h-9 rounded-full bg-[#E8F2FB]
+                  w-9 h-9 rounded-full bg-[#EBF0F7]
                   flex items-center justify-center
-                  text-[12px] font-bold text-[#0C447C]
+                  text-[12px] font-bold text-[var(--color-navy)]
                   flex-shrink-0
                 ">
                   {guest.fullName.split(' ')
@@ -142,13 +145,13 @@ export function SnapshotGuestList({
 
                 {/* Name + expand indicator */}
                 <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                  <span className="text-[14px] font-medium text-[#0D1B2A] truncate">
+                  <span className="text-[14px] font-medium text-navy truncate">
                     {guest.fullName}
                   </span>
                   <ChevronDown
                     size={12}
                     className={cn(
-                      'text-[#6B7C93] transition-transform flex-shrink-0',
+                      'text-text-mid transition-transform flex-shrink-0',
                       expandedGuestId === guest.id && 'rotate-180'
                     )}
                   />
@@ -165,39 +168,39 @@ export function SnapshotGuestList({
                   <div className="flex flex-col items-end gap-1">
                     {/* Livery badge */}
                     {guest.approvalStatus === 'pending_livery_briefing' ? (
-                      <span className="text-[11px] font-bold text-[#92400E] bg-[#FFF8E1] px-1.5 py-0.5 rounded-full">
-                        ⚓ Briefing Required
+                      <span className="text-[11px] font-bold text-warn bg-warn-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
+                        <Anchor size={10} /> Briefing Required
                       </span>
                     ) : guest.liveryBriefingVerifiedAt ? (
-                      <span className="text-[11px] font-bold text-[#1D9E75]">
-                        ✅ Briefed
+                      <span className="text-[11px] font-bold text-teal flex items-center gap-[3px]">
+                        <Check size={10} /> Briefed
                       </span>
                     ) : null}
 
                     {/* Waiver status */}
                     {guest.waiverTextHash === 'firma_template' ? (
-                      <span className="text-[12px] font-bold text-[#0C447C]">
-                        📝 Firma
+                      <span className="text-[12px] font-bold text-navy flex items-center gap-[3px]">
+                        <FileText size={11} /> Firma
                       </span>
                     ) : guest.waiverSigned ? (
-                      <span className="text-[12px] font-bold text-[#1D9E75]">
-                        ✓ Signed
+                      <span className="text-[12px] font-bold text-teal flex items-center gap-[3px]">
+                        <Check size={11} /> Signed
                       </span>
                     ) : (
-                      <span className="text-[12px] font-bold text-[#E5910A]">
-                        ⏳ Pending
+                      <span className="text-[12px] font-bold text-warn flex items-center gap-[3px]">
+                        <Clock size={11} /> Pending
                       </span>
                     )}
                     {/* Safety ack count */}
-                    <span className="text-[10px] text-[#6B7C93]">
-                      🛡 {guest.safetyAckCount} cards
+                    <span className="text-[10px] text-text-mid flex items-center gap-[3px]">
+                      <Shield size={10} /> {guest.safetyAckCount} cards
                     </span>
                     
                     {!guest.waiverSigned && (
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleUploadClick(guest.id) }}
                         disabled={uploadingId === guest.id}
-                        className="text-[10px] text-[#6B7C93] underline disabled:opacity-50"
+                        className="text-[10px] text-text-mid underline disabled:opacity-50"
                       >
                         {uploadingId === guest.id ? 'Uploading...' : 'Upload Paper'}
                       </button>
@@ -211,8 +214,8 @@ export function SnapshotGuestList({
                 <div className="mt-2.5 ml-12 space-y-2 animate-in slide-in-from-top-1 duration-200">
                   {/* Emergency Contact */}
                   {guest.emergencyContactName && guest.emergencyContactPhone && (
-                    <div className="flex items-center gap-3 p-3 rounded-[10px] bg-[#FEF3DC] border border-[#E5910A]/20">
-                      <span className="text-[16px]">📞</span>
+                    <div className="flex items-center gap-3 p-3 rounded-[10px] bg-warn-dim border border-[#E5910A]/20">
+                      <Phone size={14} className="text-warn shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-[12px] font-semibold text-[#92400E]">
                           Emergency: {guest.emergencyContactName}
@@ -240,13 +243,13 @@ export function SnapshotGuestList({
                   {/* Medical/dietary flags */}
                   <div className="flex flex-wrap gap-1.5">
                     {guest.isNonSwimmer && (
-                      <span className="text-[11px] font-medium text-[#DC2626] bg-[#FEE2E2] px-2 py-0.5 rounded-full">
-                        🏊 Non-swimmer
+                      <span className="text-[11px] font-medium text-error bg-error-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
+                        <LifeBuoy size={10} /> Non-swimmer
                       </span>
                     )}
                     {guest.dietaryRequirements && (
-                      <span className="text-[11px] font-medium text-[#92400E] bg-[#FEF3DC] px-2 py-0.5 rounded-full">
-                        🥗 {guest.dietaryRequirements}
+                      <span className="text-[11px] font-medium text-warn bg-warn-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
+                        <Utensils size={10} /> {guest.dietaryRequirements}
                       </span>
                     )}
                     {guest.dateOfBirth && (() => {
@@ -254,13 +257,13 @@ export function SnapshotGuestList({
                         (Date.now() - new Date(guest.dateOfBirth).getTime()) / 31557600000
                       )
                       if (age < 6) return (
-                        <span className="text-[11px] font-medium text-[#DC2626] bg-[#FEE2E2] px-2 py-0.5 rounded-full">
-                          👶 Age {age} — PFD Required
+                        <span className="text-[11px] font-medium text-error bg-error-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
+                          <Baby size={10} /> Age {age} — PFD Required
                         </span>
                       )
                       if (age < 18) return (
-                        <span className="text-[11px] font-medium text-[#6B7C93] bg-[#F5F8FC] px-2 py-0.5 rounded-full">
-                          🧒 Minor (age {age})
+                        <span className="text-[11px] font-medium text-text-mid bg-bg px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
+                          <User size={10} /> Minor (age {age})
                         </span>
                       )
                       return null
@@ -269,7 +272,7 @@ export function SnapshotGuestList({
 
                   {/* No emergency contact notice */}
                   {!guest.emergencyContactPhone && (
-                    <p className="text-[11px] text-[#6B7C93] italic">
+                    <p className="text-[11px] text-text-mid italic">
                       No emergency contact provided
                     </p>
                   )}
@@ -290,19 +293,19 @@ export function SnapshotGuestList({
                         placeholder="Your name"
                         value={liveryVerifierName}
                         onChange={e => setLiveryVerifierName(e.target.value)}
-                        className="w-full h-[36px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-[#0D1B2A] placeholder:text-[#6B7C93] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                        className="w-full h-[36px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
                       />
                       <div className="flex gap-2">
                         <button
                           onClick={() => verifyLiveryBriefing(guest.id)}
                           disabled={!liveryVerifierName.trim() || actioning === guest.id}
-                          className="flex-1 h-[32px] rounded-[8px] bg-[#1D9E75] text-white text-[12px] font-semibold hover:bg-[#178a65] transition-colors disabled:opacity-40"
+                          className="flex-1 h-[32px] rounded-[8px] bg-teal text-white text-[12px] font-semibold hover:bg-[#178a65] transition-colors disabled:opacity-40"
                         >
                           ✓ Confirm
                         </button>
                         <button
                           onClick={() => setLiveryVerifyId(null)}
-                          className="h-[32px] px-3 rounded-[8px] bg-white border border-[#D0E2F3] text-[12px] text-[#6B7C93]"
+                          className="h-[32px] px-3 rounded-[8px] bg-white border border-border text-[12px] text-text-mid"
                         >
                           Cancel
                         </button>

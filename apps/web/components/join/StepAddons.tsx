@@ -85,8 +85,8 @@ export function StepAddons({
   return (
     <div className="pt-2 space-y-4">
       <div>
-        <h2 className="text-[20px] font-bold text-[#0D1B2A] mb-1">Add extras to your trip</h2>
-        <p className="text-[14px] text-[#6B7C93]">Pre-order before you arrive</p>
+        <h2 className="text-[20px] font-bold text-navy mb-1">Add extras to your trip</h2>
+        <p className="text-[14px] text-text-mid">Pre-order before you arrive</p>
       </div>
 
       {/* Addon list */}
@@ -97,44 +97,44 @@ export function StepAddons({
             <div
               key={addon.id}
               className={cn(
-                'flex items-center gap-4 p-4 rounded-[16px]',
+                'flex items-center gap-4 p-4 rounded-[14px]',
                 'border transition-colors',
-                qty > 0 ? 'border-[#0C447C] bg-[#E8F2FB]' : 'border-[#D0E2F3] bg-white'
+                qty > 0 ? 'border-gold bg-gold-dim' : 'border-border bg-white'
               )}
             >
               {/* Emoji */}
-              <div className="w-12 h-12 rounded-[12px] bg-[#F5F8FC] flex items-center justify-center text-[24px] flex-shrink-0">
+              <div className="w-12 h-12 rounded-[12px] bg-bg flex items-center justify-center text-[24px] flex-shrink-0">
                 {addon.emoji}
               </div>
 
               {/* Name + price */}
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold text-[#0D1B2A] truncate">{addon.name}</p>
+                <p className="text-[14px] font-semibold text-navy truncate">{addon.name}</p>
                 {addon.description && (
-                  <p className="text-[12px] text-[#6B7C93] truncate">{addon.description}</p>
+                  <p className="text-[12px] text-text-mid truncate">{addon.description}</p>
                 )}
-                <p className="text-[14px] font-bold text-[#0C447C] mt-0.5">
+                <p className="text-[14px] font-bold text-navy mt-0.5">
                   {addon.priceCents === 0 ? 'Free' : formatCurrency(addon.priceCents)}
                 </p>
               </div>
 
               {/* Stepper */}
-              <div className="flex items-center border border-[#D0E2F3] rounded-[10px] overflow-hidden flex-shrink-0">
+              <div className="flex items-center border border-border rounded-[10px] overflow-hidden flex-shrink-0">
                 <button
                   onClick={() => setQty(addon.id, qty - 1)}
                   disabled={qty === 0}
-                  className="w-10 h-10 flex items-center justify-center text-[18px] text-[#0C447C] font-medium hover:bg-[#E8F2FB] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-[18px] text-navy font-medium hover:bg-gold-dim disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Decrease"
                 >
                   −
                 </button>
-                <span className="w-8 text-center text-[14px] font-bold text-[#0D1B2A]">
+                <span className="w-8 text-center text-[14px] font-bold text-navy">
                   {qty}
                 </span>
                 <button
                   onClick={() => setQty(addon.id, qty + 1)}
                   disabled={qty >= addon.maxQuantity}
-                  className="w-10 h-10 flex items-center justify-center text-[18px] text-[#0C447C] font-medium hover:bg-[#E8F2FB] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-[18px] text-navy font-medium hover:bg-gold-dim disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   aria-label="Increase"
                 >
                   +
@@ -147,20 +147,20 @@ export function StepAddons({
 
       {/* Total */}
       {totalCents > 0 && (
-        <div className="flex items-center justify-between p-4 rounded-[12px] bg-[#F5F8FC] border border-[#D0E2F3]">
-          <span className="text-[14px] font-medium text-[#6B7C93]">Your total</span>
-          <span className="text-[18px] font-bold text-[#0C447C]">{formatCurrency(totalCents)}</span>
+        <div className="flex items-center justify-between p-4 rounded-[12px] bg-bg border border-border">
+          <span className="text-[14px] font-medium text-text-mid">Your total</span>
+          <span className="text-[18px] font-bold text-navy">{formatCurrency(totalCents)}</span>
         </div>
       )}
 
       {orderError && (
-        <p className="text-[14px] text-[#D63B3B] font-medium">{orderError}</p>
+        <p className="text-[14px] text-error font-medium">{orderError}</p>
       )}
 
       <button
         onClick={submitOrders}
         disabled={isOrdering}
-        className="w-full h-[56px] rounded-[12px] bg-[#0C447C] text-white font-semibold text-[16px] hover:bg-[#093a6b] transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
+        className="w-full h-[56px] rounded-[12px] bg-navy text-white font-semibold text-[16px] hover:bg-navy/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
       >
         {isOrdering ? (
           <AnchorLoader size="sm" color="white" />
@@ -173,7 +173,7 @@ export function StepAddons({
 
       <button
         onClick={onSkip}
-        className="w-full text-[14px] text-[#6B7C93] underline py-2 min-h-[44px]"
+        className="w-full text-[14px] text-text-mid underline py-2 min-h-[44px]"
       >
         Skip — no add-ons
       </button>

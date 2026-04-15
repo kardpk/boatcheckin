@@ -18,7 +18,7 @@ export function SafetyExpand({
     <div>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 text-[13px] font-medium text-[#0C447C] mt-3 min-h-[44px]"
+        className="flex items-center gap-2 text-[13px] font-medium text-navy mt-3 min-h-[44px]"
       >
         <ChevronDown
           size={15}
@@ -28,13 +28,13 @@ export function SafetyExpand({
       </button>
 
       {open && (
-        <ul className="divide-y divide-[#D0E2F3] border-t border-[#D0E2F3] mt-1">
+        <ul className="divide-y divide-[#D0E2F3] border-t border-border mt-1">
           {points.map((point) => (
             <li key={point.id} className="flex items-start gap-3 py-3">
-              <div className="w-5 h-5 rounded-full bg-[#0C447C] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-5 h-5 rounded-full bg-navy flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-white text-[10px] font-bold">✓</span>
               </div>
-              <p className="text-[14px] text-[#0D1B2A] leading-snug">{point.text}</p>
+              <p className="text-[14px] text-navy leading-snug">{point.text}</p>
             </li>
           ))}
         </ul>

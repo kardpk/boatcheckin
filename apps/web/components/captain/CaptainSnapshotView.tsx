@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
+import {
+  Shield, MapPin, Clock, Calendar, FileText, Lock,
+  CheckCircle2, AlertTriangle, QrCode, Briefcase
+} from 'lucide-react'
 import { formatTripDate, formatTime, formatDuration } from '@/lib/utils/format'
 import { SnapshotAlerts } from './SnapshotAlerts'
 import { SnapshotGuestList } from './SnapshotGuestList'
@@ -234,20 +238,20 @@ export function CaptainSnapshotView({
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F8FC]">
+    <div className="min-h-screen bg-bg">
 
       {/* Header */}
-      <div className="bg-[#0C447C] px-5 pt-5 pb-6 text-white">
+      <div className="bg-[var(--color-navy)] px-5 pt-5 pb-6 text-white">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[13px] font-bold tracking-wider opacity-70">
             CAPTAIN VIEW · BOATCHECKIN
           </span>
           <span className={
             status === 'active'
-              ? 'text-[12px] font-bold bg-[#1D9E75] px-2.5 py-1 rounded-full'
+              ? 'text-[12px] font-bold bg-teal px-2.5 py-1 rounded-full'
               : 'text-[12px] font-bold bg-white/20 px-2.5 py-1 rounded-full'
           }>
-            {status === 'active' ? '● Active' : status === 'completed' ? '✓ Completed' : 'Upcoming'}
+            {status === 'active' ? '● Active' : status === 'completed' ? 'Completed' : 'Upcoming'}
           </span>
         </div>
         {/* Compliance mode badge */}
@@ -282,27 +286,27 @@ export function CaptainSnapshotView({
                 {liveSnapshot.captainName}
               </p>
               {liveSnapshot.captainLicense && (
-                <p className="text-[11px] text-white/60 leading-tight">
-                  🪪 {liveSnapshot.captainLicense}
+                <p className="text-[11px] text-white/60 leading-tight flex items-center gap-[4px]">
+                  <Briefcase size={10} /> {liveSnapshot.captainLicense}
                 </p>
               )}
             </div>
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2 mt-2">
-          {[
-            `📅 ${formatTripDate(liveSnapshot.tripDate)}`,
-            `⏰ ${formatTime(liveSnapshot.departureTime)}`,
-            `⏳ ${formatDuration(liveSnapshot.durationHours)}`,
-          ].map(chip => (
-            <span key={chip} className="bg-white/20 text-white text-[12px] px-3 py-1 rounded-full">
-              {chip}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-[6px] mt-[8px]">
+          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
+            <Calendar size={11} /> {formatTripDate(liveSnapshot.tripDate)}
+          </span>
+          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
+            <Clock size={11} /> {formatTime(liveSnapshot.departureTime)}
+          </span>
+          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
+            <Clock size={11} /> {formatDuration(liveSnapshot.durationHours)}
+          </span>
         </div>
-        <p className="text-white/70 text-[13px] mt-2">
-          📍 {liveSnapshot.marinaName}
+        <p className="text-white/70 text-[13px] mt-[6px] flex items-center gap-[4px]">
+          <MapPin size={12} /> {liveSnapshot.marinaName}
           {liveSnapshot.slipNumber ? ` · Slip ${liveSnapshot.slipNumber}` : ''}
         </p>
 
@@ -322,15 +326,15 @@ export function CaptainSnapshotView({
 
         {/* Buoy insurance status */}
         {status === 'active' && (
-          <div className="p-4 rounded-[16px] bg-[#E8F9F4] border border-[#1D9E75] border-opacity-30">
-            <div className="flex items-center gap-2">
-              <span className="text-[20px]">🟢</span>
+          <div className="p-card rounded-[14px] bg-teal-dim border border-teal-line">
+            <div className="flex items-center gap-[8px]">
+              <Shield size={20} className="text-teal" />
               <div>
-                <p className="text-[14px] font-semibold text-[#1D9E75]">
+                <p className="text-[14px] font-semibold text-teal">
                   Insurance active
                 </p>
                 {policyId && !policyId.startsWith('STUB') && !policyId.startsWith('FAIL') && (
-                  <p className="text-[12px] text-[#6B7C93]">
+                  <p className="text-[12px] text-text-mid">
                     Policy: {policyId}
                   </p>
                 )}
@@ -341,14 +345,14 @@ export function CaptainSnapshotView({
 
         {/* ── Safety Briefing Confirmation Status ──────────────── */}
         {(briefingAttestation || liveSnapshot.safetyBriefingConfirmedAt) && (
-          <div className="p-4 rounded-[16px] bg-[#E8F2FB] border-2 border-[#0C447C]">
-            <div className="flex items-center gap-3">
-              <span className="text-[24px]">🛡️</span>
+          <div className="p-card rounded-[14px] bg-[#EBF0F7] border-2 border-navy">
+            <div className="flex items-center gap-[10px]">
+              <Shield size={22} className="text-navy" />
               <div>
-                <p className="text-[14px] font-bold text-[#0C447C]">
+                <p className="text-[14px] font-bold text-[var(--color-navy)]">
                   Safety Briefing Confirmed
                 </p>
-                <p className="text-[12px] text-[#6B7C93] mt-0.5">
+                <p className="text-[12px] text-text-mid mt-0.5">
                   {briefingAttestation?.signature ?? liveSnapshot.safetyBriefingConfirmedBy} ·{' '}
                   {briefingAttestation?.type?.replace(/_/g, ' ') ?? liveSnapshot.safetyBriefingType?.replace(/_/g, ' ')}
                 </p>
@@ -360,28 +364,28 @@ export function CaptainSnapshotView({
         {/* ── USCG PRE-DEPARTURE COMPLIANCE BANNER ──────────────── */}
         {status === 'upcoming' && (
           isReadyToDepart ? (
-            <div className="p-4 rounded-[16px] bg-[#E8F9F4] border-2 border-[#1D9E75]">
-              <div className="flex items-center gap-3">
-                <span className="text-[28px]">✅</span>
+            <div className="p-card rounded-[14px] bg-teal-dim border-2 border-teal">
+              <div className="flex items-center gap-[10px]">
+                <CheckCircle2 size={24} className="text-teal" />
                 <div>
-                  <p className="text-[16px] font-bold text-[#1D9E75]">
+                  <p className="text-[16px] font-bold text-teal">
                     ALL CLEAR — Ready for departure
                   </p>
-                  <p className="text-[12px] text-[#6B7C93] mt-0.5">
+                  <p className="text-[12px] text-text-mid mt-0.5">
                     {mergedGuests.length} guest{mergedGuests.length !== 1 ? 's' : ''} · All waivers signed · Safety briefing complete
                   </p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="p-4 rounded-[16px] bg-[#FEF3DC] border-2 border-[#E5910A]">
-              <div className="flex items-center gap-3">
-                <span className="text-[28px]">⚠️</span>
+            <div className="p-card rounded-[14px] bg-warn-dim border-2 border-warn">
+              <div className="flex items-center gap-[10px]">
+                <AlertTriangle size={24} className="text-warn" />
                 <div>
-                  <p className="text-[16px] font-bold text-[#E5910A]">
+                  <p className="text-[16px] font-bold text-warn">
                     WAITING ON GUESTS
                   </p>
-                  <p className="text-[12px] text-[#6B7C93] mt-0.5">
+                  <p className="text-[12px] text-text-mid mt-0.5">
                     {nonCompliantCount} guest{nonCompliantCount !== 1 ? 's' : ''} still need to sign the waiver or complete the safety briefing
                   </p>
                 </div>
@@ -431,31 +435,31 @@ export function CaptainSnapshotView({
         )}
 
         {/* ── USCG Float Plan Download ── */}
-        <div className="bg-white rounded-[20px] border border-[#D0E2F3] overflow-hidden">
+        <div className="bg-white rounded-[14px] border border-border overflow-hidden">
           <button
             onClick={() => downloadFloatPlan(liveSnapshot)}
             className="
               w-full px-5 py-4 flex items-center gap-3
-              text-left hover:bg-[#F5F8FC] transition-colors
+              text-left hover:bg-bg transition-colors
             "
           >
-            <span className="text-[20px]">📋</span>
+            <FileText size={20} className="text-text-dim" />
             <div className="flex-1">
-              <p className="text-[14px] font-semibold text-[#0D1B2A]">
+              <p className="text-[14px] font-semibold text-navy">
                 USCG Float Plan
               </p>
-              <p className="text-[12px] text-[#6B7C93]">
+              <p className="text-[12px] text-text-mid">
                 Download pre-filled float plan for this trip
               </p>
             </div>
-            <span className="text-[11px] font-bold text-[#0C447C] bg-[#E8F2FB] px-3 py-1.5 rounded-full">
+            <span className="text-[11px] font-bold text-[var(--color-navy)] bg-[#EBF0F7] px-3 py-1.5 rounded-full">
               Download
             </span>
           </button>
         </div>
 
         {/* Refresh indicator */}
-        <p className="text-[11px] text-[#6B7C93] text-center">
+        <p className="text-[11px] text-text-mid text-center">
           Live updates active · Fallback refresh every 30s
         </p>
 
@@ -466,16 +470,16 @@ export function CaptainSnapshotView({
               onClick={() => setShowBriefingGate(true)}
               disabled={!isReadyToDepart}
               className="
-                w-full h-[64px] rounded-[16px]
-                bg-[#1D9E75] text-white
+                w-full h-[64px] rounded-[14px]
+                bg-teal text-white
                 font-bold text-[18px]
                 hover:bg-[#178a64] transition-colors
                 active:scale-[0.98]
                 disabled:opacity-40 disabled:cursor-not-allowed
-                disabled:hover:bg-[#1D9E75]
+                disabled:hover:bg-teal
               "
             >
-              {isReadyToDepart ? '🛡️ Safety Briefing & Start →' : '🔒 Waiting on compliance...'}
+              {isReadyToDepart ? 'Safety Briefing & Start →' : 'Waiting on compliance...'}
             </button>
           )}
 
@@ -483,7 +487,7 @@ export function CaptainSnapshotView({
             <button
               onClick={() => setShowEndFlow(true)}
               className="
-                w-full h-[64px] rounded-[16px]
+                w-full h-[64px] rounded-[14px]
                 bg-[#E8593C] text-white
                 font-bold text-[18px]
                 hover:bg-[#cc4a32] transition-colors
@@ -495,12 +499,12 @@ export function CaptainSnapshotView({
 
           {status === 'completed' && (
             <div className="
-              w-full h-[64px] rounded-[16px]
+              w-full h-[64px] rounded-[14px]
               bg-[#E8F9F4] border border-[#1D9E75] border-opacity-30
               flex items-center justify-center
             ">
-              <span className="text-[16px] font-semibold text-[#1D9E75]">
-                ✓ Trip completed
+              <span className="text-[16px] font-semibold text-teal">
+                Trip completed
               </span>
             </div>
           )}
@@ -514,14 +518,14 @@ export function CaptainSnapshotView({
           className="
             fixed bottom-6 right-6 z-50
             w-[56px] h-[56px] rounded-full
-            bg-[#0C447C] text-white shadow-lg
+            bg-[var(--color-navy)] text-white shadow-lg
             flex items-center justify-center
-            hover:bg-[#093a6b] transition-colors
+            hover:bg-[var(--color-navy)] transition-colors
             active:scale-95
           "
           title="Open QR boarding scanner"
         >
-          <span className="text-[24px]">📱</span>
+          <QrCode size={22} />
         </button>
       )}
 

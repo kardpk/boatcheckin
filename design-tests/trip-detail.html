@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BoatCheckin — Trip Detail</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-ExtraLight.otf'); font-weight: 200; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Light.otf'); font-weight: 300; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Regular.otf'); font-weight: 400; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Book.otf'); font-weight: 450; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Medium.otf'); font-weight: 500; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-SemiBold.otf'); font-weight: 600; }
+  @font-face { font-family: 'BL Melody'; src: url('BLMelody-Bold.otf'); font-weight: 700; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg:         #F5F7FA;
+    --white:      #FFFFFF;
+    --navy:       #0B1D3A;
+    --navy-mid:   #1A3A5C;
+    --gold:       #B8882A;
+    --gold-hi:    #D4A84B;
+    --gold-dim:   rgba(184,136,42,0.06);
+    --gold-line:  rgba(184,136,42,0.22);
+    --text:       #1E2A3A;
+    --text-mid:   #5C6E82;
+    --text-dim:   #8E9EB0;
+    --border:     #E2E8F0;
+    --teal:       #1D9E75;
+    --teal-dim:   rgba(29,158,117,0.06);
+    --teal-line:  rgba(29,158,117,0.2);
+    --warn:       #D4860A;
+    --warn-dim:   rgba(212,134,10,0.05);
+    --error:      #C93030;
+    --font:       'BL Melody', system-ui, -apple-system, sans-serif;
+    --card-radius: 14px;
+    --card-pad:    16px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 520px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 80px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--navy);
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-logo {
+    width: 30px; height: 30px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--gold);
+  }
+  .topbar-title { font-size: 17px; font-weight: 700; color: #FFF; }
+  .topbar-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: grid; place-items: center;
+    color: #FFF; font-size: 14px; font-weight: 600;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 6px 0 env(safe-area-inset-bottom, 8px);
+  }
+  .nav-tab {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    padding: 8px 0;
+    font-size: 10.5px; font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .nav-tab:hover { color: var(--navy-mid); }
+  .nav-tab.active { color: var(--gold); font-weight: 700; }
+  .nav-tab i { width: 22px; height: 22px; stroke-width: 2; }
+  .nav-tab.active i { stroke-width: 2.5; }
+
+  /* ── PAGE ── */
+  .page { padding: 16px 16px 0; }
+
+  .back-link {
+    font-size: 14px; color: var(--text-mid); font-weight: 500;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-bottom: 14px;
+  }
+  .back-link:hover { color: var(--navy); }
+  .back-link i { width: 16px; height: 16px; }
+
+  /* ── BUTTONS ── */
+  .btn-gold {
+    font-family: var(--font);
+    font-size: 14px; font-weight: 600;
+    color: #FFF; background: var(--gold);
+    border: none; padding: 10px 20px;
+    border-radius: 10px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-gold:hover { background: var(--gold-hi); }
+  .btn-sm {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 500;
+    color: var(--text-mid); background: var(--white);
+    border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn-sm:hover { border-color: var(--navy); color: var(--navy); }
+  .btn-sm.danger { color: var(--error); border-color: rgba(201,48,48,0.2); }
+  .btn-sm.gold-fill { color: #FFF; background: var(--gold); border-color: var(--gold); font-weight: 600; }
+  .btn-sm i { width: 13px; height: 13px; }
+
+  .btn-start {
+    font-family: var(--font);
+    font-size: 15px; font-weight: 600;
+    color: #FFF; background: var(--gold);
+    border: none; padding: 12px 28px;
+    border-radius: 10px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+    white-space: nowrap;
+  }
+  .btn-start i { width: 16px; height: 16px; }
+
+  /* ── STANDARD CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: var(--card-pad);
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card.warn::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--warn);
+  }
+  .card.info::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--teal);
+  }
+
+  /* ── TRIP HEADER ── */
+  .trip-header {
+    background: var(--navy);
+    border-radius: var(--card-radius);
+    padding: 20px var(--card-pad) 18px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .trip-header::after {
+    content: '';
+    position: absolute; top: -20px; right: -20px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(184,136,42,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .trip-kicker {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .trip-kicker i { width: 14px; height: 14px; }
+  .trip-header h1 {
+    font-size: 24px; font-weight: 700;
+    color: #FFF; letter-spacing: -0.02em;
+    margin-bottom: 12px; line-height: 1.2;
+  }
+  .trip-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .trip-chip {
+    font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.1);
+    padding: 6px 14px; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .trip-chip i { width: 14px; height: 14px; }
+  .trip-meta {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: rgba(255,255,255,0.5);
+  }
+  .trip-meta i { width: 14px; height: 14px; }
+  .status-pill {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 5px;
+  }
+  .pill-upcoming { color: var(--gold); background: rgba(184,136,42,0.15); border: 1px solid rgba(184,136,42,0.3); }
+  .pill-signed { color: var(--teal); background: var(--teal-dim); }
+  .pill-pending { color: var(--warn); background: var(--warn-dim); }
+  .pill-boarded { color: var(--navy); background: #EBF0F7; border: 1px solid #D0D9E6; font-weight: 700; }
+
+  /* ── SECTION HEAD ── */
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-head h2 {
+    font-size: 18px; font-weight: 700;
+    color: var(--navy);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .card-head h2 i { width: 18px; height: 18px; color: var(--text-mid); }
+  .card-head .sub { font-size: 13px; color: var(--text-dim); font-weight: 400; }
+
+  /* ── WEATHER ── */
+  .weather-row {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .weather-icon i { width: 32px; height: 32px; color: var(--gold); }
+  .weather-temp { font-size: 26px; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; }
+  .weather-desc { font-size: 14px; color: var(--text-mid); margin-top: 1px; }
+  .weather-detail { font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+  .weather-detail i { width: 13px; height: 13px; }
+  .weather-good { color: var(--teal); font-weight: 500; margin-top: 3px; }
+
+  /* ── GUEST ROW ── */
+  .guest-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F2F5F8;
+  }
+  .guest-row:last-child { border-bottom: none; }
+  .guest-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+    color: #FFF; flex-shrink: 0;
+  }
+  .guest-avatar.pending { background: var(--text-dim); }
+  .guest-info { flex: 1; min-width: 0; }
+  .guest-name { font-size: 15px; font-weight: 600; color: var(--navy); }
+  .guest-note { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
+  .guest-note.warn-text { color: var(--warn); }
+  .guest-status { display: flex; gap: 5px; flex-shrink: 0; }
+  .guest-status .status-pill { font-size: 10px; }
+
+  /* ── CREW ASSIGN ── */
+  .crew-assign {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+  }
+  .crew-assign + .crew-assign { border-top: 1px solid var(--border); }
+  .assign-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: grid; place-items: center;
+    font-size: 16px; font-weight: 700;
+    color: #FFF; flex-shrink: 0;
+  }
+  .assign-avatar.mate { background: #1D6B50; }
+  .assign-info { flex: 1; }
+  .assign-name { font-size: 16px; font-weight: 600; color: var(--navy); }
+  .assign-role {
+    font-size: 13px; color: var(--gold); font-weight: 500; margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .assign-role i { width: 13px; height: 13px; }
+  .assign-role.teal { color: var(--teal); }
+
+  /* ── COMPLIANCE ── */
+  .compliance-row {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    align-items: center;
+  }
+  .check-item {
+    font-size: 13px; color: var(--text-mid); font-weight: 400;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .check-item i { width: 14px; height: 14px; }
+  .check-item.ok { color: var(--teal); font-weight: 500; }
+
+  /* ── ACTION BAR ── */
+  .action-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .action-btn {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 5px;
+    padding: 14px 4px;
+    border-radius: 12px;
+    font-size: 11px; font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid;
+  }
+  .action-btn i { width: 20px; height: 20px; }
+  .action-default { color: var(--text-mid); background: var(--white); border-color: var(--border); }
+  .action-teal { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-line); }
+  .action-gold { color: #FFF; background: var(--gold); border-color: var(--gold); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo"><i data-lucide="anchor" style="width:16px;height:16px;"></i></div>
+    <span class="topbar-title">BoatCheckin</span>
+  </div>
+  <div class="topbar-avatar">CF</div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <a href="#" class="back-link"><i data-lucide="chevron-left"></i> All Trips</a>
+
+  <!-- TRIP HEADER -->
+  <div class="trip-header">
+    <div class="trip-kicker"><i data-lucide="compass"></i> Trip Detail</div>
+    <h1>Conrad's Viking — Sunset Cruise</h1>
+    <div class="trip-chips">
+      <span class="trip-chip"><i data-lucide="calendar"></i> Sat, Apr 19</span>
+      <span class="trip-chip"><i data-lucide="clock"></i> 5:00 PM</span>
+      <span class="trip-chip"><i data-lucide="timer"></i> 3 hours</span>
+      <span class="trip-chip"><i data-lucide="users"></i> 8/12</span>
+    </div>
+    <div class="trip-meta">
+      <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin"></i> Miami Beach Marina · Slip A-14</span>
+      <span class="status-pill pill-upcoming">Upcoming</span>
+    </div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="card">
+    <div class="weather-row">
+      <div class="weather-icon"><i data-lucide="cloud-sun"></i></div>
+      <div>
+        <div class="weather-temp">78°F</div>
+        <div class="weather-desc">Partly cloudy</div>
+      </div>
+      <div style="margin-left:auto; text-align:right;">
+        <div class="weather-detail"><i data-lucide="wind"></i> 8 mph ENE</div>
+        <div class="weather-detail"><i data-lucide="waves"></i> 1–2 ft</div>
+        <div class="weather-detail weather-good"><i data-lucide="check-circle"></i> Good conditions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUESTS -->
+  <div class="card">
+    <div class="card-head">
+      <h2><i data-lucide="users"></i> Guests</h2>
+      <span class="sub">8 of 12</span>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-avatar">EM</div>
+      <div class="guest-info">
+        <div class="guest-name">Emma Mitchell</div>
+      </div>
+      <div class="guest-status">
+        <span class="status-pill pill-signed">Signed</span>
+        <span class="status-pill pill-boarded">Boarded</span>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-avatar">TW</div>
+      <div class="guest-info">
+        <div class="guest-name">Tyler Williams</div>
+        <div class="guest-note warn-text">Non-swimmer</div>
+      </div>
+      <div class="guest-status">
+        <span class="status-pill pill-signed">Signed</span>
+        <span class="status-pill pill-signed">Ready</span>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-avatar pending">KJ</div>
+      <div class="guest-info">
+        <div class="guest-name">Karen Johnson</div>
+        <div class="guest-note">Gluten-free</div>
+      </div>
+      <div class="guest-status">
+        <span class="status-pill pill-pending">Pending</span>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-avatar">DP</div>
+      <div class="guest-info">
+        <div class="guest-name">David Park</div>
+      </div>
+      <div class="guest-status">
+        <span class="status-pill pill-signed">Signed</span>
+        <span class="status-pill pill-boarded">Boarded</span>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-avatar">AS</div>
+      <div class="guest-info">
+        <div class="guest-name">Anna Schulz</div>
+        <div class="guest-note">German speaker</div>
+      </div>
+      <div class="guest-status">
+        <span class="status-pill pill-signed">Signed</span>
+        <span class="status-pill pill-signed">Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREW ASSIGNMENT -->
+  <div class="card">
+    <div class="card-head">
+      <h2><i data-lucide="user-cog"></i> Crew</h2>
+      <button class="btn-sm gold-fill"><i data-lucide="plus" style="width:12px;height:12px;"></i> Assign</button>
+    </div>
+
+    <div class="crew-assign">
+      <div class="assign-avatar">JM</div>
+      <div class="assign-info">
+        <div class="assign-name">Jake Morrison</div>
+        <div class="assign-role"><i data-lucide="shield"></i> Captain · PIC · Master 100 Ton</div>
+      </div>
+      <button class="btn-sm">Swap</button>
+    </div>
+
+    <div class="crew-assign">
+      <div class="assign-avatar mate">SL</div>
+      <div class="assign-info">
+        <div class="assign-name">Sarah Langford</div>
+        <div class="assign-role teal"><i data-lucide="anchor"></i> First Mate</div>
+      </div>
+      <button class="btn-sm danger">Remove</button>
+    </div>
+  </div>
+
+  <!-- SAFETY BRIEFING -->
+  <div class="card info">
+    <div class="card-head">
+      <h2><i data-lucide="shield-check"></i> Safety Briefing</h2>
+    </div>
+    <div style="font-size:14px; color:var(--text-mid); line-height:1.6;">
+      <span style="color:var(--teal); font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+        <i data-lucide="check-circle" style="width:14px;height:14px;"></i> Confirmed
+      </span>
+      — Apr 14 at 4:52 PM by Capt. Jake Morrison<br>
+      <span style="font-size:13px; color:var(--text-dim); margin-top:4px; display:block;">
+        Life jackets · Emergency procedures · Fire extinguisher · Man overboard · Weather
+      </span>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE + START -->
+  <div class="card">
+    <div class="card-head">
+      <h2><i data-lucide="clipboard-check"></i> Ready to Depart</h2>
+    </div>
+    <div class="compliance-row" style="margin-bottom:14px;">
+      <span class="check-item ok"><i data-lucide="check-circle"></i> Waivers (8/8)</span>
+      <span class="check-item ok"><i data-lucide="check-circle"></i> Safety briefing</span>
+      <span class="check-item ok"><i data-lucide="check-circle"></i> Crew assigned</span>
+      <span class="check-item ok"><i data-lucide="check-circle"></i> Manifest ready</span>
+    </div>
+    <button class="btn-start" style="width:100%;justify-content:center;"><i data-lucide="play"></i> Start Trip</button>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-grid">
+    <div class="action-btn action-default"><i data-lucide="file-text"></i> Manifest</div>
+    <div class="action-btn action-teal"><i data-lucide="anchor"></i> USCG CSV</div>
+    <div class="action-btn action-default"><i data-lucide="message-circle"></i> WhatsApp</div>
+    <div class="action-btn action-gold"><i data-lucide="link"></i> Captain</div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a class="nav-tab" href="#"><i data-lucide="home"></i> Home</a>
+  <a class="nav-tab" href="#"><i data-lucide="ship"></i> Boats</a>
+  <a class="nav-tab active" href="#"><i data-lucide="anchor"></i> Trips</a>
+  <a class="nav-tab" href="#"><i data-lucide="users"></i> Crew</a>
+  <a class="nav-tab" href="#"><i data-lucide="settings"></i> More</a>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

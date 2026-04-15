@@ -13,13 +13,13 @@ export function SafetySection({ safetyPoints, tr }: SafetySectionProps) {
   const expandable = safetyPoints.slice(2)
 
   return (
-    <div className="mx-4 mt-3 bg-[#E8F2FB] rounded-[16px] p-5">
+    <div className="mx-4 mt-3 bg-gold-dim rounded-[16px] p-5">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-full bg-[#0C447C] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center">
           <ShieldCheck size={16} className="text-white" />
         </div>
-        <p className="text-[17px] font-semibold text-[#0D1B2A]">{tr.safety}</p>
+        <p className="text-[17px] font-semibold text-navy">{tr.safety}</p>
       </div>
 
       {/* Always-visible first 2 points */}
@@ -44,12 +44,12 @@ export function SafetySection({ safetyPoints, tr }: SafetySectionProps) {
       </noscript>
 
       {/* Emergency contacts */}
-      <div className="mt-4 pt-4 border-t border-[#D0E2F3] space-y-2">
-        <p className="text-[13px] font-semibold text-[#0D1B2A]">
+      <div className="mt-4 pt-4 border-t border-border space-y-2">
+        <p className="text-[13px] font-semibold text-navy">
           🆘 {tr.emergency}
         </p>
-        <p className="text-[13px] text-[#6B7C93]">🚢 {tr.coastGuard} — {tr.vhf16}</p>
-        <p className="text-[13px] text-[#6B7C93]">📞 Local marina: contact operator</p>
+        <p className="text-[13px] text-text-mid">{tr.coastGuard} — {tr.vhf16}</p>
+        <p className="text-[13px] text-text-mid">Local marina: contact operator</p>
       </div>
     </div>
   )
@@ -58,10 +58,10 @@ export function SafetySection({ safetyPoints, tr }: SafetySectionProps) {
 function SafetyPointItem({ point }: { point: SafetyPoint }) {
   return (
     <li className="flex items-start gap-3 py-3">
-      <div className="w-5 h-5 rounded-full bg-[#0C447C] flex items-center justify-center shrink-0 mt-0.5">
+      <div className="w-5 h-5 rounded-full bg-navy flex items-center justify-center shrink-0 mt-0.5">
         <span className="text-white text-[10px] font-bold">✓</span>
       </div>
-      <p className="text-[14px] text-[#0D1B2A] leading-snug">{point.text}</p>
+      <p className="text-[14px] text-navy leading-snug">{point.text}</p>
     </li>
   )
 }

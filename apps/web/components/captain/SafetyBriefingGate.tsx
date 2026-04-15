@@ -44,7 +44,7 @@ const BRIEFING_TYPES: { id: BriefingType; icon: string; label: string; desc: str
   },
   {
     id: 'abbreviated_with_cards',
-    icon: '📋',
+    icon: 'clipboard',
     label: 'Abbreviated + Cards',
     desc: 'Distributed safety cards with brief announcement',
   },
@@ -129,10 +129,10 @@ export function SafetyBriefingGate({
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <div className="bg-[#E8593C] px-5 pt-6 pb-5 text-white">
-          <h1 className="text-[22px] font-bold">⚠️ Skip Safety Briefing?</h1>
+          <h1 className="text-[22px] font-bold">Skip Safety Briefing?</h1>
         </div>
         <div className="flex-1 px-5 py-6 space-y-4">
-          <div className="p-5 bg-[#FEF3DC] border-2 border-[#E5910A] rounded-[16px]">
+          <div className="p-5 bg-warn-dim border-2 border-[#E5910A] rounded-[14px]">
             <p className="text-[15px] font-bold text-[#92400E] mb-2">
               Legal Exposure Warning
             </p>
@@ -161,7 +161,7 @@ export function SafetyBriefingGate({
           <div className="flex gap-3">
             <button
               onClick={() => setShowSkipWarning(false)}
-              className="flex-1 h-[52px] rounded-[12px] border border-[#D0E2F3] text-[#0D1B2A] font-semibold hover:bg-[#F5F8FC] transition-colors"
+              className="flex-1 h-[52px] rounded-[12px] border border-border text-navy font-semibold hover:bg-bg transition-colors"
             >
               ← Go Back
             </button>
@@ -183,7 +183,7 @@ export function SafetyBriefingGate({
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* Header */}
-      <div className="bg-[#0C447C] px-5 pt-6 pb-5 text-white">
+      <div className="bg-[var(--color-navy)] px-5 pt-6 pb-5 text-white">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={onCancel}
@@ -196,7 +196,7 @@ export function SafetyBriefingGate({
           </span>
         </div>
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-[28px]">🛡️</span>
+          <span className="text-navy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
           <div>
             <h1 className="text-[20px] font-bold">Safety Briefing Confirmation</h1>
             <p className="text-white/80 text-[13px]">
@@ -215,7 +215,7 @@ export function SafetyBriefingGate({
 
         {/* Step 1: Briefing Type */}
         <div>
-          <h2 className="text-[14px] font-bold text-[#6B7C93] uppercase tracking-wider mb-3">
+          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
             Step 1 — How did you brief?
           </h2>
           <div className="space-y-2">
@@ -226,8 +226,8 @@ export function SafetyBriefingGate({
                 className={cn(
                   'w-full p-4 rounded-[14px] border-2 text-left transition-all',
                   selectedType === bt.id
-                    ? 'border-[#0C447C] bg-[#E8F2FB]'
-                    : 'border-[#D0E2F3] bg-white hover:bg-[#F5F8FC]'
+                    ? 'border-[var(--color-navy)] bg-[#EBF0F7]'
+                    : 'border-border bg-white hover:bg-bg'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -235,14 +235,14 @@ export function SafetyBriefingGate({
                   <div>
                     <p className={cn(
                       'text-[14px] font-semibold',
-                      selectedType === bt.id ? 'text-[#0C447C]' : 'text-[#0D1B2A]'
+                      selectedType === bt.id ? 'text-[var(--color-navy)]' : 'text-navy'
                     )}>
                       {bt.label}
                     </p>
-                    <p className="text-[12px] text-[#6B7C93]">{bt.desc}</p>
+                    <p className="text-[12px] text-text-mid">{bt.desc}</p>
                   </div>
                   {selectedType === bt.id && (
-                    <span className="ml-auto text-[16px]">✓</span>
+                    <span className="ml-auto text-teal"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
                   )}
                 </div>
               </button>
@@ -252,14 +252,14 @@ export function SafetyBriefingGate({
 
         {/* Step 2: Topic Checklist */}
         <div>
-          <h2 className="text-[14px] font-bold text-[#6B7C93] uppercase tracking-wider mb-3">
+          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
             Step 2 — Topics Covered
           </h2>
-          <div className="bg-[#F5F8FC] rounded-[16px] p-4 space-y-1">
+          <div className="bg-bg rounded-[14px] p-4 space-y-1">
             {briefingTopics.map(topic => (
               <label
                 key={topic.id}
-                className="flex items-start gap-3 py-3 cursor-pointer border-b border-[#D0E2F3] last:border-0"
+                className="flex items-start gap-3 py-3 cursor-pointer border-b border-border last:border-0"
               >
                 <div
                   onClick={() => toggleTopic(topic.id)}
@@ -267,8 +267,8 @@ export function SafetyBriefingGate({
                     'w-6 h-6 rounded-[6px] border-2 flex items-center justify-center',
                     'transition-all duration-150 flex-shrink-0 mt-0.5',
                     checkedTopics.has(topic.id)
-                      ? 'bg-[#1D9E75] border-[#1D9E75]'
-                      : 'bg-white border-[#D0E2F3]'
+                      ? 'bg-teal border-[#1D9E75]'
+                      : 'bg-white border-border'
                   )}
                 >
                   {checkedTopics.has(topic.id) && (
@@ -281,25 +281,25 @@ export function SafetyBriefingGate({
                 <div className="flex-1">
                   <p className={cn(
                     'text-[14px] font-medium leading-tight',
-                    checkedTopics.has(topic.id) ? 'text-[#6B7C93] line-through' : 'text-[#0D1B2A]'
+                    checkedTopics.has(topic.id) ? 'text-text-mid line-through' : 'text-navy'
                   )}>
                     {topic.label}
-                    {topic.required && <span className="text-[#D63B3B] ml-1">*</span>}
+                    {topic.required && <span className="text-error ml-1">*</span>}
                   </p>
-                  <p className="text-[12px] text-[#6B7C93] mt-0.5">{topic.description}</p>
+                  <p className="text-[12px] text-text-mid mt-0.5">{topic.description}</p>
                 </div>
-                <span className="text-[10px] text-[#0C447C] bg-[#E8F2FB] px-2 py-0.5 rounded-full font-bold flex-shrink-0 mt-0.5">
+                <span className="text-[10px] text-[var(--color-navy)] bg-[#EBF0F7] px-2 py-0.5 rounded-full font-bold flex-shrink-0 mt-0.5">
                   {topic.cfrRef}
                 </span>
               </label>
             ))}
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-[12px] text-[#6B7C93]">
+              <span className="text-[12px] text-text-mid">
                 {checkedTopics.size} / {briefingTopics.length} confirmed
               </span>
               {allRequiredChecked && (
-                <span className="text-[12px] font-semibold text-[#1D9E75]">
-                  ✓ All required topics covered
+                <span className="text-[12px] font-semibold text-teal">
+                  All required topics covered
                 </span>
               )}
             </div>
@@ -308,11 +308,11 @@ export function SafetyBriefingGate({
 
         {/* Step 3: Attestation */}
         <div>
-          <h2 className="text-[14px] font-bold text-[#6B7C93] uppercase tracking-wider mb-3">
+          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
             Step 3 — Captain Attestation
           </h2>
-          <div className="bg-[#F5F8FC] rounded-[16px] p-4 space-y-3">
-            <p className="text-[13px] text-[#0D1B2A] leading-relaxed">
+          <div className="bg-bg rounded-[14px] p-4 space-y-3">
+            <p className="text-[13px] text-navy leading-relaxed">
               &ldquo;I, <strong>{signature || '___'}</strong>, attest that I have verbally
               delivered the required safety orientation to all{' '}
               <strong>{guestCount} passenger{guestCount !== 1 ? 's' : ''}</strong>{' '}
@@ -321,7 +321,7 @@ export function SafetyBriefingGate({
             </p>
 
             <div>
-              <label className="block text-[12px] font-medium text-[#6B7C93] mb-1.5">
+              <label className="block text-[12px] font-medium text-text-mid mb-1.5">
                 Your signature (type your name)
               </label>
               <input
@@ -329,8 +329,8 @@ export function SafetyBriefingGate({
                 value={signature}
                 onChange={e => setSignature(e.target.value)}
                 placeholder="Captain name"
-                style={{ fontFamily: 'var(--font-satisfy, cursive)', fontSize: '22px', color: '#0C447C' }}
-                className="w-full h-[52px] px-4 rounded-[10px] border border-[#D0E2F3] placeholder:text-[#D0E2F3] focus:outline-none focus:border-[#0C447C] bg-white"
+                style={{ fontFamily: 'var(--font-satisfy, cursive)', fontSize: '22px', color: 'var(--color-navy)' }}
+                className="w-full h-[52px] px-4 rounded-[10px] border border-border placeholder:text-text-dim focus:outline-none focus:border-[var(--color-navy)] bg-white"
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -340,7 +340,7 @@ export function SafetyBriefingGate({
       </div>
 
       {/* Bottom CTA */}
-      <div className="px-5 pb-8 pt-4 bg-white border-t border-[#D0E2F3] space-y-3">
+      <div className="px-5 pb-8 pt-4 bg-white border-t border-border space-y-3">
         <button
           onClick={handleConfirm}
           disabled={!canConfirm || isSaving}
@@ -350,14 +350,14 @@ export function SafetyBriefingGate({
             'transition-all duration-150',
             'disabled:opacity-40 disabled:cursor-not-allowed',
             canConfirm
-              ? 'bg-[#1D9E75] text-white hover:bg-[#178a64] active:scale-[0.98]'
-              : 'bg-[#D0E2F3] text-[#6B7C93]'
+              ? 'bg-teal text-white hover:bg-[#178a64] active:scale-[0.98]'
+              : 'bg-border text-text-mid'
           )}
         >
           {isSaving ? (
             <AnchorLoader size="sm" color="white" />
           ) : canConfirm ? (
-            '🛡️ Confirm Briefing & Proceed'
+            'Confirm Briefing & Proceed'
           ) : (
             'Complete all steps above'
           )}
@@ -367,7 +367,7 @@ export function SafetyBriefingGate({
         {allowSkip && (
           <button
             onClick={() => setShowSkipWarning(true)}
-            className="w-full text-[13px] text-[#6B7C93] underline py-2"
+            className="w-full text-[13px] text-text-mid underline py-2"
           >
             Skip for now (not recommended)
           </button>
