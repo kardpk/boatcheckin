@@ -8,6 +8,7 @@ interface OperatorRow {
   email: string
   subscription_tier: string
   subscription_status: string
+  max_boats: number
   is_active: boolean
   admin_role: string | null
   created_at: string
@@ -18,7 +19,7 @@ async function getOperators() {
 
   const { data, error } = await supabase
     .from('operators')
-    .select('id, full_name, email, subscription_tier, subscription_status, is_active, admin_role, created_at')
+    .select('id, full_name, email, subscription_tier, subscription_status, max_boats, is_active, admin_role, created_at')
     .order('created_at', { ascending: false })
 
   if (error) {

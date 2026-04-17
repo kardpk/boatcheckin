@@ -42,3 +42,32 @@ export async function setAdminRole(operatorId: string, role: string | null) {
   revalidatePath('/admin/operators')
   return { success: true }
 }
+
+/**
+ * Set max_boats for an operator (founder-only).
+ * Use 999 for unlimited.
+ */
+export async function setMaxBoats(operatorId: string, maxBoats: number, tier: string) {
+  await requireAdmin('founder')
+  const supabase = createServiceClient()
+
+  const validTiers = ['solo', 'captain', 'fleet', 'marina']
+  if (!validTiers.includes(tier)) return { error: 'Invalid tier' }
+  if (maxBoats < 1 || maxBoats > 999) return { error: 'max_boats must be 1–999' }
+
+  const { error } = await supabase
+    .from('operators')
+    .update({
+      max_boats: maxBoats,
+      subscription_tier: tier,
+      subscription_status: 'active',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', operatorId)
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/admin/operators')
+  return { success: true }
+}
+
