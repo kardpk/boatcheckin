@@ -83,173 +83,156 @@ export function SnapshotGuestList({
   }
 
   return (
-    <div className="
-      bg-white rounded-[14px] overflow-hidden
-      border border-border
-    ">
+    <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
       {/* Header */}
-      <div className="px-card py-[14px] border-b border-border">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-navy">
-            Passengers
-          </h2>
-          <div className="flex items-center gap-2">
-            <span className="text-[14px] font-bold text-[var(--color-navy)]">
-              {guests.length} checked in · {signed} signed
+      <div
+        className="flex items-center justify-between"
+        style={{ padding: 'var(--s-4) var(--s-5)', borderBottom: '1px solid var(--color-line-soft)' }}
+      >
+        <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>
+          Passengers
+        </h2>
+        <div className="flex items-center" style={{ gap: 'var(--s-2)' }}>
+          <span className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, color: 'var(--color-ink)' }}>
+            {guests.length} checked in · {signed} signed
+          </span>
+          {pendingLivery > 0 && (
+            <span className="pill pill--warn" style={{ fontSize: 'var(--t-mono-xs)' }}>
+              <Anchor size={10} strokeWidth={2} aria-hidden="true" /> {pendingLivery} livery
             </span>
-            {pendingLivery > 0 && (
-              <span className="text-[11px] font-semibold px-[6px] py-[2px] rounded-[5px] bg-warn-dim text-warn flex items-center gap-[3px]">
-                <Anchor size={10} /> {pendingLivery} livery
-              </span>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
       {/* Guest rows */}
       {guests.length === 0 ? (
-        <div className="px-5 py-8 text-center">
-          <p className="text-[15px] text-text-mid">No guests yet</p>
+        <div style={{ padding: 'var(--s-8) var(--s-5)', textAlign: 'center' }}>
+          <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)' }}>No guests yet</p>
         </div>
       ) : (
-        <div className="divide-y divide-border">
+        <div style={{ borderTop: 0 }}>
           {guests.map(guest => (
             <div
               key={guest.id}
-              className={cn(
-                'px-5 py-3 transition-colors cursor-pointer',
-                guest.approvalStatus === 'pending_livery_briefing'
-                  ? 'bg-[#FFFBEB]'
+              style={{
+                borderBottom: '1px solid var(--color-line-soft)',
+                background: guest.approvalStatus === 'pending_livery_briefing'
+                  ? 'rgba(191,141,48,0.06)'
                   : guest.waiverSigned
-                  ? ''
-                  : 'bg-[#FEF9EE]',
-                expandedGuestId === guest.id && 'bg-bg'
-              )}
+                  ? 'transparent'
+                  : 'rgba(191,141,48,0.04)',
+                ...(expandedGuestId === guest.id ? { background: 'var(--color-bone)' } : {}),
+              }}
             >
               <div
-                className="flex items-center gap-3"
+                className="flex items-center"
+                style={{ gap: 'var(--s-3)', padding: 'var(--s-3) var(--s-5)', cursor: 'pointer' }}
                 onClick={() => setExpandedGuestId(
                   expandedGuestId === guest.id ? null : guest.id
                 )}
               >
                 {/* Avatar */}
-                <div className="
-                  w-9 h-9 rounded-full bg-[#EBF0F7]
-                  flex items-center justify-center
-                  text-[12px] font-bold text-[var(--color-navy)]
-                  flex-shrink-0
-                ">
-                  {guest.fullName.split(' ')
-                    .map(n => n[0]).join('').slice(0, 2)}
+                <div
+                  className="avatar avatar--sm flex-shrink-0"
+                  style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--t-mono-xs)', fontWeight: 600, color: 'var(--color-ink)', background: 'var(--color-bone)', borderColor: 'var(--color-line)' }}
+                >
+                  {guest.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
 
                 {/* Name + expand indicator */}
-                <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                  <span className="text-[14px] font-medium text-navy truncate">
+                <div className="flex-1 min-w-0 flex items-center" style={{ gap: 'var(--s-2)' }}>
+                  <span style={{ fontSize: 'var(--t-body-sm)', fontWeight: 500, color: 'var(--color-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {guest.fullName}
                   </span>
                   <ChevronDown
                     size={12}
-                    className={cn(
-                      'text-text-mid transition-transform flex-shrink-0',
-                      expandedGuestId === guest.id && 'rotate-180'
-                    )}
+                    strokeWidth={2}
+                    style={{ color: 'var(--color-ink-muted)', flexShrink: 0, transition: 'transform var(--dur-fast) var(--ease)', transform: expandedGuestId === guest.id ? 'rotate(180deg)' : 'none' }}
                   />
                 </div>
 
-                {/* Language + addons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-[14px]">{guest.languageFlag}</span>
-                  {guest.addonEmojis.length > 0 && (
-                    <span className="text-[13px]">
-                      {guest.addonEmojis.join('')}
+                {/* Status badges */}
+                <div className="flex flex-col items-end" style={{ gap: 'var(--s-1)', flexShrink: 0 }}>
+                  {/* Livery badge */}
+                  {guest.approvalStatus === 'pending_livery_briefing' ? (
+                    <span className="pill pill--warn" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                      <Anchor size={9} strokeWidth={2} aria-hidden="true" /> Briefing Required
+                    </span>
+                  ) : guest.liveryBriefingVerifiedAt ? (
+                    <span className="pill pill--ok" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                      <Check size={9} strokeWidth={2.5} aria-hidden="true" /> Briefed
+                    </span>
+                  ) : null}
+
+                  {/* Waiver status */}
+                  {guest.waiverTextHash === 'firma_template' ? (
+                    <span className="pill pill--brass" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                      <FileText size={9} strokeWidth={2} aria-hidden="true" /> Firma
+                    </span>
+                  ) : guest.waiverSigned ? (
+                    <span className="pill pill--ok" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                      <Check size={9} strokeWidth={2.5} aria-hidden="true" /> Signed
+                    </span>
+                  ) : (
+                    <span className="pill pill--warn" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                      <Clock size={9} strokeWidth={2} aria-hidden="true" /> Pending
                     </span>
                   )}
-                  <div className="flex flex-col items-end gap-1">
-                    {/* Livery badge */}
-                    {guest.approvalStatus === 'pending_livery_briefing' ? (
-                      <span className="text-[11px] font-bold text-warn bg-warn-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
-                        <Anchor size={10} /> Briefing Required
-                      </span>
-                    ) : guest.liveryBriefingVerifiedAt ? (
-                      <span className="text-[11px] font-bold text-teal flex items-center gap-[3px]">
-                        <Check size={10} /> Briefed
-                      </span>
-                    ) : null}
 
-                    {/* Waiver status */}
-                    {guest.waiverTextHash === 'firma_template' ? (
-                      <span className="text-[12px] font-bold text-navy flex items-center gap-[3px]">
-                        <FileText size={11} /> Firma
-                      </span>
-                    ) : guest.waiverSigned ? (
-                      <span className="text-[12px] font-bold text-teal flex items-center gap-[3px]">
-                        <Check size={11} /> Signed
-                      </span>
-                    ) : (
-                      <span className="text-[12px] font-bold text-warn flex items-center gap-[3px]">
-                        <Clock size={11} /> Pending
-                      </span>
-                    )}
-                    {/* Safety ack count */}
-                    <span className="text-[10px] text-text-mid flex items-center gap-[3px]">
-                      <Shield size={10} /> {guest.safetyAckCount} cards
-                    </span>
-                    
-                    {!guest.waiverSigned && (
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleUploadClick(guest.id) }}
-                        disabled={uploadingId === guest.id}
-                        className="text-[10px] text-text-mid underline disabled:opacity-50"
-                      >
-                        {uploadingId === guest.id ? 'Uploading...' : 'Upload Paper'}
-                      </button>
-                    )}
-                  </div>
+                  {/* Safety ack count */}
+                  <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <Shield size={9} strokeWidth={2} aria-hidden="true" /> {guest.safetyAckCount} cards
+                  </span>
+
+                  {!guest.waiverSigned && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleUploadClick(guest.id) }}
+                      disabled={uploadingId === guest.id}
+                      className="editorial-link"
+                      style={{ fontSize: 'var(--t-mono-xs)', border: 'none', padding: 0 }}
+                    >
+                      {uploadingId === guest.id ? 'Uploading...' : 'Upload Paper'}
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* ── Expanded: Emergency Contact + Details ── */}
+              {/* Expanded: Emergency Contact + Details */}
               {expandedGuestId === guest.id && (
-                <div className="mt-2.5 ml-12 space-y-2 animate-in slide-in-from-top-1 duration-200">
+                <div style={{ margin: '0 var(--s-5) var(--s-3)', marginLeft: 'calc(var(--s-5) + 36px + var(--s-3))', display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
                   {/* Emergency Contact */}
                   {guest.emergencyContactName && guest.emergencyContactPhone && (
-                    <div className="flex items-center gap-3 p-3 rounded-[10px] bg-warn-dim border border-[#E5910A]/20">
-                      <Phone size={14} className="text-warn shrink-0" />
+                    <div className="alert alert--warn" style={{ alignItems: 'center' }}>
+                      <Phone size={14} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-semibold text-[#92400E]">
+                        <p style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, color: 'var(--color-ink)', margin: 0 }}>
                           Emergency: {guest.emergencyContactName}
                         </p>
-                        <p className="text-[12px] text-[#78350F]">
+                        <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: '2px' }}>
                           {guest.emergencyContactPhone}
                         </p>
                       </div>
                       <a
                         href={`tel:${guest.emergencyContactPhone}`}
                         onClick={e => e.stopPropagation()}
-                        className="
-                          flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                          bg-[#E8593C] text-white text-[11px] font-bold
-                          hover:bg-[#cc4a32] transition-colors
-                          flex-shrink-0
-                        "
+                        className="btn btn--danger btn--sm"
+                        style={{ flexShrink: 0, fontSize: 'var(--t-mono-xs)', letterSpacing: '0.1em' }}
                       >
-                        <Phone size={11} />
-                        CALL
+                        <Phone size={11} strokeWidth={2} aria-hidden="true" /> CALL
                       </a>
                     </div>
                   )}
 
                   {/* Medical/dietary flags */}
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap" style={{ gap: 'var(--s-2)' }}>
                     {guest.isNonSwimmer && (
-                      <span className="text-[11px] font-medium text-error bg-error-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
-                        <LifeBuoy size={10} /> Non-swimmer
+                      <span className="pill pill--err" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                        <LifeBuoy size={9} strokeWidth={2} aria-hidden="true" /> Non-swimmer
                       </span>
                     )}
                     {guest.dietaryRequirements && (
-                      <span className="text-[11px] font-medium text-warn bg-warn-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
-                        <Utensils size={10} /> {guest.dietaryRequirements}
+                      <span className="pill pill--warn" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                        <Utensils size={9} strokeWidth={2} aria-hidden="true" /> {guest.dietaryRequirements}
                       </span>
                     )}
                     {guest.dateOfBirth && (() => {
@@ -257,35 +240,36 @@ export function SnapshotGuestList({
                         (Date.now() - new Date(guest.dateOfBirth).getTime()) / 31557600000
                       )
                       if (age < 6) return (
-                        <span className="text-[11px] font-medium text-error bg-error-dim px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
-                          <Baby size={10} /> Age {age} — PFD Required
+                        <span className="pill pill--err" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                          <Baby size={9} strokeWidth={2} aria-hidden="true" /> Age {age} — PFD Required
                         </span>
                       )
                       if (age < 18) return (
-                        <span className="text-[11px] font-medium text-text-mid bg-bg px-[6px] py-[2px] rounded-[5px] flex items-center gap-[3px]">
-                          <User size={10} /> Minor (age {age})
+                        <span className="pill pill--ghost" style={{ fontSize: 'var(--t-mono-xs)' }}>
+                          <User size={9} strokeWidth={2} aria-hidden="true" /> Minor (age {age})
                         </span>
                       )
                       return null
-                    })()}
+                    })()
+                    }
                   </div>
 
                   {/* No emergency contact notice */}
                   {!guest.emergencyContactPhone && (
-                    <p className="text-[11px] text-text-mid italic">
+                    <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', fontStyle: 'italic' }}>
                       No emergency contact provided
                     </p>
                   )}
                 </div>
               )}
 
-              {/* Livery verify button — inline for captain */}
+              {/* Livery verify — captain inline form */}
               {guest.approvalStatus === 'pending_livery_briefing' && captainToken && (
-                <div className="mt-2 ml-12">
+                <div style={{ margin: '0 var(--s-5) var(--s-3)', marginLeft: 'calc(var(--s-5) + 36px + var(--s-3))' }}>
                   {liveryVerifyId === guest.id ? (
-                    <div className="p-3 bg-[#FFF8E1] border border-[#FFD54F] rounded-[10px] space-y-2">
-                      <p className="text-[12px] text-[#92400E] leading-relaxed">
-                        <strong>I confirm</strong> I have briefed <strong>{guest.fullName}</strong> on 
+                    <div style={{ padding: 'var(--s-3)', background: 'var(--color-bone)', border: '1px solid var(--color-brass)', borderRadius: 'var(--r-1)', display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+                      <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.6 }}>
+                        <strong>I confirm</strong> I have briefed <strong>{guest.fullName}</strong> on{' '}
                         vessel operation, safety equipment, and emergency procedures.
                       </p>
                       <input
@@ -293,19 +277,22 @@ export function SnapshotGuestList({
                         placeholder="Your name"
                         value={liveryVerifierName}
                         onChange={e => setLiveryVerifierName(e.target.value)}
-                        className="w-full h-[36px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                        className="field-input"
+                        style={{ height: 36, padding: '0 var(--s-3)', fontSize: 'var(--t-body-sm)' }}
                       />
-                      <div className="flex gap-2">
+                      <div className="flex" style={{ gap: 'var(--s-2)' }}>
                         <button
                           onClick={() => verifyLiveryBriefing(guest.id)}
                           disabled={!liveryVerifierName.trim() || actioning === guest.id}
-                          className="flex-1 h-[32px] rounded-[8px] bg-teal text-white text-[12px] font-semibold hover:bg-[#178a65] transition-colors disabled:opacity-40"
+                          className="btn btn--rust flex-1 btn--sm"
+                          style={{ height: 32, justifyContent: 'center' }}
                         >
                           ✓ Confirm
                         </button>
                         <button
                           onClick={() => setLiveryVerifyId(null)}
-                          className="h-[32px] px-3 rounded-[8px] bg-white border border-border text-[12px] text-text-mid"
+                          className="btn btn--sm"
+                          style={{ height: 32, paddingLeft: 'var(--s-3)', paddingRight: 'var(--s-3)' }}
                         >
                           Cancel
                         </button>
@@ -313,13 +300,11 @@ export function SnapshotGuestList({
                     </div>
                   ) : (
                     <button
-                      onClick={() => {
-                        setLiveryVerifyId(guest.id)
-                        setLiveryVerifierName('')
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFF8E1] border border-[#FFD54F] text-[11px] font-semibold text-[#92400E] hover:bg-[#FFECB3] transition-colors"
+                      onClick={() => { setLiveryVerifyId(guest.id); setLiveryVerifierName('') }}
+                      className="pill pill--brass"
+                      style={{ fontSize: 'var(--t-mono-xs)', cursor: 'pointer', border: 'none' }}
                     >
-                      <Anchor size={11} />
+                      <Anchor size={10} strokeWidth={2} aria-hidden="true" />
                       Verify Livery Briefing
                     </button>
                   )}

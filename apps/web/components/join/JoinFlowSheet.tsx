@@ -123,7 +123,7 @@ export function JoinFlowSheet({
   return (
     <div
       className="fixed inset-0 z-50 flex items-end"
-      style={{ background: 'rgba(12,68,124,0.2)' }}
+      style={{ background: 'rgba(11,30,45,0.4)' }}
       onClick={e => { if (e.target === e.currentTarget && canClose) onClose() }}
     >
       <motion.div
@@ -131,37 +131,44 @@ export function JoinFlowSheet({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className={cn(
-          'w-full bg-white rounded-t-[20px]',
-          'max-h-[95vh] flex flex-col'
-        )}
+        style={{
+          width: '100%',
+          background: 'var(--color-paper)',
+          borderTopLeftRadius: 'var(--r-1)',
+          borderTopRightRadius: 'var(--r-1)',
+          maxHeight: '95vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
         {/* Handle bar + close + progress */}
-        <div className="flex-shrink-0 pt-3 pb-2 px-5">
-          <div className="w-10 h-1 bg-border rounded-full mx-auto mb-3" />
+        <div className="flex-shrink-0" style={{ paddingTop: 'var(--s-3)', paddingBottom: 'var(--s-2)', paddingLeft: 'var(--s-5)', paddingRight: 'var(--s-5)' }}>
+          {/* Drag handle */}
+          <div style={{ width: 40, height: 3, background: 'var(--color-line)', borderRadius: 2, margin: '0 auto var(--s-3)' }} />
+
           <div className="flex items-center justify-between">
             <div className="flex-1" />
             {canClose && (
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-bg flex items-center justify-center text-text-mid hover:bg-gold-dim transition-colors"
+                className="btn btn--ghost btn--sm"
+                style={{ width: 32, height: 32, padding: 0, justifyContent: 'center' }}
                 aria-label="Close"
               >
-                <X size={16} />
+                <X size={16} strokeWidth={2} />
               </button>
             )}
           </div>
 
           {/* Progress bar — hidden on boarding step */}
           {state.step !== 'boarding' && (
-            <div className="mt-3">
-              <div className="w-full h-1 bg-gold-dim rounded-full overflow-hidden">
+            <div style={{ marginTop: 'var(--s-3)' }}>
+              <div style={{ width: '100%', height: 3, background: 'var(--color-bone)', borderRadius: 2, overflow: 'hidden' }}>
                 <div
-                  className="h-full bg-navy rounded-full transition-all duration-400"
-                  style={{ width: `${progressPercent}%` }}
+                  style={{ height: '100%', background: 'var(--color-ink)', borderRadius: 2, width: `${progressPercent}%`, transition: 'width 400ms var(--ease)' }}
                 />
               </div>
-              <p className="text-[11px] text-text-mid mt-1">
+              <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 'var(--s-1)' }}>
                 Step {Math.max(1, stepIndex + 1)} of {activeSteps.length}
                 {isFastTrack && ' · Fast-Track'}
               </p>

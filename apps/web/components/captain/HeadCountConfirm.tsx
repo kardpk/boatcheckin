@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react'
 import { Users, AlertTriangle, CheckCircle2, Minus, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils/cn'
 
 interface HeadCountConfirmProps {
   token: string
@@ -49,62 +48,67 @@ export function HeadCountConfirm({
     }
   }, [numericCount, confirming, token, onConfirmed])
 
+  // Confirmed result state
   if (confirmed && result) {
-    return (
-      <div className={cn(
-        'p-card rounded-[14px] border-2',
-        result.mismatch
-          ? 'bg-warn-dim border-warn'
-          : 'bg-teal-dim border-teal'
-      )}>
-        <div className="flex items-center gap-[10px]">
-          {result.mismatch
-            ? <AlertTriangle size={22} className="text-warn" />
-            : <CheckCircle2 size={22} className="text-teal" />
-          }
-          <div>
-            <p className={cn(
-              'text-[14px] font-bold',
-              result.mismatch ? 'text-warn' : 'text-teal'
-            )}>
-              {result.mismatch
-                ? `HEAD COUNT MISMATCH`
-                : 'Head count confirmed'}
-            </p>
-            <p className="text-[12px] text-text-mid mt-[3px]">
-              {result.physicalCount} aboard · {result.digitalCount} registered
-              {result.mismatch && ' · Operator notified'}
-            </p>
-          </div>
+    return result.mismatch ? (
+      <div className="alert alert--warn">
+        <AlertTriangle size={18} strokeWidth={2} aria-hidden="true" />
+        <div className="alert__body">
+          <strong style={{ fontSize: 'var(--t-body-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Head Count Mismatch</strong>
+          <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+            {result.physicalCount} aboard · {result.digitalCount} registered · Operator notified
+          </p>
+        </div>
+      </div>
+    ) : (
+      <div className="alert alert--ok">
+        <CheckCircle2 size={18} strokeWidth={2} aria-hidden="true" />
+        <div className="alert__body">
+          <strong style={{ fontSize: 'var(--t-body-sm)' }}>Head count confirmed</strong>
+          <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+            {result.physicalCount} aboard · {result.digitalCount} registered
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-[14px] border border-border overflow-hidden">
-      <div className="px-card py-[14px] border-b border-border flex items-center gap-[6px]">
-        <Users size={16} className="text-text-dim" />
-        <h2 className="text-[16px] font-bold text-navy">
+    <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
+      {/* Header row */}
+      <div
+        className="flex items-center"
+        style={{ padding: 'var(--s-4) var(--s-5)', borderBottom: '1px solid var(--color-line-soft)', gap: 'var(--s-2)' }}
+      >
+        <Users size={16} strokeWidth={2} style={{ color: 'var(--color-ink-muted)' }} aria-hidden="true" />
+        <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>
           Head Count Verification
         </h2>
       </div>
-      <div className="px-card py-[14px] space-y-[10px]">
-        <p className="text-[13px] text-text-mid font-medium">
-          Digital count: <span className="font-bold text-navy">{digitalGuestCount} guests</span> registered
+
+      <div style={{ padding: 'var(--s-4) var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
+        <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', fontWeight: 500 }}>
+          Digital count:{' '}
+          <span style={{ fontWeight: 700, color: 'var(--color-ink)' }}>{digitalGuestCount} guests</span>{' '}
+          registered
         </p>
 
-        <div className="flex items-center gap-[10px]">
-          <label className="text-[13px] text-text-mid flex-shrink-0 font-medium">
+        {/* Stepper */}
+        <div className="flex items-center" style={{ gap: 'var(--s-3)' }}>
+          <label style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', flexShrink: 0, fontWeight: 500 }}>
             Actual count aboard:
           </label>
-          <div className="flex items-center border border-border rounded-[10px] overflow-hidden">
+          <div
+            className="flex items-center overflow-hidden"
+            style={{ border: '1px solid var(--color-line)', borderRadius: 'var(--r-1)' }}
+          >
             <button
               type="button"
               onClick={() => setCount(String(Math.max(0, numericCount - 1)))}
-              className="w-[44px] h-[44px] text-navy hover:bg-bg transition-colors flex items-center justify-center"
+              className="flex items-center justify-center"
+              style={{ width: 44, height: 44, color: 'var(--color-ink)', background: 'none', border: 'none', cursor: 'pointer', transition: 'background var(--dur-fast) var(--ease)' }}
             >
-              <Minus size={16} />
+              <Minus size={16} strokeWidth={2} />
             </button>
             <input
               type="number"
@@ -112,25 +116,26 @@ export function HeadCountConfirm({
               max="500"
               value={count}
               onChange={e => setCount(e.target.value)}
-              className="w-16 h-[44px] text-center text-[18px] font-bold text-navy border-none outline-none bg-transparent"
+              className="w-16 text-center bg-transparent border-none outline-none"
+              style={{ height: 44, fontSize: 'var(--t-tile)', fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-display)' }}
             />
             <button
               type="button"
               onClick={() => setCount(String(numericCount + 1))}
-              className="w-[44px] h-[44px] text-navy hover:bg-bg transition-colors flex items-center justify-center"
+              className="flex items-center justify-center"
+              style={{ width: 44, height: 44, color: 'var(--color-ink)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
-              <Plus size={16} />
+              <Plus size={16} strokeWidth={2} />
             </button>
           </div>
         </div>
 
         {/* Mismatch warning */}
         {mismatch && (
-          <div className="flex items-center gap-[8px] p-[10px] rounded-[10px] bg-warn-dim border border-warn/30">
-            <AlertTriangle size={16} className="text-warn shrink-0" />
-            <p className="text-[12px] text-warn font-medium">
-              Mismatch detected: {numericCount} aboard vs {digitalGuestCount} registered.
-              You can still confirm — the operator will be notified.
+          <div className="alert alert--warn">
+            <AlertTriangle size={16} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+            <p style={{ fontSize: 'var(--t-body-sm)', margin: 0 }}>
+              Mismatch: {numericCount} aboard vs {digitalGuestCount} registered. You can still confirm — the operator will be notified.
             </p>
           </div>
         )}
@@ -139,15 +144,10 @@ export function HeadCountConfirm({
           type="button"
           onClick={handleConfirm}
           disabled={numericCount <= 0 || confirming}
-          className="
-            w-full h-[48px] rounded-[10px]
-            bg-gold text-white font-bold text-[14px]
-            hover:bg-gold-hi transition-colors
-            disabled:opacity-40 disabled:cursor-not-allowed
-            flex items-center justify-center gap-[6px]
-          "
+          className="btn btn--rust w-full"
+          style={{ height: 48, justifyContent: 'center', gap: 'var(--s-2)' }}
         >
-          <CheckCircle2 size={16} />
+          <CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" />
           {confirming ? 'Confirming...' : `Confirm ${numericCount} aboard`}
         </button>
       </div>

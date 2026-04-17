@@ -39,7 +39,6 @@ export function StartTripFlow({
   const unsignedGuests = snapshot.guests.filter(g => !g.waiverSigned)
   const allChecked = checked.size === CHECKLIST_ITEMS.length
 
-  // Texas Party Boat Act: Dynamic trigger based on state, length, and guest count
   const complianceRules = useMemo(
     () => getComplianceRules(snapshot.stateCode, snapshot.boatType, snapshot.charterType),
     [snapshot.stateCode, snapshot.boatType, snapshot.charterType]
@@ -48,7 +47,6 @@ export function StartTripFlow({
     () => isPartyBoatTriggered(complianceRules, snapshot.lengthFt, snapshot.guests.length),
     [complianceRules, snapshot.lengthFt, snapshot.guests.length]
   )
-  // Block departure if party boat triggered but captain hasn't attested
   const canSlide = allChecked && (!partyBoatTriggered || hasPartyBoatLicense)
 
   function toggleCheck(id: ChecklistId) {
@@ -69,37 +67,26 @@ export function StartTripFlow({
   async function confirmStart() {
     setIsStarting(true)
     setStartError('')
-
     try {
-      const res = await fetch(
-        `/api/trips/${snapshot.slug}/start`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            snapshotToken: token,
-            captainName: snapshot.captainName,
-            confirmedGuestCount: snapshot.guests.length,
-            checklistConfirmed: true,
-            briefingAttestation: briefingAttestation ?? undefined,
-          }),
-        }
-      )
-
+      const res = await fetch(`/api/trips/${snapshot.slug}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          snapshotToken: token,
+          captainName: snapshot.captainName,
+          confirmedGuestCount: snapshot.guests.length,
+          checklistConfirmed: true,
+          briefingAttestation: briefingAttestation ?? undefined,
+        }),
+      })
       const json = await res.json()
-
       if (!res.ok) {
         setStartError(json.error ?? 'Failed to start trip')
         setSliderComplete(false)
         setShowConfirm(false)
         return
       }
-
-      onStarted({
-        startedAt: json.data.startedAt,
-        buoyPolicyId: json.data.buoyPolicyId,
-      })
-
+      onStarted({ startedAt: json.data.startedAt, buoyPolicyId: json.data.buoyPolicyId })
     } catch {
       setStartError('Connection error. Please try again.')
       setSliderComplete(false)
@@ -110,150 +97,132 @@ export function StartTripFlow({
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-paper)' }}>
 
-      {/* Header */}
-      <div className="bg-teal px-5 pt-6 pb-5 text-white">
-        <div className="flex items-center justify-between mb-3">
+      {/* Header — ink bg matching captain snapshot */}
+      <div style={{ background: 'var(--color-ink)', padding: 'var(--s-6) var(--s-5) var(--s-5)' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--s-3)' }}>
           <button
             onClick={onCancel}
-            className="text-white/70 hover:text-white text-[14px]"
+            className="btn btn--ghost btn--sm"
+            style={{ color: 'rgba(244,239,230,0.7)', paddingLeft: 0 }}
           >
             ← Back
           </button>
-          <span className="text-[13px] font-bold tracking-wider opacity-70">
-            PRE-DEPARTURE
+          <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', letterSpacing: '0.15em', color: 'rgba(244,239,230,0.4)', textTransform: 'uppercase', fontWeight: 600 }}>
+            Pre-Departure
           </span>
         </div>
-        <h1 className="text-[24px] font-bold">Ready to depart?</h1>
-        <p className="text-white/80 text-[14px] mt-1">
+        <h1 className="font-display" style={{ fontSize: 'var(--t-card)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-bone)', marginBottom: 'var(--s-1)' }}>
+          Ready to depart?
+        </h1>
+        <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'rgba(244,239,230,0.6)' }}>
           {snapshot.boatName} · {formatTripDate(snapshot.tripDate)} · {formatTime(snapshot.departureTime)}
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+      <div className="flex-1 overflow-y-auto" style={{ padding: 'var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
 
         {/* Unsigned waiver warning */}
         {unsignedGuests.length > 0 && (
-          <div className="p-4 bg-warn-dim rounded-[14px] border border-[#E5910A] border-opacity-30">
-            <p className="text-[14px] font-semibold text-warn mb-2">
-              {unsignedGuests.length} guest{unsignedGuests.length !== 1 ? 's' : ''} has not signed the waiver
-            </p>
-            <div className="space-y-1">
+          <div className="alert alert--warn" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <strong style={{ fontSize: 'var(--t-body-sm)' }}>
+              {unsignedGuests.length} guest{unsignedGuests.length !== 1 ? 's' : ''} {unsignedGuests.length !== 1 ? 'have' : 'has'} not signed the waiver
+            </strong>
+            <ul style={{ margin: 'var(--s-2) 0 0', paddingLeft: 'var(--s-4)', listStyle: 'disc' }}>
               {unsignedGuests.map(g => (
-                <p key={g.id} className="text-[13px] text-navy">
-                  · {g.fullName}
-                </p>
+                <li key={g.id} className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink)' }}>{g.fullName}</li>
               ))}
-            </div>
-            <p className="text-[12px] text-text-mid mt-2">
+            </ul>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 'var(--s-2)' }}>
               You may still proceed. Record this in your log.
             </p>
           </div>
         )}
 
         {/* Pre-departure checklist */}
-        <div className="bg-bg rounded-[14px] p-5">
-          <h2 className="text-[16px] font-semibold text-navy mb-4">
+        <div className="tile" style={{ padding: 'var(--s-5)' }}>
+          <h2 style={{ fontSize: 'var(--t-body-lg)', fontWeight: 600, color: 'var(--color-ink)', marginBottom: 'var(--s-1)' }}>
             Pre-departure checklist
           </h2>
-          <p className="text-[13px] text-text-mid mb-4">
+          <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-4)' }}>
             Confirm each item before sliding to start.
           </p>
-          <div className="space-y-1">
+          <div>
             {CHECKLIST_ITEMS.map(item => (
               <label
                 key={item.id}
-                className="flex items-center gap-3 py-3 cursor-pointer min-h-[48px]
-                           border-b border-border last:border-0"
+                className="flex items-center"
+                style={{ gap: 'var(--s-3)', padding: 'var(--s-3) 0', cursor: 'pointer', minHeight: 48, borderBottom: '1px dashed var(--color-line-soft)' }}
               >
                 <div
                   onClick={() => toggleCheck(item.id)}
                   className={cn(
-                    'w-6 h-6 rounded-[6px] border-2 flex items-center justify-center',
-                    'transition-all duration-150 flex-shrink-0',
-                    checked.has(item.id)
-                      ? 'bg-teal border-[#1D9E75]'
-                      : 'bg-white border-border'
+                    'check-box flex-shrink-0',
+                    checked.has(item.id) && 'bg-[var(--color-rust)] border-[var(--color-rust)]'
                   )}
+                  style={checked.has(item.id) ? { background: 'var(--color-rust)', borderColor: 'var(--color-rust)' } : {}}
                 >
                   {checked.has(item.id) && (
-                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2"
-                            strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="10" height="8" viewBox="0 0 12 10" fill="none">
+                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </div>
-                <span className={cn(
-                  'text-[15px] leading-tight',
-                  checked.has(item.id)
-                    ? 'text-text-mid line-through'
-                    : 'text-navy'
-                )}>
+                <span style={{
+                  fontSize: 'var(--t-body-md)',
+                  lineHeight: 1.35,
+                  color: checked.has(item.id) ? 'var(--color-ink-muted)' : 'var(--color-ink)',
+                  textDecoration: checked.has(item.id) ? 'line-through' : 'none',
+                }}>
                   {item.label}
                 </span>
               </label>
             ))}
           </div>
-
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-[13px] text-text-mid">
+          <div className="flex items-center justify-between" style={{ marginTop: 'var(--s-4)' }}>
+            <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', letterSpacing: '0.08em' }}>
               {checked.size} / {CHECKLIST_ITEMS.length} confirmed
             </span>
             {allChecked && (
-              <span className="text-[13px] font-semibold text-teal">
+              <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, color: 'var(--color-status-ok)', letterSpacing: '0.08em' }}>
                 All confirmed
               </span>
             )}
           </div>
         </div>
 
-        {/* Guest count */}
-        <div className="bg-[#EBF0F7] rounded-[14px] px-5 py-4">
-          <div className="flex items-center justify-between">
-            <p className="text-[15px] font-semibold text-navy">
-              Passengers on board
-            </p>
-            <span className="text-[22px] font-black text-[var(--color-navy)]">
-              {snapshot.guests.length}
-            </span>
-          </div>
+        {/* Passenger count KPI */}
+        <div className="kpi tile" style={{ textAlign: 'center', padding: 'var(--s-5)' }}>
+          <p className="kpi-label">Passengers on board</p>
+          <p className="kpi-value" style={{ fontSize: 'var(--t-sub)' }}>{snapshot.guests.length}</p>
         </div>
 
-        {/* ── Texas Party Boat Act Attestation ────────────────────── */}
+        {/* Texas Party Boat Act Attestation */}
         {partyBoatTriggered && (
-          <div className="p-5 bg-[#FFFBEB] rounded-[14px] border-2 border-[#F59E0B] border-opacity-40">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[20px]">🤠</span>
-              <h4 className="text-[14px] font-bold text-[#92400E] uppercase tracking-wider">
-                Texas Party Boat Act Triggered
-              </h4>
-            </div>
-            <p className="text-[13px] text-[#78350F] leading-relaxed mb-4">
+          <div className="alert alert--warn" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <h4 className="mono" style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-status-warn)', marginBottom: 'var(--s-2)' }}>
+              Texas Party Boat Act Triggered
+            </h4>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.6, marginBottom: 'var(--s-4)' }}>
               This vessel exceeds 30ft and is carrying more than 6 passengers.
               Texas Water Safety Act requires an annual TPWD inspection and a licensed operator.
             </p>
-            <label className="flex items-start gap-3 cursor-pointer">
+            <label className="flex items-start" style={{ gap: 'var(--s-3)', cursor: 'pointer' }}>
               <div className="mt-0.5 flex-shrink-0">
                 <div
                   onClick={() => setHasPartyBoatLicense(!hasPartyBoatLicense)}
-                  className={cn(
-                    'w-6 h-6 rounded-[6px] border-2 flex items-center justify-center',
-                    'transition-all duration-150',
-                    hasPartyBoatLicense
-                      ? 'bg-[#F59E0B] border-[#F59E0B]'
-                      : 'bg-white border-[#D97706]'
-                  )}
+                  className="check-box"
+                  style={hasPartyBoatLicense ? { background: 'var(--color-brass)', borderColor: 'var(--color-brass)' } : {}}
                 >
                   {hasPartyBoatLicense && (
-                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2"
-                            strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="10" height="8" viewBox="0 0 12 10" fill="none">
+                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </div>
               </div>
-              <span className="text-[13px] text-[#78350F] leading-relaxed">
+              <span style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.6 }}>
                 I certify under penalty of law that I hold a valid Texas Party Boat
                 Operator License and this vessel displays a current TPWD inspection decal.
               </span>
@@ -263,16 +232,14 @@ export function StartTripFlow({
 
         {/* Error */}
         {startError && (
-          <div className="p-4 bg-error-dim rounded-[12px]">
-            <p className="text-[14px] text-error font-medium">
-              {startError}
-            </p>
+          <div className="alert alert--err">
+            <span>{startError}</span>
           </div>
         )}
       </div>
 
       {/* Slider CTA */}
-      <div className="px-5 pb-10 pt-4 bg-white border-t border-border">
+      <div style={{ padding: 'var(--s-4) var(--s-5) var(--s-10)', background: 'var(--color-paper)', borderTop: '1px solid var(--color-line-soft)' }}>
         {canSlide ? (
           <SlideToConfirm
             label="SLIDE TO START TRIP"
@@ -281,94 +248,66 @@ export function StartTripFlow({
             color="teal"
           />
         ) : (
-          <div className="
-            w-full h-[64px] rounded-[14px]
-            bg-border flex items-center justify-center
-          ">
-            <span className="text-[15px] font-semibold text-text-mid">
-              {!allChecked
-                ? 'Complete checklist to continue'
-                : 'Complete compliance attestation above'}
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: '100%', height: 64,
+              borderRadius: 'var(--r-1)',
+              background: 'var(--color-bone)',
+              border: '1px solid var(--color-line)',
+            }}
+          >
+            <span className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', fontWeight: 600 }}>
+              {!allChecked ? 'Complete checklist to continue' : 'Complete compliance attestation above'}
             </span>
           </div>
         )}
       </div>
 
-      {/* Confirmation overlay */}
+      {/* Confirmation bottom sheet */}
       {showConfirm && (
-        <div className="
-          fixed inset-0 z-50 bg-[rgba(12,68,124,0.5)]
-          flex items-end
-        ">
-          <div className="
-            w-full bg-white rounded-t-[24px]
-            px-6 py-6 pb-10
-          ">
-            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-5" />
+        <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(11,30,45,0.55)' }}>
+          <div style={{ width: '100%', background: 'var(--color-paper)', borderTopLeftRadius: 'var(--r-1)', borderTopRightRadius: 'var(--r-1)', padding: 'var(--s-6) var(--s-6) var(--s-10)' }}>
+            <div style={{ width: 40, height: 3, background: 'var(--color-line)', borderRadius: 2, margin: '0 auto var(--s-5)' }} />
 
-            <h2 className="text-[22px] font-bold text-navy mb-2">
+            <h2 className="font-display" style={{ fontSize: 'var(--t-tile)', fontWeight: 500, color: 'var(--color-ink)', marginBottom: 'var(--s-2)' }}>
               Starting trip
             </h2>
-            <p className="text-[15px] text-text-mid mb-1">
-              {snapshot.boatName}
-            </p>
-            <p className="text-[14px] text-text-mid mb-5">
+            <p style={{ fontSize: 'var(--t-body-md)', color: 'var(--color-ink)', fontWeight: 500 }}>{snapshot.boatName}</p>
+            <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: 'var(--s-1) 0 var(--s-5)' }}>
               {formatTripDate(snapshot.tripDate)} · {formatTime(snapshot.departureTime)} · {snapshot.guests.length} passengers
             </p>
 
-            <div className="space-y-2">
-              <div className="flex items-start gap-2 text-[13px] text-text-mid">
-                <span className="text-teal">✓</span>
-                <span>Trip status set to Active</span>
-              </div>
-              <div className="flex items-start gap-2 text-[13px] text-text-mid">
-                <span className="text-teal">✓</span>
-                <span>Insurance policy activated via Buoy API</span>
-              </div>
-              <div className="flex items-start gap-2 text-[13px] text-text-mid">
-                <span className="text-teal">✓</span>
-                <span>Departure timestamp logged (USCG)</span>
-              </div>
-              <div className="flex items-start gap-2 text-[13px] text-text-mid">
-                <span className="text-teal">✓</span>
-                <span>Guests notified on their phones</span>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)', marginBottom: 'var(--s-6)' }}>
+              {[
+                'Trip status set to Active',
+                'Insurance policy activated via Buoy API',
+                'Departure timestamp logged (USCG)',
+                'Guests notified on their phones',
+              ].map(item => (
+                <div key={item} className="flex items-center" style={{ gap: 'var(--s-2)' }}>
+                  <span style={{ color: 'var(--color-status-ok)', fontWeight: 700, fontSize: '13px' }}>✓</span>
+                  <span style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)' }}>{item}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex" style={{ gap: 'var(--s-3)' }}>
               <button
-                onClick={() => {
-                  setShowConfirm(false)
-                  setSliderComplete(false)
-                }}
+                onClick={() => { setShowConfirm(false); setSliderComplete(false) }}
                 disabled={isStarting}
-                className="
-                  flex-1 h-[56px] rounded-[12px]
-                  border border-border text-text-mid
-                  font-semibold text-[15px]
-                  hover:bg-bg transition-colors
-                  disabled:opacity-40
-                "
+                className="btn flex-1"
+                style={{ height: 56, justifyContent: 'center' }}
               >
                 Cancel
               </button>
               <button
                 onClick={confirmStart}
                 disabled={isStarting}
-                className="
-                  flex-1 h-[56px] rounded-[12px]
-                  bg-teal text-white
-                  font-bold text-[16px]
-                  flex items-center justify-center gap-2
-                  hover:bg-[#178a64] transition-colors
-                  disabled:opacity-40
-                "
+                className="btn btn--rust flex-1"
+                style={{ height: 56, justifyContent: 'center', fontSize: 'var(--t-body-md)', fontWeight: 600 }}
               >
-                {isStarting ? (
-                  <AnchorLoader size="sm" color="white" />
-                ) : (
-                  'Start now'
-                )}
+                {isStarting ? <AnchorLoader size="sm" color="white" /> : 'Start now'}
               </button>
             </div>
           </div>

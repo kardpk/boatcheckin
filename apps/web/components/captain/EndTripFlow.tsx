@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Check, ArrowLeft } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { AnchorLoader } from '@/components/ui/AnchorLoader'
 import { SlideToConfirm } from '@/components/ui/SlideToConfirm'
 
@@ -22,7 +22,6 @@ export function EndTripFlow({
   const [error, setError] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
 
-  // Live elapsed time counter
   useEffect(() => {
     if (!startedAt) return
     function update() {
@@ -39,25 +38,18 @@ export function EndTripFlow({
   async function confirmEnd() {
     setIsEnding(true)
     setError('')
-
     try {
-      const res = await fetch(
-        `/api/trips/${tripSlug}/end`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ snapshotToken: token }),
-        }
-      )
-
+      const res = await fetch(`/api/trips/${tripSlug}/end`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ snapshotToken: token }),
+      })
       const json = await res.json()
-
       if (!res.ok) {
         setError(json.error ?? 'Failed to end trip')
         setShowConfirm(false)
         return
       }
-
       onEnded()
     } catch {
       setError('Connection error. Please try again.')
@@ -68,55 +60,60 @@ export function EndTripFlow({
   }
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col">
-      {/* Header */}
-      <div className="bg-[#E8593C] px-5 pt-6 pb-5 text-white">
-        <button onClick={onCancel} className="text-white/70 mb-3 text-[14px]">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-paper)' }}>
+
+      {/* Header — danger red bg */}
+      <div style={{ background: 'var(--color-status-err)', padding: 'var(--s-6) var(--s-5) var(--s-5)' }}>
+        <button
+          onClick={onCancel}
+          className="btn btn--ghost btn--sm"
+          style={{ color: 'rgba(244,239,230,0.7)', paddingLeft: 0, marginBottom: 'var(--s-3)' }}
+        >
           ← Back
         </button>
-        <h1 className="text-[24px] font-bold">End this charter?</h1>
-        <p className="text-white/80 text-[14px] mt-1">{boatName}</p>
+        <h1 className="font-display" style={{ fontSize: 'var(--t-card)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-bone)' }}>
+          End this charter?
+        </h1>
+        <p style={{ fontSize: 'var(--t-body-sm)', color: 'rgba(244,239,230,0.7)', marginTop: 'var(--s-1)' }}>{boatName}</p>
       </div>
 
-      <div className="flex-1 px-5 py-6 space-y-5">
+      <div className="flex-1" style={{ padding: 'var(--s-6) var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
 
-        {/* Duration */}
+        {/* Elapsed time KPI */}
         {elapsed && (
-          <div className="bg-white rounded-[14px] p-5 border border-border">
-            <p className="text-[13px] text-text-mid mb-1">Time since departure</p>
-            <p className="text-[28px] font-black text-navy">{elapsed}</p>
+          <div className="kpi tile" style={{ textAlign: 'center', padding: 'var(--s-5)' }}>
+            <p className="kpi-label">Time since departure</p>
+            <p className="kpi-value" style={{ fontSize: 'var(--t-sub)' }}>{elapsed}</p>
           </div>
         )}
 
-        {/* What happens */}
-        <div className="bg-white rounded-[14px] p-5 border border-border">
-          <p className="text-[14px] font-semibold text-navy mb-3">
+        {/* What happens tile */}
+        <div className="tile" style={{ padding: 'var(--s-5)' }}>
+          <p style={{ fontSize: 'var(--t-body-md)', fontWeight: 600, color: 'var(--color-ink)', marginBottom: 'var(--s-3)' }}>
             On ending:
           </p>
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
             {[
               'Trip marked as completed',
               'Insurance policy deactivated',
               'Guests sent review request (2hr delay)',
               'Trip postcards unlocked for guests',
             ].map(item => (
-              <div key={item} className="flex items-center gap-[6px]">
-                <Check size={14} className="text-teal" />
-                <span className="text-[14px] text-text-mid">{item}</span>
+              <div key={item} className="flex items-center" style={{ gap: 'var(--s-2)' }}>
+                <Check size={14} strokeWidth={2.5} style={{ color: 'var(--color-status-ok)', flexShrink: 0 }} />
+                <span style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)' }}>{item}</span>
               </div>
             ))}
           </div>
         </div>
 
         {error && (
-          <div className="p-4 bg-error-dim rounded-[12px]">
-            <p className="text-[14px] text-error">{error}</p>
-          </div>
+          <div className="alert alert--err"><span>{error}</span></div>
         )}
       </div>
 
       {/* Slider */}
-      <div className="px-5 pb-10 pt-4 bg-white border-t border-border">
+      <div style={{ padding: 'var(--s-4) var(--s-5) var(--s-10)', background: 'var(--color-paper)', borderTop: '1px solid var(--color-line-soft)' }}>
         <SlideToConfirm
           label="SLIDE TO END TRIP"
           onComplete={() => setShowConfirm(true)}
@@ -126,27 +123,29 @@ export function EndTripFlow({
 
       {/* Confirm overlay */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 bg-navy/50 flex items-end">
-          <div className="w-full bg-white rounded-t-[24px] px-[20px] py-[20px] pb-[32px]">
-            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-[18px]" />
-            <h2 className="text-[20px] font-bold text-navy mb-2">
+        <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(11,30,45,0.55)' }}>
+          <div style={{ width: '100%', background: 'var(--color-paper)', borderTopLeftRadius: 'var(--r-1)', borderTopRightRadius: 'var(--r-1)', padding: 'var(--s-5) var(--s-5) var(--s-8)' }}>
+            <div style={{ width: 40, height: 3, background: 'var(--color-line)', borderRadius: 2, margin: '0 auto var(--s-4)' }} />
+            <h2 className="font-display" style={{ fontSize: 'var(--t-tile)', fontWeight: 500, color: 'var(--color-ink)', marginBottom: 'var(--s-2)' }}>
               End charter?
             </h2>
-            <p className="text-[14px] text-text-mid mb-6">
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-6)' }}>
               This cannot be undone. The trip will be marked as completed.
             </p>
-            <div className="flex gap-3">
+            <div className="flex" style={{ gap: 'var(--s-3)' }}>
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={isEnding}
-                className="flex-1 h-[56px] rounded-[12px] border border-border text-text-mid font-semibold text-[15px] disabled:opacity-40"
+                className="btn flex-1"
+                style={{ height: 56, justifyContent: 'center' }}
               >
                 Cancel
               </button>
               <button
                 onClick={confirmEnd}
                 disabled={isEnding}
-                className="flex-1 h-[56px] rounded-[12px] bg-[#E8593C] text-white font-bold text-[16px] flex items-center justify-center gap-2 disabled:opacity-40"
+                className="btn btn--danger flex-1"
+                style={{ height: 56, justifyContent: 'center', fontSize: 'var(--t-body-md)', fontWeight: 600 }}
               >
                 {isEnding ? <AnchorLoader size="sm" color="white" /> : 'End trip'}
               </button>
