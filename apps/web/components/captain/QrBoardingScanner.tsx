@@ -197,22 +197,14 @@ export function QrBoardingScanner({
               onChange={e => setManualToken(e.target.value)}
               placeholder="Paste or type QR token..."
               autoFocus
-              className="
-                w-full h-[56px] rounded-[12px]
-                bg-white/10 border border-white/20
-                text-white text-[16px] px-4
-                placeholder:text-white/30
-                focus:outline-none focus:border-[#1D9E75]
-              "
+              className="field-input"
+              style={{ height: 56, background: 'rgba(244,239,230,0.08)', borderColor: 'rgba(244,239,230,0.2)', color: 'var(--color-bone)', fontSize: 'var(--t-body-md)', borderRadius: 'var(--r-1)' }}
             />
             <button
               type="submit"
               disabled={!manualToken.trim() || isProcessing}
-              className="
-                w-full h-[56px] rounded-[12px] mt-4
-                bg-teal text-white font-bold
-                text-[16px] disabled:opacity-40
-              "
+              className="btn btn--rust w-full"
+              style={{ height: 56, marginTop: 'var(--s-4)', justifyContent: 'center', fontSize: 'var(--t-body-md)' }}
             >
               {isProcessing ? 'Processing...' : 'Board Guest'}
             </button>
@@ -221,42 +213,32 @@ export function QrBoardingScanner({
 
         {/* Success toast */}
         {lastResult && (
-          <div className={cn(
-            'absolute inset-x-4 bottom-8 p-6 rounded-[14px]',
-            'flex items-center gap-4 animate-pulse',
-            lastResult.alreadyBoarded
-              ? 'bg-[#FFFBEB] border-2 border-[#F59E0B]'
-              : 'bg-[#E8F9F4] border-2 border-[#1D9E75]'
-          )}>
-            <span className="text-[48px]">
-              {lastResult.alreadyBoarded ? 'ℹ' : '✓'}
+          <div
+            className={lastResult.alreadyBoarded ? 'alert alert--warn' : 'alert alert--ok'}
+            style={{ position: 'absolute', left: 'var(--s-4)', right: 'var(--s-4)', bottom: 'var(--s-8)', padding: 'var(--s-5)', gap: 'var(--s-4)', borderRadius: 'var(--r-1)', animation: 'pulse 2s ease infinite' }}
+          >
+            <span style={{ fontSize: 36 }}>
+              {lastResult.alreadyBoarded ? '\u2139' : '\u2713'}
             </span>
             <div>
-              <p className={cn(
-                'text-[22px] font-black',
-                lastResult.alreadyBoarded ? 'text-[#92400E]' : 'text-teal'
-              )}>
+              <p className="mono" style={{ fontSize: 20, fontWeight: 700, letterSpacing: '0.05em' }}>
                 {lastResult.alreadyBoarded ? 'ALREADY BOARDED' : 'BOARDED'}
               </p>
-              <p className={cn(
-                'text-[16px] font-medium',
-                lastResult.alreadyBoarded ? 'text-[#78350F]' : 'text-[#065F46]'
-              )}>
-                {lastResult.guestName}
-              </p>
+              <p style={{ fontSize: 'var(--t-body-md)', marginTop: 2 }}>{lastResult.guestName}</p>
             </div>
           </div>
         )}
 
         {/* Error toast */}
         {error && (
-          <div className="absolute inset-x-4 bottom-8 p-6 rounded-[14px] bg-[#FEE2E2] border-2 border-[#DC2626]">
-            <div className="flex items-center gap-4">
-              <span className="text-error text-[24px] font-bold">✕</span>
-              <div>
-                <p className="text-[22px] font-black text-[#DC2626]">INVALID</p>
-                <p className="text-[14px] text-[#7F1D1D]">{error}</p>
-              </div>
+          <div
+            className="alert alert--err"
+            style={{ position: 'absolute', left: 'var(--s-4)', right: 'var(--s-4)', bottom: 'var(--s-8)', padding: 'var(--s-5)', gap: 'var(--s-4)', borderRadius: 'var(--r-1)' }}
+          >
+            <span style={{ fontSize: 20, fontWeight: 700 }}>\u2715</span>
+            <div>
+              <p className="mono" style={{ fontSize: 18, fontWeight: 700, letterSpacing: '0.05em' }}>INVALID</p>
+              <p style={{ fontSize: 'var(--t-body-sm)', marginTop: 2 }}>{error}</p>
             </div>
           </div>
         )}

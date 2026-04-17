@@ -42,7 +42,6 @@ export function LoginForm() {
       if (res?.error) {
         setError(res.error);
       } else {
-        // Read next param — validate to prevent open redirect
         const nextPath = searchParams.get('next');
         const safePath =
           nextPath && nextPath.startsWith('/dashboard')
@@ -60,35 +59,29 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      {/* Kicker */}
-      <div className="flex items-center gap-[10px] mb-3">
-        <span className="w-[24px] h-[1px] bg-[#B8882A]" />
-        <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#B8882A]">
+      {/* Kicker — mono brass rule */}
+      <div className="flex items-center" style={{ gap: 'var(--s-3)', marginBottom: 'var(--s-3)' }}>
+        <span style={{ width: 24, height: 1, background: 'var(--color-brass)', display: 'block', flexShrink: 0 }} />
+        <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-brass)', fontWeight: 600 }}>
           Operator sign in
         </span>
       </div>
 
-      {/* Heading */}
+      {/* Heading — Fraunces display §4.1 */}
       <h1
-        className="text-[clamp(28px,4vw,38px)] font-bold leading-[1.08] tracking-[-0.025em] text-white mb-2"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+        className="font-display"
+        style={{ fontSize: 'clamp(28px,4vw,38px)', fontWeight: 500, lineHeight: 1.08, letterSpacing: '-0.025em', color: 'var(--color-bone)', marginBottom: 'var(--s-2)' }}
       >
         Welcome back.
       </h1>
-      <p
-        className="text-[15px] font-normal text-[#9AADC4] mb-8 leading-relaxed"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic" }}
-      >
-        Sign in to manage your fleet, trips & compliance
+      <p style={{ fontSize: 'var(--t-body-md)', color: 'rgba(244,239,230,0.55)', marginBottom: 'var(--s-8)', lineHeight: 1.6 }}>
+        Sign in to manage your fleet, trips &amp; compliance
       </p>
 
-      <div className="flex flex-col gap-5">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
         {/* Email */}
-        <div>
-          <label
-            htmlFor="email"
-            className="text-[12px] font-semibold tracking-[0.06em] uppercase text-[#5A7090] block mb-2"
-          >
+        <div className="field">
+          <label htmlFor="email" className="field-label" style={{ color: 'rgba(244,239,230,0.55)' }}>
             Email address
           </label>
           <input
@@ -98,29 +91,21 @@ export function LoginForm() {
             required
             autoComplete="email"
             placeholder="hello@yourboat.com"
-            className="
-              w-full h-[48px] px-4 rounded-[4px]
-              bg-white/[0.04] border border-white/[0.12]
-              text-[15px] font-normal text-white
-              placeholder:text-white/20
-              focus:border-[#B8882A] focus:outline-none
-              transition-colors
-            "
+            className="field-input"
+            style={{ background: 'rgba(244,239,230,0.06)', borderColor: 'rgba(244,239,230,0.18)', color: 'var(--color-bone)' }}
           />
         </div>
 
         {/* Password */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label
-              htmlFor="password"
-              className="text-[12px] font-semibold tracking-[0.06em] uppercase text-[#5A7090]"
-            >
+        <div className="field">
+          <div className="flex items-center justify-between" style={{ marginBottom: 'var(--s-2)' }}>
+            <label htmlFor="password" className="field-label" style={{ color: 'rgba(244,239,230,0.55)', marginBottom: 0 }}>
               Password
             </label>
             <Link
               href="/forgot-password"
-              className="text-[12px] font-normal text-[#B8882A] hover:text-[#D4A84B] transition-colors no-underline tracking-[0.02em]"
+              className="mono"
+              style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-brass)', textDecoration: 'underline', textUnderlineOffset: 3, letterSpacing: '0.05em' }}
             >
               Forgot password?
             </Link>
@@ -132,22 +117,17 @@ export function LoginForm() {
               type={showPassword ? "text" : "password"}
               required
               placeholder="Enter your password"
-              className="
-                w-full h-[48px] px-4 pr-12 rounded-[4px]
-                bg-white/[0.04] border border-white/[0.12]
-                text-[15px] font-normal text-white
-                placeholder:text-white/20
-                focus:border-[#B8882A] focus:outline-none
-                transition-colors
-              "
+              className="field-input pr-12"
+              style={{ background: 'rgba(244,239,230,0.06)', borderColor: 'rgba(244,239,230,0.18)', color: 'var(--color-bone)' }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A7090] hover:text-[#9AADC4] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              style={{ color: 'rgba(244,239,230,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
             </button>
           </div>
         </div>
@@ -155,8 +135,8 @@ export function LoginForm() {
 
       {/* Error */}
       {error && (
-        <div className="mt-4 p-3 bg-[rgba(214,59,59,0.1)] border border-[rgba(214,59,59,0.3)] rounded-[4px]">
-          <p className="text-[13px] text-[#FF6B6B]">{error}</p>
+        <div className="alert alert--err" style={{ marginTop: 'var(--s-4)' }}>
+          <span>{error}</span>
         </div>
       )}
 
@@ -164,52 +144,36 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="
-          w-full h-[52px] mt-8
-          bg-[#B8882A] text-[#07101C]
-          font-semibold text-[14px] tracking-[0.04em]
-          rounded-[3px] border-none cursor-pointer
-          hover:bg-[#D4A84B] transition-all duration-200
-          disabled:opacity-50 disabled:cursor-not-allowed
-          flex items-center justify-center
-          hover:translate-y-[-1px]
-        "
+        className="btn btn--rust w-full"
+        style={{ height: 52, marginTop: 'var(--s-8)', justifyContent: 'center', fontSize: 'var(--t-body-sm)', letterSpacing: '0.04em' }}
       >
-        {loading ? (
-          <AnchorLoader size="sm" color="white" />
-        ) : (
-          "Sign in →"
-        )}
+        {loading ? <AnchorLoader size="sm" color="white" /> : "Sign in"}
       </button>
 
       {/* Divider */}
-      <div className="flex items-center gap-4 my-6">
-        <div className="flex-1 h-[1px] bg-white/[0.07]" />
-        <span className="text-[11px] font-normal text-[#5A7090] tracking-[0.1em]">
-          OR
-        </span>
-        <div className="flex-1 h-[1px] bg-white/[0.07]" />
+      <div className="flex items-center" style={{ gap: 'var(--s-4)', margin: 'var(--s-6) 0' }}>
+        <div style={{ flex: 1, height: 1, background: 'rgba(244,239,230,0.07)' }} />
+        <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.35)', letterSpacing: '0.1em' }}>OR</span>
+        <div style={{ flex: 1, height: 1, background: 'rgba(244,239,230,0.07)' }} />
       </div>
 
       {/* Footer link */}
-      <p className="text-[14px] text-[#9AADC4] text-center">
+      <p style={{ fontSize: 'var(--t-body-sm)', color: 'rgba(244,239,230,0.55)', textAlign: 'center' }}>
         New to BoatCheckin?{" "}
         <Link
           href="/signup"
-          className="text-[#B8882A] hover:text-[#D4A84B] transition-colors no-underline font-medium"
+          className="editorial-link"
+          style={{ color: 'var(--color-brass)', borderColor: 'var(--color-brass)', display: 'inline-flex' }}
         >
-          Start free trial →
+          Start free trial
         </Link>
       </p>
 
-      {/* Trust badges */}
-      <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+      {/* Trust badges — mono muted text */}
+      <div className="flex items-center justify-center" style={{ gap: 'var(--s-3)', marginTop: 'var(--s-6)', flexWrap: 'wrap' }}>
         {["No credit card", "14-day trial", "Cancel anytime"].map((t) => (
-          <span
-            key={t}
-            className="text-[10px] font-normal tracking-[0.06em] text-[#5A7090]"
-          >
-            {t}{" "}
+          <span key={t} className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.3)', letterSpacing: '0.06em' }}>
+            {t}
           </span>
         ))}
       </div>
