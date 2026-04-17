@@ -283,7 +283,9 @@ export interface WizardData {
   lat: number | null;
   lng: number | null;
 
-  // Step 3 — Captain
+  // Step 3 — Link crew (captain IDs selected from existing crew roster)
+  linkedCaptainIds: string[];
+  // Legacy captain fields (kept for draft compatibility, no longer used for INSERT)
   captainName: string;
   captainPhotoFile: File | null;
   captainPhotoPreview: string;
@@ -341,6 +343,7 @@ export const INITIAL_WIZARD_DATA: WizardData = {
   operatingArea: "",
   lat: null,
   lng: null,
+  linkedCaptainIds: [],
   captainName: "",
   captainPhotoFile: null,
   captainPhotoPreview: "",
@@ -373,7 +376,7 @@ export const INITIAL_WIZARD_DATA: WizardData = {
 export const STEP_TITLES: Record<number, string> = {
   1: "Vessel basics",
   2: "Marina & dock",
-  3: "Captain",
+  3: "Link crew",
   4: "Equipment",
   5: "Rules & conduct",
   6: "Packing guide",

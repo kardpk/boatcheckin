@@ -15,7 +15,7 @@ import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
 import { saveBoatProfile } from "./actions";
 import { Step1Vessel } from "./steps/Step1Vessel";
 import { Step2Marina } from "./steps/Step2Marina";
-import { Step3Captain } from "./steps/Step3Captain";
+import { Step3LinkCrew } from "./steps/Step3LinkCrew";
 import { Step4Equipment } from "./steps/Step4Equipment";
 import { Step5Rules } from "./steps/Step5Rules";
 import { Step6Packing } from "./steps/Step6Packing";
@@ -356,7 +356,7 @@ export function BoatWizard() {
               />
             )}
             {step === 2 && <Step2Marina data={data} onNext={goNext} template={template} />}
-            {step === 3 && <Step3Captain data={data} onNext={goNext} />}
+            {step === 3 && <Step3LinkCrew data={data} onNext={goNext} />}
             {step === 4 && <Step4Equipment data={data} onNext={goNext} template={template} loading={templateLoading} loadError={templateLoadError} onRetry={() => handleBoatTypeSelected(data.boatType as BoatTypeKey)} />}
             {step === 5 && <Step5Rules data={data} onNext={goNext} />}
             {step === 6 && <Step6Packing data={data} onNext={goNext} />}

@@ -196,88 +196,25 @@ export async function saveBoatProfile(data: {
       }
     }
 
-    // 7. Sync captain to captains table + captain_boat_links
-    // Defensive find-then-insert/update — works with or without migration 023 index.
-    if (data.captainName && data.captainName.trim()) {
-      const validLicenseTypes = [
-        'OUPV', 'Master 25 Ton', 'Master 50 Ton',
-        'Master 100 Ton', 'Master 200 Ton', 'Master Unlimited',
-        'Able Seaman', 'Other',
-      ];
-      const licenseType = validLicenseTypes.includes(data.captainLicenseType)
-        ? data.captainLicenseType
-        : null;
+    // 7. Link pre-existing crew members to this boat (selected on Step 3)
+    // Captains are managed exclusively via the Crew tab; the wizard only links them.
+    const linkedIds: string[] = Array.isArray(data.linkedCaptainIds)
+      ? data.linkedCaptainIds.filter(Boolean)
+      : [];
 
-      const captainPayload = {
-        operator_id:      operator.id,
-        full_name:        data.captainName.trim(),
-        bio:              data.captainBio || null,
-        photo_url:        data.captainPhotoUrl || null,
-        license_number:   data.captainLicense || null,
-        license_type:     licenseType,
-        languages:        data.captainLanguages.length > 0 ? data.captainLanguages : ['en'],
-        years_experience: data.captainYearsExp ? parseInt(data.captainYearsExp) : null,
-        certifications:   data.captainCertifications,
-        default_role:     'captain',
-        is_active:        true,
-        is_default:       false,
-        updated_at:       new Date().toISOString(),
-      };
+    if (linkedIds.length > 0) {
+      const linkRows = linkedIds.map((captainId) => ({
+        captain_id:  captainId,
+        boat_id:     boat.id,
+        operator_id: operator.id,
+      }));
 
-      // Step 1: look for an existing active captain with this name (case-insensitive)
-      const normalised = data.captainName.trim().toLowerCase();
-      const { data: existingCaptain } = await supabase
-        .from('captains')
-        .select('id')
-        .eq('operator_id', operator.id)
-        .eq('is_active', true)
-        .ilike('full_name', normalised)
-        .maybeSingle();
+      const { error: linkError } = await supabase
+        .from('captain_boat_links')
+        .upsert(linkRows, { onConflict: 'captain_id,boat_id', ignoreDuplicates: true });
 
-      let captainId: string | null = null;
-
-      if (existingCaptain?.id) {
-        // Step 2a: UPDATE existing captain row
-        const { error: updateErr } = await supabase
-          .from('captains')
-          .update(captainPayload)
-          .eq('id', existingCaptain.id)
-          .eq('operator_id', operator.id);
-        if (updateErr) {
-          console.error('[saveBoatProfile] captain UPDATE failed (non-fatal):', updateErr);
-        } else {
-          captainId = existingCaptain.id;
-        }
-      } else {
-        // Step 2b: INSERT new captain row
-        const { data: newCaptain, error: insertErr } = await supabase
-          .from('captains')
-          .insert(captainPayload)
-          .select('id')
-          .single();
-        if (insertErr || !newCaptain) {
-          console.error('[saveBoatProfile] captain INSERT failed (non-fatal):', insertErr);
-        } else {
-          captainId = newCaptain.id;
-        }
-      }
-
-      if (captainId) {
-        // Link captain to boat (idempotent INSERT ignore duplicate)
-        const { error: linkError } = await supabase
-          .from('captain_boat_links')
-          .upsert(
-            {
-              captain_id:  captainId,
-              boat_id:     boat.id,
-              operator_id: operator.id,
-              role:        'captain',
-            },
-            { onConflict: 'captain_id,boat_id', ignoreDuplicates: true }
-          );
-        if (linkError) {
-          console.error('[saveBoatProfile] captain_boat_links upsert failed (non-fatal):', linkError);
-        }
+      if (linkError) {
+        console.error('[saveBoatProfile] captain_boat_links upsert failed (non-fatal):', linkError);
       }
     }
 
