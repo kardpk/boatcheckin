@@ -1,40 +1,82 @@
 -- =============================================
--- Migration 023: Unique constraint on captains (operator_id, full_name)
+-- Migration 023 (REVISED): Captains unique index
 --
--- Required for the wizard captain upsert (ON CONFLICT DO UPDATE).
--- Without this unique index the upsert falls back to INSERT-only
--- and can create duplicate captain rows for the same operator.
+-- Problem: migration 017 copied boats.captain_name → captains and created
+-- duplicate (operator_id, full_name) pairs.  We must deduplicate BEFORE
+-- adding the unique index or the index creation will fail.
+--
+-- Steps:
+--   1. Remove hard duplicates (keep newest, discard older copies)
+--   2. Create partial unique index on active rows
 -- =============================================
 
--- The captain_boat_links upsert already uses (captain_id, boat_id)
--- which has a UNIQUE constraint from migration 020.
+-- ─────────────────────────────────────────────
+-- 1. Deduplicate captains table
+--    Keep the NEWEST row per (operator_id, lower(trim(full_name)))
+--    Hard-delete the older duplicates that have NO trip assignments.
+-- ─────────────────────────────────────────────
 
--- Add unique index on captains(operator_id, full_name) for upsert support.
--- We normalise with LOWER(TRIM(...)) so "Captain Rivera" and "captain rivera"
--- are treated as the same person.  However, Supabase's .upsert() onConflict
--- requires a plain expression index (not a functional one) that maps to a
--- real unique constraint.  We use a case-insensitive collation-aware index
--- and a partial approach: index on (operator_id, lower(full_name)).
+-- Identify the IDs to keep (newest per normalised name per operator)
+WITH ranked AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (
+      PARTITION BY operator_id, lower(trim(full_name))
+      ORDER BY created_at DESC
+    ) AS rn
+  FROM captains
+),
+keep_ids AS (
+  SELECT id FROM ranked WHERE rn = 1
+),
+-- Identify the duplicates that are safe to delete
+-- (no trip_assignments referencing them)
+safe_to_delete AS (
+  SELECT c.id
+  FROM captains c
+  LEFT JOIN ranked r ON r.id = c.id
+  LEFT JOIN trip_assignments ta ON ta.captain_id = c.id
+  WHERE r.rn > 1           -- it's a duplicate
+    AND ta.id IS NULL      -- no trip assignment references it
+)
+DELETE FROM captains
+WHERE id IN (SELECT id FROM safe_to_delete);
 
-CREATE UNIQUE INDEX IF NOT EXISTS captains_operator_name_idx
-  ON captains (operator_id, lower(trim(full_name)));
+-- For any remaining duplicates that DO have trip assignments,
+-- soft-delete them so the unique index (partial on is_active=true)
+-- doesn't conflict.
+WITH ranked AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (
+      PARTITION BY operator_id, lower(trim(full_name))
+      ORDER BY created_at DESC
+    ) AS rn
+  FROM captains
+  WHERE is_active = true
+)
+UPDATE captains
+SET is_active = false
+WHERE id IN (
+  SELECT id FROM ranked WHERE rn > 1
+);
 
--- Ensure the index is used as the conflict target by creating a matching
--- unique constraint (Postgres < 15 needs this for DO UPDATE):
-ALTER TABLE captains
-  DROP CONSTRAINT IF EXISTS captains_operator_name_key;
+-- ─────────────────────────────────────────────
+-- 2. Add partial unique index on active rows
+--    Scoped to is_active = true so deactivated records
+--    never conflict with newly created ones.
+-- ─────────────────────────────────────────────
 
--- Note: we cannot use a functional expression in a standard UNIQUE constraint.
--- The upsert in actions.ts matches on 'operator_id,full_name' (exact).
--- To stay compatible we add a plain unique constraint on the trimmed value
--- via a generated column approach — but that requires PG 12+ generated columns.
--- Simplest solution: use plain unique index on (operator_id, full_name) and
--- normalise the name in application code before inserting.
+-- Drop old indexes if they were partially created before this migration failed
+DROP INDEX IF EXISTS captains_operator_name_idx;
+DROP INDEX IF EXISTS captains_operator_exact_name_idx;
 
--- Plain unique constraint (application must normalise case before insert):
-CREATE UNIQUE INDEX IF NOT EXISTS captains_operator_exact_name_idx
+-- Create the unique partial index
+-- The upsert in actions.ts uses onConflict: 'operator_id,full_name'
+-- which Supabase maps to this index.
+CREATE UNIQUE INDEX captains_operator_name_idx
   ON captains (operator_id, full_name)
   WHERE is_active = true;
 
-COMMENT ON INDEX captains_operator_exact_name_idx IS
-  'Allows upsert by (operator_id, full_name) for wizard-created captains. Application normalises name case before insert.';
+COMMENT ON INDEX captains_operator_name_idx IS
+  'Unique per active captain name per operator. Used by wizard upsert (ON CONFLICT DO UPDATE). Soft-deleted captains are excluded (is_active = false).';

@@ -2,14 +2,39 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Plus, Trash2, Package, Utensils, Camera, Waves,
+  Wine, Music, Fuel, Check, ChevronDown, Info,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { ContinueButton } from "@/components/ui/ContinueButton";
 import { WizardField } from "@/components/ui/WizardField";
 import { validateUpload } from "@/lib/security/uploads";
 import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
 import type { WizardData, WizardAddon, BoatTypeKey } from "../types";
 
-const MAX_PHOTOS = 12;
+// ─── MASTER_DESIGN R1: no emojis — map addon name → lucide icon ───
+function addonCategoryIcon(name: string): LucideIcon {
+  const n = name.toLowerCase();
+  if (/chef|food|meal|cater|picnic|lunch|dinner/.test(n)) return Utensils;
+  if (/photo|camera|photog/.test(n)) return Camera;
+  if (/dive|snorkel|surf|wakeboard|wake|water.*sport|water.*toy|tube|towable/.test(n)) return Waves;
+  if (/champagne|wine|bar|beverage|spirit|bottle|cocktail|drink/.test(n)) return Wine;
+  if (/music|band|dj|entertain/.test(n)) return Music;
+  if (/fuel|surcharge|extend/.test(n)) return Fuel;
+  return Package; // default
+}
+
+// Preset icon options for custom addon icon picker
+const ADDON_ICON_OPTIONS: { Icon: LucideIcon; label: string }[] = [
+  { Icon: Package,  label: "Service" },
+  { Icon: Utensils, label: "Food" },
+  { Icon: Camera,   label: "Photo" },
+  { Icon: Waves,    label: "Water" },
+  { Icon: Wine,     label: "Drinks" },
+  { Icon: Music,    label: "Music" },
+];
+
 
 interface Step9Props {
   data: WizardData;
@@ -28,7 +53,7 @@ export function Step9Photos({ data, onNext, saving, template }: Step9Props) {
   const [showCustomAddon, setShowCustomAddon] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customDesc, setCustomDesc] = useState("");
-  const [customEmoji, setCustomEmoji] = useState("🎁");
+  const [customIconIdx, setCustomIconIdx] = useState(0); // index into ADDON_ICON_OPTIONS
   const [customPrice, setCustomPrice] = useState("");
   const [customMaxQty, setCustomMaxQty] = useState("10");
 
@@ -95,14 +120,14 @@ export function Step9Photos({ data, onNext, saving, template }: Step9Props) {
       id: `addon-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name: customName.trim(),
       description: customDesc.trim(),
-      emoji: customEmoji,
+      emoji: "",  // emoji field kept for DB compat but unused in UI
       priceCents: Math.round(parseFloat(customPrice || "0") * 100),
       maxQuantity: parseInt(customMaxQty) || 10,
     };
     setAddons((prev) => [...prev, addon]);
     setCustomName("");
     setCustomDesc("");
-    setCustomEmoji("🎁");
+    setCustomIconIdx(0);
     setCustomPrice("");
     setCustomMaxQty("10");
     setShowCustomAddon(false);
@@ -205,10 +230,287 @@ export function Step9Photos({ data, onNext, saving, template }: Step9Props) {
 
       {/* SECTION 2 — Add-ons */}
       <div>
-        <h3 className="text-h3 text-dark-text">Add-on menu</h3>
-        <p className="text-caption text-grey-text mt-micro">
-          Items guests can pre-order before arriving. You earn the full amount.
-        </p>
+        {/* Section header */}
+        <div style={{ marginBottom: 'var(--s-3)' }}>
+          <h3
+            className="font-display"
+            style={{ fontSize: 'var(--t-body-lg)', fontWeight: 500, color: 'var(--color-ink)' }}
+          >
+            Add-on menu
+          </h3>
+          <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 2 }}>
+            Items guests can request before arriving. You earn the full amount.
+          </p>
+        </div>
+
+        {/* Beta banner — polished, no infrastructure mention */}
+        <div
+          className="alert alert--info"
+          style={{ marginBottom: 'var(--s-5)', display: 'flex', alignItems: 'flex-start', gap: 'var(--s-3)' }}
+        >
+          <Info size={15} strokeWidth={1.75} style={{ flexShrink: 0, marginTop: 1, color: 'var(--color-status-info)' }} aria-hidden="true" />
+          <div>
+            <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 500, color: 'var(--color-ink)' }}>
+              Add-on payments are not available in the Beta.
+            </p>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 2 }}>
+              Your menu is saved and will activate automatically when we launch.
+            </p>
+          </div>
+        </div>
+
+        {/* Suggested add-ons */}
+        {template && template.suggestedAddons.length > 0 && (
+          <div style={{ marginBottom: 'var(--s-4)' }}>
+            <p
+              className="mono"
+              style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-2)' }}
+            >
+              Suggested for {template.label}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-1)' }}>
+              {template.suggestedAddons
+                .filter((s) => !addedAddonNames.has(s.name))
+                .map((s) => {
+                  const AddonIcon = addonCategoryIcon(s.name);
+                  return (
+                    <div
+                      key={s.name}
+                      className="tile"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: 'var(--s-3) var(--s-4)',
+                        gap: 'var(--s-3)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)', flex: 1, minWidth: 0 }}>
+                        {/* Icon tile — no emoji */}
+                        <div
+                          style={{
+                            width: 36, height: 36, flexShrink: 0,
+                            borderRadius: 'var(--r-1)',
+                            background: 'var(--color-bone)',
+                            border: '1px solid var(--color-line-soft)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                        >
+                          <AddonIcon size={16} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} aria-hidden="true" />
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 500, color: 'var(--color-ink)', lineHeight: 1.3 }}>{s.name}</p>
+                          <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 1 }}>{s.description}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => addFromSuggestion(s)}
+                        className="btn btn--ghost btn--sm"
+                        style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+                      >
+                        Add to menu
+                      </button>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
+        {/* Active add-ons */}
+        {addons.length > 0 && (
+          <div style={{ marginBottom: 'var(--s-4)' }}>
+            <p
+              className="mono"
+              style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-2)' }}
+            >
+              Your menu ({addons.length} item{addons.length !== 1 ? 's' : ''})
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+              {addons.map((addon) => {
+                const AddonIcon = addonCategoryIcon(addon.name);
+                return (
+                  <div
+                    key={addon.id}
+                    className="tile"
+                    style={{
+                      padding: 'var(--s-4)',
+                      borderLeft: '3px solid var(--color-brass)',
+                    }}
+                  >
+                    {/* Row: icon + name/desc + remove */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--s-3)', marginBottom: 'var(--s-3)' }}>
+                      <div
+                        style={{
+                          width: 32, height: 32, flexShrink: 0,
+                          borderRadius: 'var(--r-1)',
+                          background: 'var(--color-bone)',
+                          border: '1px solid var(--color-line-soft)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                      >
+                        <AddonIcon size={14} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} aria-hidden="true" />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 500, color: 'var(--color-ink)' }}>{addon.name}</p>
+                        {addon.description && (
+                          <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 2 }}>{addon.description}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => removeAddon(addon.id)}
+                        style={{ color: 'var(--color-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0 }}
+                        aria-label="Remove add-on"
+                      >
+                        <Trash2 size={14} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                    {/* Price + qty row */}
+                    <div style={{ display: 'flex', gap: 'var(--s-5)' }}>
+                      <WizardField label="Price" htmlFor={`price-${addon.id}`}>
+                        <div style={{ position: 'relative' }}>
+                          <span style={{ position: 'absolute', left: 'var(--s-3)', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-ink-muted)', fontSize: 'var(--t-body-sm)' }}>$</span>
+                          <input
+                            id={`price-${addon.id}`}
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            value={(addon.priceCents / 100).toFixed(2)}
+                            onChange={(e) => updateAddonPrice(addon.id, e.target.value)}
+                            className="field-input"
+                            style={{ width: 120, paddingLeft: 'var(--s-5)' }}
+                          />
+                        </div>
+                      </WizardField>
+                      <WizardField label="Max qty" htmlFor={`qty-${addon.id}`}>
+                        <input
+                          id={`qty-${addon.id}`}
+                          type="number"
+                          min={1}
+                          value={addon.maxQuantity}
+                          onChange={(e) => updateAddonQty(addon.id, e.target.value)}
+                          className="field-input"
+                          style={{ width: 80 }}
+                        />
+                      </WizardField>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Custom add-on form */}
+        {showCustomAddon ? (
+          <div
+            className="tile"
+            style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}
+          >
+            {/* Icon picker — 6 preset category icons */}
+            <div>
+              <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-2)' }}>Icon</p>
+              <div style={{ display: 'flex', gap: 'var(--s-2)', flexWrap: 'wrap' }}>
+                {ADDON_ICON_OPTIONS.map(({ Icon, label }, idx) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => setCustomIconIdx(idx)}
+                    style={{
+                      width: 40, height: 40,
+                      borderRadius: 'var(--r-1)',
+                      border: customIconIdx === idx ? '2px solid var(--color-brass)' : '1px solid var(--color-line)',
+                      background: customIconIdx === idx ? 'var(--color-bone)' : 'var(--color-paper)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
+                    }}
+                    aria-label={label}
+                    title={label}
+                  >
+                    <Icon size={16} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} aria-hidden="true" />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <input
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              placeholder="Add-on name"
+              className="field-input"
+            />
+            <input
+              value={customDesc}
+              onChange={(e) => setCustomDesc(e.target.value)}
+              placeholder="Short description (optional)"
+              className="field-input"
+            />
+            <div style={{ display: 'flex', gap: 'var(--s-4)' }}>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 'var(--s-3)', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-ink-muted)', fontSize: 'var(--t-body-sm)' }}>$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={customPrice}
+                  onChange={(e) => setCustomPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="field-input"
+                  style={{ width: 120, paddingLeft: 'var(--s-5)' }}
+                />
+              </div>
+              <input
+                type="number"
+                min={1}
+                value={customMaxQty}
+                onChange={(e) => setCustomMaxQty(e.target.value)}
+                placeholder="Max qty"
+                className="field-input"
+                style={{ width: 80 }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 'var(--s-2)' }}>
+              <button
+                onClick={addCustomAddon}
+                disabled={!customName.trim()}
+                className="btn btn--rust btn--sm"
+              >
+                <Check size={14} strokeWidth={2.5} /> Save
+              </button>
+              <button
+                onClick={() => setShowCustomAddon(false)}
+                className="btn btn--ghost btn--sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowCustomAddon(true)}
+            className="btn btn--ghost btn--sm"
+            style={{ gap: 'var(--s-1)', color: 'var(--color-ink-muted)' }}
+          >
+            <Plus size={14} strokeWidth={2} aria-hidden="true" />
+            Add custom item
+          </button>
+        )}
+
+        {/* Skip */}
+        <div style={{ marginTop: 'var(--s-4)' }}>
+          <button
+            type="button"
+            onClick={handleContinue}
+            style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Skip for now — I&apos;ll add these later
+          </button>
+        </div>
+      </div>
+
+      <ContinueButton onClick={handleContinue} loading={saving ?? false}>Save boat profile →</ContinueButton>
+    </div>
+  );
+}
+
 
         {/* Suggested add-ons */}
         {template && template.suggestedAddons.length > 0 && (

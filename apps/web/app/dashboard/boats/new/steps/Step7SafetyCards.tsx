@@ -27,9 +27,10 @@ import {
   Shield,
   ShieldCheck,
   Upload,
-  AlertTriangle,
+  TriangleAlert,
   Check,
   Loader2,
+  ImageOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ContinueButton } from "@/components/ui/ContinueButton";
@@ -141,29 +142,140 @@ function SortableCardRow({
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={cn(
-        "border rounded-card bg-white overflow-hidden",
-        isDragging ? "shadow-lg opacity-80 border-navy" : "border-border",
-        !card.image_url && !card.preview && "border-dashed border-warning-text/30"
-      )}
+      style={{
+        ...style,
+        borderRadius: 'var(--r-1)',
+        border: isDragging
+          ? '2px solid var(--color-brass)'
+          : '1px solid var(--color-line)',
+        background: 'var(--color-paper)',
+        overflow: 'hidden',
+        boxShadow: isDragging ? 'var(--shadow-float)' : 'none',
+        opacity: isDragging ? 0.85 : 1,
+      }}
     >
-      <div className="flex items-start gap-standard p-standard">
+      {/* ─── HEADER ZONE ─── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--s-2)',
+          padding: 'var(--s-2) var(--s-3)',
+          background: 'var(--color-bone)',
+          borderBottom: '1px solid var(--color-line-soft)',
+        }}
+      >
         {/* Drag handle */}
         <button
           {...attributes}
           {...listeners}
-          className="mt-[2px] cursor-grab text-grey-text touch-none shrink-0"
+          className="touch-none"
+          style={{
+            background: 'none', border: 'none', cursor: 'grab',
+            color: 'var(--color-ink-muted)', opacity: 0.4,
+            display: 'flex', alignItems: 'center', flexShrink: 0, padding: '2px 4px',
+          }}
           aria-label="Drag to reorder"
         >
-          <GripVertical size={14} />
+          <GripVertical size={14} strokeWidth={1.5} />
         </button>
 
-        {/* Image preview / upload zone */}
+        {/* Topic title */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {card.topic_key === 'custom' ? (
+            <input
+              value={card.custom_title || ''}
+              onChange={(e) => onUpdate({ custom_title: e.target.value })}
+              placeholder="Custom topic name"
+              style={{
+                width: '100%',
+                background: 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--color-line)',
+                padding: '2px 0',
+                fontSize: 'var(--t-body-sm)',
+                fontWeight: 500,
+                color: 'var(--color-ink)',
+                outline: 'none',
+              }}
+            />
+          ) : (
+            <p
+              className="font-display"
+              style={{
+                fontSize: 'var(--t-body-sm)',
+                fontWeight: 500,
+                color: 'var(--color-ink)',
+                lineHeight: 1.3,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {displayLabel}
+            </p>
+          )}
+        </div>
+
+        {/* USCG pill — amber severity */}
+        {isRequired && (
+          <span
+            className="pill pill--warn"
+            style={{ fontSize: 'var(--t-mono-xs)', flexShrink: 0 }}
+          >
+            USCG
+          </span>
+        )}
+
+        {/* Delete / clear */}
+        <button
+          onClick={() => {
+            if (isRequired) {
+              onUpdate({ image_url: null, preview: '', file: null });
+            } else {
+              onDelete();
+            }
+          }}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--color-ink-muted)', padding: 4, flexShrink: 0,
+            display: 'flex', alignItems: 'center',
+          }}
+          title={isRequired ? 'Clear image (required topic)' : 'Remove card'}
+          aria-label={isRequired ? 'Clear image' : 'Remove card'}
+        >
+          <Trash2 size={14} strokeWidth={1.5} />
+        </button>
+      </div>
+
+      {/* ─── CONTENT ZONE ─── */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 'var(--s-3)',
+          padding: 'var(--s-3)',
+          alignItems: 'flex-start',
+        }}
+      >
+        {/* Photo upload — 96×72, dashed brass border when empty */}
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="w-[80px] h-[60px] rounded-[8px] overflow-hidden bg-off-white shrink-0 relative group cursor-pointer border border-border hover:border-navy/30 transition-colors"
+          style={{
+            width: 96, height: 72, flexShrink: 0,
+            borderRadius: 'var(--r-1)',
+            overflow: 'hidden',
+            position: 'relative',
+            cursor: 'pointer',
+            border: (card.preview || card.image_url)
+              ? '1px solid var(--color-line)'
+              : '1.5px dashed var(--color-brass)',
+            background: (card.preview || card.image_url)
+              ? 'transparent'
+              : 'var(--color-bone)',
+            transition: 'border-color var(--dur-fast)',
+          }}
+          aria-label="Upload photo"
         >
           {card.preview || card.image_url ? (
             <>
@@ -174,20 +286,42 @@ function SortableCardRow({
                 className="object-cover"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-navy/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Camera size={16} className="text-white" />
+              {/* Hover overlay */}
+              <div
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(11,30,45,0.45)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  opacity: 0,
+                  transition: 'opacity var(--dur-fast)',
+                }}
+                className="group-hover-overlay"
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.opacity = '1')}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.opacity = '0')}
+              >
+                <Camera size={18} strokeWidth={1.5} style={{ color: '#fff' }} />
               </div>
             </>
+          ) : uploading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+              <Loader2 size={18} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)', animation: 'spin 1s linear infinite' }} />
+            </div>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-micro">
-              {uploading ? (
-                <Loader2 size={16} className="text-navy animate-spin" />
-              ) : (
-                <>
-                  <Upload size={14} className="text-grey-text" />
-                  <span className="text-[9px] text-grey-text">Upload</span>
-                </>
-              )}
+            <div
+              style={{
+                height: '100%',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 4,
+              }}
+            >
+              <Upload size={16} strokeWidth={1.5} style={{ color: 'var(--color-brass)' }} />
+              <span
+                className="mono"
+                style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', lineHeight: 1.2 }}
+              >
+                Add photo
+              </span>
             </div>
           )}
         </button>
@@ -198,70 +332,31 @@ function SortableCardRow({
           accept="image/jpeg,image/png,image/webp"
           onChange={handleFileSelect}
           className="hidden"
+          aria-hidden="true"
         />
 
-        {/* Topic label + instructions */}
-        <div className="flex-1 space-y-tight min-w-0">
-          <div className="flex items-center gap-micro">
-            <span className="text-[14px]">{displayEmoji}</span>
-            {card.topic_key === "custom" ? (
-              <input
-                value={card.custom_title || ""}
-                onChange={(e) => onUpdate({ custom_title: e.target.value })}
-                placeholder="Custom topic name"
-                className="flex-1 h-[28px] px-tight border border-border rounded-input text-label text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
-              />
-            ) : (
-              <span className="text-label text-dark-text truncate">
-                {displayLabel}
-              </span>
-            )}
-            {isRequired && (
-              <span className="text-[9px] text-navy bg-light-blue px-[6px] py-[1px] rounded-pill font-medium shrink-0">
-                USCG
-              </span>
-            )}
-          </div>
-          <textarea
-            value={card.instructions}
-            onChange={(e) => onUpdate({ instructions: e.target.value })}
-            placeholder="Where is this located on YOUR boat? (e.g. Port-side bench seat, under helm console)"
-            rows={2}
-            className="w-full p-tight border border-border rounded-input text-[13px] text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none resize-none"
-          />
-        </div>
-
-        {/* Delete */}
-        <button
-          onClick={() => {
-            if (isRequired) {
-              // Don't delete USCG required cards, just clear the image
-              onUpdate({ image_url: null, preview: "", file: null });
-            } else {
-              onDelete();
-            }
+        {/* Instructions */}
+        <textarea
+          value={card.instructions}
+          onChange={(e) => onUpdate({ instructions: e.target.value })}
+          placeholder="Describe where this equipment is located on YOUR boat…"
+          style={{
+            flex: 1,
+            minHeight: 88,
+            padding: 'var(--s-2) var(--s-3)',
+            border: '1px solid var(--color-line)',
+            borderRadius: 'var(--r-1)',
+            fontSize: 'var(--t-body-sm)',
+            color: 'var(--color-ink)',
+            background: 'var(--color-paper)',
+            outline: 'none',
+            resize: 'none',
+            lineHeight: 1.5,
           }}
-          className={cn(
-            "transition-colors shrink-0 mt-[2px]",
-            isRequired
-              ? "text-grey-text/40 hover:text-warning-text"
-              : "text-grey-text hover:text-error-text"
-          )}
-          title={isRequired ? "Clear image (required topic cannot be removed)" : "Remove card"}
-        >
-          <Trash2 size={14} />
-        </button>
+          onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-line-dark)'; }}
+          onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-line)'; }}
+        />
       </div>
-
-      {/* Missing image warning for required cards */}
-      {isRequired && !card.image_url && !card.preview && (
-        <div className="px-standard pb-tight -mt-tight">
-          <p className="text-[10px] text-warning-text flex items-center gap-micro">
-            <AlertTriangle size={10} />
-            Photo recommended for USCG compliance
-          </p>
-        </div>
-      )}
     </div>
   );
 }
@@ -414,14 +509,21 @@ export function Step7SafetyCards({ data, onNext }: Step7Props) {
       </div>
 
       {/* Progress indicator */}
-      <div className="flex items-center justify-between px-tight">
-        <p className="text-caption text-grey-text">
-          {uploadedCount}/{safetyCards.length} cards have photos ·{" "}
-          {requiredWithImage}/{requiredCount} required topics covered
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 var(--s-1)', marginBottom: 'var(--s-3)' }}>
+        <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)' }}>
+          {uploadedCount}/{safetyCards.length} cards have photos
+          {requiredWithImage < requiredCount && (
+            <span style={{ color: 'var(--color-status-warn)', marginLeft: 'var(--s-2)' }}>
+              · {requiredCount - requiredWithImage} required {requiredCount - requiredWithImage === 1 ? 'topic' : 'topics'} still need a photo
+            </span>
+          )}
         </p>
         {requiredWithImage === requiredCount && requiredCount > 0 && (
-          <span className="text-[11px] text-success-text font-medium flex items-center gap-micro">
-            <Check size={12} /> Compliant
+          <span
+            className="pill pill--ok"
+            style={{ fontSize: 'var(--t-mono-xs)' }}
+          >
+            <Check size={10} strokeWidth={2.5} aria-hidden="true" /> All required
           </span>
         )}
       </div>
@@ -464,9 +566,10 @@ export function Step7SafetyCards({ data, onNext }: Step7Props) {
             <button
               type="button"
               onClick={addCustomCard}
-              className="w-full py-standard border-2 border-dashed border-border hover:border-navy/40 rounded-card flex items-center justify-center gap-micro text-label text-navy hover:text-mid-blue transition-all"
+              className="btn btn--ghost"
+              style={{ width: '100%', justifyContent: 'center', gap: 'var(--s-2)', marginTop: 'var(--s-1)' }}
             >
-              <Plus size={16} />
+              <Plus size={16} strokeWidth={1.75} aria-hidden="true" />
               Add custom safety card
             </button>
           )}
