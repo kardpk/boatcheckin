@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   Ship, MapPin, Users, Calendar, Anchor, ChevronLeft, UserCog,
 } from "lucide-react";
+import { BoatQRSection } from "./BoatQRSection";
 
 interface BoatDetailPageProps {
   params: Promise<{ id: string }>;
@@ -158,6 +159,15 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
         >
           Create trip →
         </Link>
+      </div>
+
+      {/* Dock QR Code */}
+      <div className="mt-section">
+        <BoatQRSection
+          boatId={boat.id as string}
+          boatName={boat.boat_name as string}
+          publicSlug={(boat.public_slug as string) ?? ''}
+        />
       </div>
     </div>
   );

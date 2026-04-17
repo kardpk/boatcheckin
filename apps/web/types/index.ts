@@ -131,6 +131,7 @@ export interface BoatProfile {
   cancellationPolicy: string | null;
   addons: AddonItem[];
   photoUrl: string | null;
+  publicSlug: string;   // stable 32-char hex slug for /board/[publicSlug] QR URL
   createdAt: string;
 }
 

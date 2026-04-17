@@ -85,6 +85,89 @@
   --radius-chip: 8px;
   --radius-modal: 20px;
   --radius-badge: 5px;
+
+  /* ══════════════════════════════════════════════════════
+     MASTER_DESIGN.md v1.0 — Canonical Token System
+     Maritime editorial: paper · ink · rust · brass
+     Fonts: Fraunces (display) · Inter (body) · JetBrains Mono (data)
+     ══════════════════════════════════════════════════════ */
+
+  /* Core palette */
+  --color-ink:        #0B1E2D;
+  --color-ink-soft:   #1A2F42;
+  --color-ink-muted:  #3D5568;
+  --color-bone:       #F4EFE6;
+  --color-bone-warm:  #EDE6D8;
+  --color-paper:      #FAF7F0;
+  --color-paper-warm: #F6F0E4;
+
+  /* Accent palette */
+  --color-rust:       #B84A1F;
+  --color-rust-deep:  #8A3515;
+  --color-rust-soft:  #E8A585;
+  --color-brass:      #C8A14A;
+  --color-brass-deep: #9E7D2E;
+  --color-sea:        #2D5D6E;
+  --color-sea-deep:   #1A3F4D;
+  --color-sand:       #D9CFB8;
+
+  /* Status palette */
+  --color-status-ok:        #1F6B52;
+  --color-status-ok-soft:   #D4E5DC;
+  --color-status-warn:      #B5822A;
+  --color-status-warn-soft: #F2E4C4;
+  --color-status-err:       #A8361E;
+  --color-status-err-soft:  #F2D5CC;
+  --color-status-info:      #2D5D6E;
+  --color-status-info-soft: #CBD9DD;
+
+  /* Lines & borders */
+  --color-line:        #0B1E2D;
+  --color-line-soft:   rgba(11, 30, 45, 0.12);
+  --color-line-softer: rgba(11, 30, 45, 0.06);
+
+  /* Radii (MASTER_DESIGN scale) */
+  --r-0:    0px;
+  --r-1:    2px;
+  --r-2:    4px;
+  --r-pill: 9999px;
+
+  /* Shadows */
+  --shadow-lift:    8px 8px 0 #0B1E2D;
+  --shadow-float:   0 4px 24px rgba(11, 30, 45, 0.08);
+  --shadow-inset:   inset 0 1px 0 rgba(11, 30, 45, 0.04);
+
+  /* Spacing (MASTER_DESIGN scale) */
+  --s-1:  4px;  --s-2:  8px;  --s-3:  12px; --s-4:  16px;
+  --s-5:  20px; --s-6:  24px; --s-8:  32px; --s-10: 40px;
+  --s-12: 48px; --s-16: 64px; --s-20: 80px; --s-24: 96px;
+  --s-30: 120px;
+
+  /* Typography sizes */
+  --t-mono-xs: 10px; --t-mono-sm: 11px; --t-mono-md: 13px;
+  --t-body-sm: 13px; --t-body-md: 15px; --t-body-lg: 17px;
+  --t-lede: 19px;    --t-tile: 22px;    --t-card: 28px;
+  --t-sub: 36px;     --t-section: 48px; --t-hero: 86px;
+
+  /* Fonts */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+
+  /* Motion */
+  --ease:          cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:      150ms;
+  --dur:           250ms;
+  --dur-slow:      400ms;
+
+  /* Focus */
+  --focus-ring:       0 0 0 3px rgba(184, 74, 31, 0.25);
+  --focus-ring-error: 0 0 0 3px rgba(168, 54, 30, 0.25);
+
+  /* Border */
+  --border-w:      1.5px;
+  --border-w-heavy: 2px;
 }
 
 /* ============================================

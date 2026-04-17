@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
@@ -15,6 +16,29 @@ const blMelody = localFont({
   ],
   display: "swap",
   variable: "--font-blmelody",
+});
+
+// MASTER_DESIGN.md fonts
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  weight: ["400", "500", "600", "700", "900"],
+  display: "swap",
+  variable: "--font-fraunces",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-jetbrains",
 });
 
 export const metadata: Metadata = {
@@ -38,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={blMelody.variable} suppressHydrationWarning>
+    <html lang="en" className={`${blMelody.variable} ${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
         {children}
         <Script
