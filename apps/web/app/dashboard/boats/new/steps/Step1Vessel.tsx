@@ -2,41 +2,45 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import {
+  ChevronDown, ChevronUp, Info,
+  Ship, Fish, Wind, Zap, Users, Waves, Compass, Gauge,
+  Sunrise, Anchor, Home, HelpCircle, Bike,
+} from "lucide-react";
 import { z } from "zod";
 import { cn } from "@/lib/utils/cn";
 import { AnchorLoader } from "@/components/ui/AnchorLoader";
 import { WizardField } from "@/components/ui/WizardField";
 import { ContinueButton } from "@/components/ui/ContinueButton";
-
+import type { LucideIcon } from "lucide-react";
 import type { WizardData, BoatTypeKey, CharterType } from "../types";
 
-const BOAT_TYPES: { key: BoatTypeKey; emoji: string; label: string; desc: string }[] = [
-  { key: "motor_yacht", emoji: "", label: "Motor Yacht", desc: "Luxury captained vessel" },
-  { key: "fishing_charter", emoji: "", label: "Fishing Charter", desc: "Sportfishing experiences" },
-  { key: "catamaran", emoji: "⛵", label: "Catamaran (Sailing)", desc: "Stable sailing multihull" },
-  { key: "power_catamaran", emoji: "", label: "Catamaran (Power)", desc: "Engine-powered multihull" },
-  { key: "pontoon", emoji: "", label: "Pontoon / Party", desc: "High-capacity leisure" },
-  { key: "snorkel_dive", emoji: "🤿", label: "Snorkel / Dive", desc: "Reef & diving experiences" },
-  { key: "sailing_yacht", emoji: "🌬️", label: "Sailing Yacht", desc: "Classic sailing experience" },
-  { key: "speedboat", emoji: "💨", label: "Speedboat", desc: "Speed & day trips" },
-  { key: "wake_sports", emoji: "🏄", label: "Wake Sports", desc: "Wakeboard & wakesurf" },
-  { key: "sunset_cruise", emoji: "", label: "Sunset Cruise", desc: "Tours & sightseeing" },
-  { key: "center_console", emoji: "", label: "Center Console", desc: "Versatile fishing & cruising" },
-  { key: "houseboat", emoji: "", label: "Houseboat", desc: "Live-aboard multi-day charter" },
-  { key: "pwc", emoji: "🏍️", label: "Jet Ski / PWC", desc: "Personal watercraft rentals" },
-  { key: "other", emoji: "", label: "Other", desc: "Custom vessel type" },
+// ─── MASTER_DESIGN R1: NO emojis — lucide icons only ───
+const BOAT_TYPES: { key: BoatTypeKey; Icon: LucideIcon; label: string; desc: string }[] = [
+  { key: "motor_yacht",      Icon: Ship,        label: "Motor Yacht",         desc: "Luxury captained vessel" },
+  { key: "fishing_charter",  Icon: Fish,        label: "Fishing Charter",     desc: "Sportfishing experiences" },
+  { key: "catamaran",        Icon: Wind,        label: "Catamaran (Sailing)", desc: "Stable sailing multihull" },
+  { key: "power_catamaran",  Icon: Zap,         label: "Catamaran (Power)",   desc: "Engine-powered multihull" },
+  { key: "pontoon",          Icon: Users,       label: "Pontoon / Party",     desc: "High-capacity leisure" },
+  { key: "snorkel_dive",     Icon: Waves,       label: "Snorkel / Dive",      desc: "Reef & diving experiences" },
+  { key: "sailing_yacht",    Icon: Compass,     label: "Sailing Yacht",       desc: "Classic sailing experience" },
+  { key: "speedboat",        Icon: Gauge,       label: "Speedboat",           desc: "Speed & day trips" },
+  { key: "wake_sports",      Icon: Waves,       label: "Wake Sports",         desc: "Wakeboard & wakesurf" },
+  { key: "sunset_cruise",    Icon: Sunrise,     label: "Sunset Cruise",       desc: "Tours & sightseeing" },
+  { key: "center_console",   Icon: Anchor,      label: "Center Console",      desc: "Versatile fishing & cruising" },
+  { key: "houseboat",        Icon: Home,        label: "Houseboat",           desc: "Live-aboard multi-day charter" },
+  { key: "pwc",              Icon: Bike,        label: "Jet Ski / PWC",       desc: "Personal watercraft rentals" },
+  { key: "other",            Icon: HelpCircle,  label: "Other",               desc: "Custom vessel type" },
 ];
 
 const CHARTER_OPTIONS: {
   value: CharterType;
-  emoji: string;
   title: string;
   body: string;
 }[] = [
-  { value: "captained", emoji: "", title: "Captained", body: "You or a captain drives" },
-  { value: "bareboat", emoji: "", title: "Bareboat", body: "Guests operate the boat" },
-  { value: "both", emoji: "", title: "Both options", body: "Offer either type" },
+  { value: "captained", title: "Captained",    body: "You or a captain drives" },
+  { value: "bareboat",  title: "Bareboat",     body: "Guests operate the boat" },
+  { value: "both",      title: "Both options", body: "Offer either type" },
 ];
 
 const US_STATES = [
@@ -47,24 +51,18 @@ const US_STATES = [
 ];
 
 const step1Schema = z.object({
-  boatType: z.string().min(1, "Please select a boat type"),
-  boatName: z.string().min(2, "Please enter your boat name"),
-  charterType: z.enum(["captained", "bareboat", "both"], {
-    message: "Please select charter type",
-  }),
+  boatType:    z.string().min(1, "Please select a boat type"),
+  boatName:    z.string().min(2, "Please enter your boat name"),
+  charterType: z.enum(["captained", "bareboat", "both"], { message: "Please select charter type" }),
   maxCapacity: z.number().min(1, "Must have at least 1 passenger").max(500),
 });
 
 function getInfoBanner(type: BoatTypeKey): string | null {
   switch (type) {
-    case "fishing_charter":
-      return "Florida vessel charter license information will be covered in Step 4";
-    case "sailing_yacht":
-      return "Bareboat certification requirements will be covered in Step 4";
-    case "snorkel_dive":
-      return "Certification requirements will be covered in Step 4";
-    default:
-      return null;
+    case "fishing_charter": return "Florida vessel charter license information will be covered in Step 4";
+    case "sailing_yacht":   return "Bareboat certification requirements will be covered in Step 4";
+    case "snorkel_dive":    return "Certification requirements will be covered in Step 4";
+    default:                return null;
   }
 }
 
@@ -81,14 +79,12 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
   const [boatName, setBoatName] = useState(data.boatName);
   const [charterType, setCharterType] = useState<CharterType | "">(data.charterType);
   const [maxCapacity, setMaxCapacity] = useState(data.maxCapacity);
-  const [lengthFt, setLengthFt] = useState(data.lengthFt);
+  // NOTE: lengthFt removed from Step 1 — lives exclusively in Step 4 type-specific block
   const [yearBuilt, setYearBuilt] = useState(data.yearBuilt);
   const [showUSCG, setShowUSCG] = useState(!!data.uscgDocNumber);
   const [uscgDocNumber, setUscgDocNumber] = useState(data.uscgDocNumber);
   const [registrationState, setRegistrationState] = useState(data.registrationState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Track if we just selected a type (for loading animation)
   const [justSelected, setJustSelected] = useState(false);
 
   function handleTypeSelect(type: BoatTypeKey) {
@@ -96,15 +92,12 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
     setBoatType(type);
     setLoading(true);
     setJustSelected(true);
-
-    // Simulate brief loading for template loading visual feedback
     setTimeout(() => {
       onBoatTypeSelected(type);
       setLoading(false);
     }, 800);
   }
 
-  // Clear justSelected after form appears
   useEffect(() => {
     if (justSelected && !loading) {
       const timer = setTimeout(() => setJustSelected(false), 300);
@@ -137,7 +130,7 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
       boatType: boatType as BoatTypeKey,
       charterType: charterType as CharterType,
       maxCapacity,
-      lengthFt,
+      // lengthFt intentionally NOT passed — input removed from Step 1
       yearBuilt,
       uscgDocNumber,
       registrationState,
@@ -157,25 +150,62 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
           <p className="text-[12px] text-error-text mb-tight">{errors.boatType}</p>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-tight">
-          {BOAT_TYPES.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => handleTypeSelect(t.key)}
-              className={cn(
-                "h-[90px] rounded-[12px] p-standard text-left transition-all",
-                boatType === t.key
-                  ? "border-2 border-navy bg-gold-dim"
-                  : "border border-border bg-white hover:bg-bg"
-              )}
-            >
-              <span className="text-[32px] block leading-none">{t.emoji}</span>
-              <p className="text-[14px] font-semibold text-dark-text mt-micro leading-tight">
-                {t.label}
-              </p>
-              <p className="text-[11px] text-grey-text leading-tight">{t.desc}</p>
-            </button>
-          ))}
+          {BOAT_TYPES.map((t) => {
+            const isSelected = boatType === t.key;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => handleTypeSelect(t.key)}
+                style={{
+                  minHeight: 88,
+                  borderRadius: 'var(--r-1)',
+                  padding: 'var(--s-3)',
+                  textAlign: 'left',
+                  border: isSelected
+                    ? '2px solid var(--color-brass)'
+                    : '1px solid var(--color-line)',
+                  background: isSelected ? 'var(--color-bone)' : 'var(--color-paper)',
+                  transition: 'border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--s-2)',
+                }}
+              >
+                {/* Icon — no emoji */}
+                <t.Icon
+                  size={18}
+                  strokeWidth={1.5}
+                  style={{ color: isSelected ? 'var(--color-ink)' : 'var(--color-ink-muted)' }}
+                  aria-hidden="true"
+                />
+                <div>
+                  <p
+                    className="font-display"
+                    style={{
+                      fontSize: 'var(--t-body-sm)',
+                      fontWeight: 500,
+                      lineHeight: 1.2,
+                      color: 'var(--color-ink)',
+                    }}
+                  >
+                    {t.label}
+                  </p>
+                  <p
+                    className="mono"
+                    style={{
+                      fontSize: 'var(--t-mono-xs)',
+                      color: 'var(--color-ink-muted)',
+                      marginTop: 2,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {t.desc}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -183,9 +213,7 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
       {(loading || templateLoading) && boatType && (
         <div className="flex items-center justify-center gap-tight py-section">
           <AnchorLoader size="sm" color="navy" />
-          <span className="text-label text-grey-text">
-            Loading boat settings…
-          </span>
+          <span className="text-label text-grey-text">Loading boat settings…</span>
         </div>
       )}
 
@@ -211,7 +239,7 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
                 />
               </WizardField>
 
-              {/* Charter type — radio cards */}
+              {/* Charter type */}
               <WizardField label="How is the boat operated?" required error={errors.charterType}>
                 <div className="grid grid-cols-3 gap-tight">
                   {CHARTER_OPTIONS.map((opt) => (
@@ -219,16 +247,28 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
                       key={opt.value}
                       type="button"
                       onClick={() => setCharterType(opt.value)}
-                      className={cn(
-                        "border rounded-card p-standard text-left transition-all",
-                        charterType === opt.value
-                          ? "border-navy bg-light-blue"
-                          : "border-border bg-white hover:border-border-dark"
-                      )}
+                      style={{
+                        borderRadius: 'var(--r-1)',
+                        padding: 'var(--s-3)',
+                        textAlign: 'left',
+                        border: charterType === opt.value
+                          ? '2px solid var(--color-ink)'
+                          : '1px solid var(--color-line)',
+                        background: charterType === opt.value ? 'var(--color-bone)' : 'var(--color-paper)',
+                        transition: 'border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease)',
+                      }}
                     >
-                      <span className="text-[20px]">{opt.emoji}</span>
-                      <p className="text-label text-dark-text mt-micro">{opt.title}</p>
-                      <p className="text-[11px] text-grey-text mt-[2px]">{opt.body}</p>
+                      <p
+                        className="font-display"
+                        style={{ fontSize: 'var(--t-body-sm)', fontWeight: 500, color: 'var(--color-ink)' }}
+                      >
+                        {opt.title}
+                      </p>
+                      <p
+                        style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 2 }}
+                      >
+                        {opt.body}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -255,21 +295,6 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
                 />
               </WizardField>
 
-              {/* Vessel length */}
-              <WizardField label="Vessel length (ft)" htmlFor="lengthFt">
-                <input
-                  id="lengthFt"
-                  type="number"
-                  inputMode="numeric"
-                  min={10}
-                  max={500}
-                  value={lengthFt}
-                  onChange={(e) => setLengthFt(e.target.value)}
-                  placeholder="42"
-                  className="w-full h-[44px] px-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
-                />
-              </WizardField>
-
               {/* Year built */}
               <WizardField label="Year built" htmlFor="yearBuilt">
                 <input
@@ -277,7 +302,7 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
                   type="number"
                   inputMode="numeric"
                   min={1950}
-                  max={2026}
+                  max={2030}
                   value={yearBuilt}
                   onChange={(e) => setYearBuilt(e.target.value)}
                   placeholder="e.g. 2019"
@@ -285,7 +310,7 @@ export function Step1Vessel({ data, onNext, onBoatTypeSelected, templateLoading 
                 />
               </WizardField>
 
-              {/* USCG Documentation */}
+              {/* USCG Documentation — collapsible */}
               <div className="border border-border rounded-card overflow-hidden">
                 <button
                   type="button"

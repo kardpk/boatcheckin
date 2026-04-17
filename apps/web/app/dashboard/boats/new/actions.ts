@@ -51,6 +51,7 @@ export async function saveBoatProfile(data: {
   captainTripCount: string;
   captainRating: string;
   captainCertifications: string[];
+  captainPhotoUrl: string; // pre-uploaded URL from client (empty string if none)
 
   selectedEquipment: string[];
   selectedAmenities: Record<string, boolean>;
@@ -182,7 +183,7 @@ export async function saveBoatProfile(data: {
         operator_id: operator.id,
         name: addon.name,
         description: addon.description || null,
-        emoji: addon.emoji || "🎁",
+        emoji: addon.emoji || "",
         price_cents: addon.priceCents,
         max_quantity: addon.maxQuantity || 10,
         sort_order: i,
@@ -190,10 +191,69 @@ export async function saveBoatProfile(data: {
       }));
 
       const { error: addonsError } = await supabase.from("addons").insert(addonRows);
-
       if (addonsError) {
         console.error("[saveBoatProfile] addons INSERT failed:", addonsError);
-        // Non-fatal — boat was saved, addons can be added later
+      }
+    }
+
+    // 7. Sync captain to captains table + captain_boat_links (Option A)
+    if (data.captainName && data.captainName.trim()) {
+      // Normalised license_type: only insert if it matches the CHECK constraint
+      const validLicenseTypes = [
+        'OUPV', 'Master 25 Ton', 'Master 50 Ton',
+        'Master 100 Ton', 'Master 200 Ton', 'Master Unlimited',
+        'Able Seaman', 'Other',
+      ];
+      const licenseType = validLicenseTypes.includes(data.captainLicenseType)
+        ? data.captainLicenseType
+        : null;
+
+      // Upsert into captains — match on (operator_id, full_name) via DO UPDATE
+      // Uses service client (bypasses RLS) since this runs server-side
+      const { data: captainRow, error: captainError } = await supabase
+        .from('captains')
+        .upsert(
+          {
+            operator_id:      operator.id,
+            full_name:        data.captainName.trim(),
+            bio:              data.captainBio || null,
+            photo_url:        data.captainPhotoUrl || null,
+            license_number:   data.captainLicense || null,
+            license_type:     licenseType,
+            languages:        data.captainLanguages.length > 0 ? data.captainLanguages : ['en'],
+            years_experience: data.captainYearsExp ? parseInt(data.captainYearsExp) : null,
+            certifications:   data.captainCertifications,
+            default_role:     'captain',
+            is_active:        true,
+            updated_at:       new Date().toISOString(),
+          },
+          {
+            // Match on name per operator; update all fields on conflict
+            onConflict: 'operator_id,full_name',
+            ignoreDuplicates: false,
+          }
+        )
+        .select('id')
+        .single();
+
+      if (captainError || !captainRow) {
+        // Non-fatal: captain sync failure shouldn't abort boat creation
+        console.error('[saveBoatProfile] captain upsert failed (non-fatal):', captainError);
+      } else {
+        // Link captain to the newly created boat
+        const { error: linkError } = await supabase
+          .from('captain_boat_links')
+          .upsert(
+            {
+              captain_id:  captainRow.id,
+              boat_id:     boat.id,
+              operator_id: operator.id,
+            },
+            { onConflict: 'captain_id,boat_id', ignoreDuplicates: true }
+          );
+        if (linkError) {
+          console.error('[saveBoatProfile] captain_boat_links INSERT failed (non-fatal):', linkError);
+        }
       }
     }
 

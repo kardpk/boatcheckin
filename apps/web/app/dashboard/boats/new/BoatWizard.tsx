@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
+import { createBrowserClient } from "@supabase/ssr";
 import {
   INITIAL_WIZARD_DATA,
   STEP_TITLES,
@@ -23,15 +24,22 @@ import { Step8Waiver } from "./steps/Step8Waiver";
 import { Step9Photos } from "./steps/Step9Photos";
 import { StepComplete } from "./steps/StepComplete";
 
+// ─── MASTER_DESIGN §16: Editorial fade + 24px drift (not mechanical full-slide)
 const variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
+    x: direction > 0 ? 24 : -24,
     opacity: 0,
+    filter: "blur(3px)",
   }),
-  center: { x: 0, opacity: 1 },
+  center: {
+    x: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+  },
   exit: (direction: number) => ({
-    x: direction < 0 ? "100%" : "-100%",
+    x: direction < 0 ? 24 : -24,
     opacity: 0,
+    filter: "blur(3px)",
   }),
 };
 
@@ -130,6 +138,33 @@ export function BoatWizard() {
       setSaving(true);
       setSaveError(null);
       try {
+        // ── Photo upload (client-side, before server action) ──
+        // Server actions can't receive File objects (not serialisable).
+        // We upload captain photo directly from the browser using the public anon key
+        // (storage bucket must allow authenticated uploads).
+        let captainPhotoUrl = "";
+        if (merged.captainPhotoFile instanceof File) {
+          try {
+            const supabaseBrowser = createBrowserClient(
+              process.env.NEXT_PUBLIC_SUPABASE_URL!,
+              process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            );
+            const ext = merged.captainPhotoFile.name.split(".").pop() ?? "webp";
+            const path = `captain-photos/${Date.now()}.${ext}`;
+            const { data: uploadData, error: uploadError } = await supabaseBrowser.storage
+              .from("captain-photos")
+              .upload(path, merged.captainPhotoFile, { upsert: true, contentType: merged.captainPhotoFile.type });
+            if (!uploadError && uploadData) {
+              const { data: urlData } = supabaseBrowser.storage
+                .from("captain-photos")
+                .getPublicUrl(uploadData.path);
+              captainPhotoUrl = urlData.publicUrl;
+            }
+          } catch (photoErr) {
+            // Non-fatal — proceed without photo
+            console.warn("[BoatWizard] captain photo upload failed:", photoErr);
+          }
+        }
         const result = await saveBoatProfile({
           boatName: merged.boatName,
           boatType: merged.boatType as string,
@@ -155,6 +190,7 @@ export function BoatWizard() {
           captainTripCount: merged.captainTripCount,
           captainRating: merged.captainRating,
           captainCertifications: merged.captainCertifications,
+          captainPhotoUrl,  // uploaded above (empty string if no photo or upload failed)
           selectedEquipment: merged.selectedEquipment,
           selectedAmenities: merged.selectedAmenities,
           specificFieldValues: merged.specificFieldValues,
@@ -306,7 +342,7 @@ export function BoatWizard() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            transition={{ duration: 0.18, ease: [0.25, 0.1, 0.25, 1] }}
           >
             {step === 1 && (
               <Step1Vessel

@@ -18,10 +18,64 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Trash2, Plus, X, Check } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Plus, X, Check, AlertCircle, CheckCircle2, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ContinueButton } from "@/components/ui/ContinueButton";
 import type { WizardData, CustomRuleSection } from "../types";
+
+// ─── Variant config ───
+
+type RuleVariant = "rules" | "dos" | "donts" | "custom";
+
+const VARIANT_CONFIG: Record<
+  RuleVariant,
+  {
+    heading: string;
+    subheading: string;
+    pillClass: string;
+    pillLabel: string;
+    PillIcon: typeof AlertCircle;
+    stripeColor: string;
+    addLabel: string;
+  }
+> = {
+  rules: {
+    heading: "House Rules",
+    subheading: "Non-negotiable vessel rules for every charter.",
+    pillClass: "pill pill--err",
+    pillLabel: "Required",
+    PillIcon: AlertCircle,
+    stripeColor: "var(--color-status-err)",
+    addLabel: "Add house rule",
+  },
+  dos: {
+    heading: "DOs — What we encourage",
+    subheading: "Positive guidance shown to guests.",
+    pillClass: "pill pill--ok",
+    pillLabel: "Encouraged",
+    PillIcon: CheckCircle2,
+    stripeColor: "var(--color-status-ok)",
+    addLabel: "Add a DO",
+  },
+  donts: {
+    heading: "DON'Ts — What's not allowed",
+    subheading: "Prohibited behaviours shown to guests.",
+    pillClass: "pill pill--warn",
+    pillLabel: "Prohibited",
+    PillIcon: TriangleAlert,
+    stripeColor: "var(--color-status-warn)",
+    addLabel: "Add a DON'T",
+  },
+  custom: {
+    heading: "",
+    subheading: "",
+    pillClass: "pill pill--ghost",
+    pillLabel: "Custom",
+    PillIcon: Plus,
+    stripeColor: "var(--color-line)",
+    addLabel: "Add item",
+  },
+};
 
 // ─── Sortable item ───
 
@@ -30,18 +84,18 @@ function SortableRuleItem({
   text,
   onEdit,
   onDelete,
+  stripeColor,
 }: {
   id: string;
   text: string;
   onEdit: (newText: string) => void;
   onDelete: () => void;
+  stripeColor: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(text);
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -50,73 +104,133 @@ function SortableRuleItem({
   };
 
   function saveEdit() {
-    if (editText.trim()) {
-      onEdit(editText.trim());
-    }
+    if (editText.trim()) onEdit(editText.trim());
     setEditing(false);
   }
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={cn(
-        "flex items-center gap-tight py-tight px-standard border border-border rounded-input bg-white group",
-        isDragging && "shadow-lg opacity-80"
-      )}
+      style={{
+        ...style,
+        display: "flex",
+        alignItems: "center",
+        background: "var(--color-paper)",
+        border: "1px solid var(--color-line-soft)",
+        borderRadius: "var(--r-1)",
+        borderLeft: `3px solid ${stripeColor}`,
+        minHeight: 44,
+        opacity: isDragging ? 0.75 : 1,
+        boxShadow: isDragging ? "var(--shadow-float)" : "none",
+      }}
     >
-      <button {...attributes} {...listeners} className="cursor-grab text-grey-text hover:text-dark-text touch-none">
-        <GripVertical size={14} />
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="touch-none flex-shrink-0"
+        style={{
+          padding: "0 var(--s-2) 0 var(--s-3)",
+          color: "var(--color-ink-muted)",
+          cursor: "grab",
+          opacity: 0.4,
+          display: "flex",
+          alignItems: "center",
+          height: "100%",
+          background: "none",
+          border: "none",
+        }}
+        aria-label="Drag to reorder"
+      >
+        <GripVertical size={14} strokeWidth={1.5} />
       </button>
 
+      {/* Content */}
       {editing ? (
-        <div className="flex-1 flex items-center gap-tight">
+        <div className="flex-1 flex items-center" style={{ gap: "var(--s-2)", padding: "var(--s-2) var(--s-2) var(--s-2) 0" }}>
           <input
             autoFocus
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && saveEdit()}
-            className="flex-1 h-[32px] px-tight border border-border rounded-input text-body text-dark-text focus:border-border-dark focus:outline-none"
+            className="flex-1"
+            style={{
+              height: 32,
+              padding: "0 var(--s-2)",
+              border: "1px solid var(--color-line)",
+              borderRadius: "var(--r-1)",
+              fontSize: "var(--t-body-sm)",
+              color: "var(--color-ink)",
+              background: "var(--color-paper)",
+              outline: "none",
+            }}
           />
-          <button onClick={saveEdit} className="text-success-text"><Check size={14} /></button>
-          <button onClick={() => setEditing(false)} className="text-grey-text"><X size={14} /></button>
+          <button
+            onClick={saveEdit}
+            style={{ color: "var(--color-status-ok)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+            aria-label="Save edit"
+          >
+            <Check size={14} strokeWidth={2.5} />
+          </button>
+          <button
+            onClick={() => setEditing(false)}
+            style={{ color: "var(--color-ink-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+            aria-label="Cancel edit"
+          >
+            <X size={14} strokeWidth={2} />
+          </button>
         </div>
       ) : (
         <>
-          <span className="flex-1 text-body text-dark-text">{text}</span>
-          <button
-            onClick={() => { setEditText(text); setEditing(true); }}
-            className="opacity-0 group-hover:opacity-100 text-grey-text hover:text-dark-text transition-opacity"
+          <span
+            className="flex-1"
+            style={{ fontSize: "var(--t-body-sm)", color: "var(--color-ink)", padding: "var(--s-2) 0", lineHeight: 1.45 }}
           >
-            <Pencil size={14} />
-          </button>
-          <button
-            onClick={onDelete}
-            className="opacity-0 group-hover:opacity-100 text-grey-text hover:text-error-text transition-opacity"
+            {text}
+          </span>
+          {/* Edit / delete — show on hover via group */}
+          <div className="flex items-center flex-shrink-0" style={{ gap: 2, paddingRight: "var(--s-2)", opacity: 0 }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
           >
-            <Trash2 size={14} />
-          </button>
+            <button
+              onClick={() => { setEditText(text); setEditing(true); }}
+              style={{ color: "var(--color-ink-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              aria-label="Edit rule"
+            >
+              <Pencil size={13} strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={onDelete}
+              style={{ color: "var(--color-ink-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              aria-label="Delete rule"
+            >
+              <Trash2 size={13} strokeWidth={1.5} />
+            </button>
+          </div>
         </>
       )}
     </div>
   );
 }
 
-// ─── Draggable list ───
+// ─── Draggable list section ───
 
 function DraggableList({
   title,
   items,
   setItems,
-  addLabel,
+  variant,
 }: {
   title: string;
   items: string[];
   setItems: (items: string[]) => void;
-  addLabel: string;
+  variant: RuleVariant;
 }) {
   const [adding, setAdding] = useState(false);
   const [newText, setNewText] = useState("");
+
+  const cfg = VARIANT_CONFIG[variant];
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -153,9 +267,51 @@ function DraggableList({
   }
 
   return (
-    <div>
-      <h3 className="text-h3 text-dark-text">{title}</h3>
-      <div className="mt-standard space-y-tight">
+    <div
+      className="tile"
+      style={{ padding: 0, overflow: "hidden" }}
+    >
+      {/* Section header */}
+      <div
+        style={{
+          padding: "var(--s-4) var(--s-5)",
+          borderBottom: "1px solid var(--color-line-soft)",
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--s-3)",
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          {(cfg.heading || title) && (
+            <h3
+              className="font-display"
+              style={{
+                fontSize: "var(--t-body-lg)",
+                fontWeight: 500,
+                color: "var(--color-ink)",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {cfg.heading || title}
+            </h3>
+          )}
+          {cfg.subheading && (
+            <p
+              className="mono"
+              style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", marginTop: 2 }}
+            >
+              {cfg.subheading}
+            </p>
+          )}
+        </div>
+        <span className={cfg.pillClass} style={{ fontSize: "var(--t-mono-xs)", flexShrink: 0 }}>
+          <cfg.PillIcon size={10} strokeWidth={2} aria-hidden="true" />
+          {cfg.pillLabel}
+        </span>
+      </div>
+
+      {/* Rule rows */}
+      <div style={{ padding: "var(--s-2) var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-1)" }}>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={ids} strategy={verticalListSortingStrategy}>
             {items.map((item, i) => (
@@ -165,32 +321,61 @@ function DraggableList({
                 text={item}
                 onEdit={(text) => editItem(i, text)}
                 onDelete={() => deleteItem(i)}
+                stripeColor={cfg.stripeColor}
               />
             ))}
           </SortableContext>
         </DndContext>
 
         {adding ? (
-          <div className="flex items-center gap-tight">
+          <div className="flex items-center" style={{ gap: "var(--s-2)", marginTop: "var(--s-1)" }}>
             <input
               autoFocus
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addItem()}
-              placeholder={addLabel}
-              className="flex-1 h-[40px] px-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
+              placeholder={cfg.addLabel}
+              style={{
+                flex: 1,
+                height: 40,
+                padding: "0 var(--s-3)",
+                border: "1px solid var(--color-line)",
+                borderLeft: `3px solid ${cfg.stripeColor}`,
+                borderRadius: "var(--r-1)",
+                fontSize: "var(--t-body-sm)",
+                color: "var(--color-ink)",
+                background: "var(--color-paper)",
+                outline: "none",
+              }}
             />
-            <button onClick={addItem} className="text-success-text"><Check size={16} /></button>
-            <button onClick={() => { setAdding(false); setNewText(""); }} className="text-grey-text"><X size={16} /></button>
+            <button
+              onClick={addItem}
+              style={{ color: "var(--color-status-ok)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              aria-label="Confirm add"
+            >
+              <Check size={16} strokeWidth={2.5} />
+            </button>
+            <button
+              onClick={() => { setAdding(false); setNewText(""); }}
+              style={{ color: "var(--color-ink-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              aria-label="Cancel"
+            >
+              <X size={16} strokeWidth={2} />
+            </button>
           </div>
-        ) : (
-          <button
-            onClick={() => setAdding(true)}
-            className="flex items-center gap-micro text-label text-navy hover:text-mid-blue transition-colors"
-          >
-            <Plus size={16} /> Add rule
-          </button>
-        )}
+        ) : null}
+      </div>
+
+      {/* Add row footer */}
+      <div style={{ padding: "var(--s-3) var(--s-5)", borderTop: "1px dashed var(--color-line-soft)" }}>
+        <button
+          onClick={() => setAdding(true)}
+          className="btn btn--ghost btn--sm"
+          style={{ gap: "var(--s-1)", color: "var(--color-ink-muted)", fontSize: "var(--t-body-sm)" }}
+        >
+          <Plus size={14} strokeWidth={2} aria-hidden="true" />
+          {cfg.addLabel}
+        </button>
       </div>
     </div>
   );
@@ -242,105 +427,139 @@ export function Step5Rules({ data, onNext }: Step5Props) {
   }
 
   return (
-    <div className="space-y-section">
-      {/* House rules */}
-      <div>
-        <p className="text-caption text-grey-text mb-standard">
-          These are your non-negotiable vessel rules for every charter.
-        </p>
-        <DraggableList
-          title="House rules"
-          items={standardRules}
-          setItems={setStandardRules}
-          addLabel="New house rule"
-        />
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-6)" }}>
+      {/* House Rules */}
+      <DraggableList
+        title="House rules"
+        items={standardRules}
+        setItems={setStandardRules}
+        variant="rules"
+      />
 
       {/* DOs */}
       <DraggableList
-        title="DOs — What we encourage ✓"
+        title=""
         items={customDos}
         setItems={setCustomDos}
-        addLabel="New DO item"
+        variant="dos"
       />
 
       {/* DON'Ts */}
       <DraggableList
-        title="DON'Ts — What's not allowed ✗"
+        title=""
         items={customDonts}
         setItems={setCustomDonts}
-        addLabel="New DON'T item"
+        variant="donts"
       />
 
       {/* Custom sections */}
       <div>
-        <h3 className="text-h3 text-dark-text">Custom sections</h3>
-        <p className="text-caption text-grey-text mt-micro">
-          Create your own sections with custom titles and items
-        </p>
+        <div style={{ marginBottom: "var(--s-3)" }}>
+          <h3
+            className="font-display"
+            style={{ fontSize: "var(--t-body-lg)", fontWeight: 500, color: "var(--color-ink)" }}
+          >
+            Custom sections
+          </h3>
+          <p
+            className="mono"
+            style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", marginTop: 2 }}
+          >
+            Create your own sections with custom titles and items
+          </p>
+        </div>
 
         {customRuleSections.map((section) => (
-          <div key={section.id} className="mt-page border border-border rounded-card p-standard">
-            <div className="flex items-center justify-between mb-standard">
-              <div className="flex items-center gap-tight">
-                <h4 className="text-label text-dark-text">{section.title}</h4>
-                <span className="text-[10px] text-grey-text bg-off-white px-2 py-[1px] rounded-pill">
+          <div
+            key={section.id}
+            className="tile"
+            style={{ padding: 0, overflow: "hidden", marginBottom: "var(--s-4)" }}
+          >
+            <div
+              className="flex items-center justify-between"
+              style={{ padding: "var(--s-3) var(--s-4)", borderBottom: "1px solid var(--color-line-soft)" }}
+            >
+              <div className="flex items-center" style={{ gap: "var(--s-2)" }}>
+                <h4
+                  className="font-display"
+                  style={{ fontSize: "var(--t-body-sm)", fontWeight: 500, color: "var(--color-ink)" }}
+                >
+                  {section.title}
+                </h4>
+                <span
+                  className="pill pill--ghost"
+                  style={{ fontSize: "var(--t-mono-xs)" }}
+                >
                   {section.type}
                 </span>
               </div>
               <button
                 onClick={() => deleteSection(section.id)}
-                className="text-grey-text hover:text-error-text"
+                style={{ color: "var(--color-ink-muted)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+                aria-label="Delete section"
               >
-                <Trash2 size={14} />
+                <Trash2 size={14} strokeWidth={1.5} />
               </button>
             </div>
-            <DraggableList
-              title=""
-              items={section.items}
-              setItems={(items) => updateSectionItems(section.id, items)}
-              addLabel="New item"
-            />
+            <div style={{ padding: "var(--s-2) var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-1)" }}>
+              <DraggableList
+                title=""
+                items={section.items}
+                setItems={(items) => updateSectionItems(section.id, items)}
+                variant="custom"
+              />
+            </div>
           </div>
         ))}
 
         {showAddSection ? (
-          <div className="mt-standard p-standard border border-border rounded-card space-y-standard">
+          <div
+            className="tile"
+            style={{ padding: "var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-3)" }}
+          >
             <input
               autoFocus
               value={sectionTitle}
               onChange={(e) => setSectionTitle(e.target.value)}
               placeholder="Section title (e.g. Alcohol policy)"
-              className="w-full h-[40px] px-standard border border-border rounded-input text-body text-dark-text placeholder:text-grey-text/50 focus:border-border-dark focus:outline-none"
+              style={{
+                width: "100%",
+                height: 40,
+                padding: "0 var(--s-3)",
+                border: "1px solid var(--color-line)",
+                borderRadius: "var(--r-1)",
+                fontSize: "var(--t-body-sm)",
+                color: "var(--color-ink)",
+                background: "var(--color-paper)",
+                outline: "none",
+              }}
             />
-            <div className="flex gap-tight">
+            <div className="flex" style={{ gap: "var(--s-2)" }}>
               {(["bullet", "numbered", "check"] as const).map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setSectionType(type)}
-                  className={cn(
-                    "px-standard py-tight rounded-pill text-label transition-all",
-                    sectionType === type
-                      ? "bg-navy text-white"
-                      : "bg-off-white text-grey-text hover:bg-border"
-                  )}
+                  className={cn("btn btn--sm", sectionType === type ? "btn--rust" : "")}
+                  style={{ justifyContent: "center" }}
                 >
-                  {type === "bullet" ? "• Bullet" : type === "numbered" ? "1. Numbered" : "☑ Checklist"}
+                  {type === "bullet" ? "· Bullet" : type === "numbered" ? "1. Numbered" : "☑ Checklist"}
                 </button>
               ))}
             </div>
-            <div className="flex gap-tight">
+            <div className="flex" style={{ gap: "var(--s-2)" }}>
               <button
                 onClick={addSection}
                 disabled={!sectionTitle.trim()}
-                className="px-page py-tight bg-navy text-white text-label rounded-btn disabled:opacity-40"
+                className="btn btn--rust btn--sm"
+                style={{ justifyContent: "center" }}
               >
                 Create section
               </button>
               <button
                 onClick={() => { setShowAddSection(false); setSectionTitle(""); }}
-                className="px-page py-tight text-label text-grey-text"
+                className="btn btn--ghost btn--sm"
+                style={{ justifyContent: "center" }}
               >
                 Cancel
               </button>
@@ -349,9 +568,11 @@ export function Step5Rules({ data, onNext }: Step5Props) {
         ) : (
           <button
             onClick={() => setShowAddSection(true)}
-            className="mt-standard flex items-center gap-micro text-label text-navy hover:text-mid-blue transition-colors"
+            className="btn btn--ghost btn--sm"
+            style={{ gap: "var(--s-1)", color: "var(--color-ink-muted)", fontSize: "var(--t-body-sm)" }}
           >
-            <Plus size={16} /> Add section
+            <Plus size={14} strokeWidth={2} aria-hidden="true" />
+            Add section
           </button>
         )}
       </div>
