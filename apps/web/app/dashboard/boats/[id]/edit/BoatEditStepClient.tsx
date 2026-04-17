@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateBoatStep } from "../../new/actions";
 import { Step1Vessel } from "../../new/steps/Step1Vessel";
@@ -11,6 +11,7 @@ import { Step6Packing } from "../../new/steps/Step6Packing";
 import { Step7SafetyCards } from "../../new/steps/Step7SafetyCards";
 import { INITIAL_WIZARD_DATA } from "../../new/types";
 import type { WizardData, BoatTypeKey } from "../../new/types";
+import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
 import { Check, Loader2 } from "lucide-react";
 
 interface BoatEditStepClientProps {
@@ -25,6 +26,28 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Template state for Step 4 Equipment
+  const [template, setTemplate] = useState<BoatTemplate | null>(null);
+  const [templateLoading, setTemplateLoading] = useState(false);
+  const [templateLoadError, setTemplateLoadError] = useState(false);
+
+  // Fetch template when editing Step 4
+  useEffect(() => {
+    if (step !== 4) return;
+    setTemplateLoading(true);
+    setTemplateLoadError(false);
+    fetch(`/api/dashboard/wizard/template/${boatType}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to fetch template");
+        return r.json();
+      })
+      .then(({ template: tmpl }) => {
+        setTemplate(tmpl);
+      })
+      .catch(() => setTemplateLoadError(true))
+      .finally(() => setTemplateLoading(false));
+  }, [step, boatType]);
 
   // Merge prefill into initial data
   const [data, setData] = useState<WizardData>({
@@ -104,9 +127,19 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
         {step === 4 && (
           <Step4Equipment
             {...stepProps}
-            boatType={(boatType as BoatTypeKey) || "motor_yacht"}
-            templateLoading={false}
-            templateLoadError={null}
+            template={template}
+            loading={templateLoading}
+            loadError={templateLoadError}
+            onRetry={() => {
+              setTemplate(null);
+              setTemplateLoadError(false);
+              setTemplateLoading(true);
+              fetch(`/api/dashboard/wizard/template/${boatType}`)
+                .then((r) => r.json())
+                .then(({ template: tmpl }) => setTemplate(tmpl))
+                .catch(() => setTemplateLoadError(true))
+                .finally(() => setTemplateLoading(false));
+            }}
           />
         )}
         {step === 5 && (
