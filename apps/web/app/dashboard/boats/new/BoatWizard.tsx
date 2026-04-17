@@ -55,6 +55,7 @@ export function BoatWizard() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [template, setTemplate] = useState<BoatTemplate | null>(null);
   const [templateLoading, setTemplateLoading] = useState(false);
+  const [templateLoadError, setTemplateLoadError] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Hydrate draft from LocalStorage (with migration from 10-step to 9-step schema)
@@ -252,6 +253,7 @@ export function BoatWizard() {
     setData((prev) => ({ ...prev, boatType: type }));
 
     try {
+      setTemplateLoadError(false);
       const res = await fetch(`/api/dashboard/wizard/template/${type}`);
       if (!res.ok) throw new Error("Failed to fetch template");
       const { template: tmpl, defaults } = await res.json();
@@ -263,6 +265,7 @@ export function BoatWizard() {
       }));
     } catch (err) {
       console.error("[BoatWizard] template fetch failed:", err);
+      setTemplateLoadError(true);
     } finally {
       setTemplateLoading(false);
     }
@@ -354,7 +357,7 @@ export function BoatWizard() {
             )}
             {step === 2 && <Step2Marina data={data} onNext={goNext} template={template} />}
             {step === 3 && <Step3Captain data={data} onNext={goNext} />}
-            {step === 4 && <Step4Equipment data={data} onNext={goNext} template={template} />}
+            {step === 4 && <Step4Equipment data={data} onNext={goNext} template={template} loading={templateLoading} loadError={templateLoadError} onRetry={() => handleBoatTypeSelected(data.boatType as BoatTypeKey)} />}
             {step === 5 && <Step5Rules data={data} onNext={goNext} />}
             {step === 6 && <Step6Packing data={data} onNext={goNext} />}
             {step === 7 && <Step7SafetyCards data={data} onNext={goNext} />}
