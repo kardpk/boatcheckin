@@ -238,157 +238,164 @@ export function CaptainSnapshotView({
   }
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen" style={{ background: 'var(--color-paper)' }}>
 
-      {/* Header */}
-      <div className="bg-[var(--color-navy)] px-5 pt-5 pb-6 text-white">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[13px] font-bold tracking-wider opacity-70">
-            CAPTAIN VIEW · BOATCHECKIN
-          </span>
-          <span className={
-            status === 'active'
-              ? 'text-[12px] font-bold bg-teal px-2.5 py-1 rounded-full'
-              : 'text-[12px] font-bold bg-white/20 px-2.5 py-1 rounded-full'
-          }>
-            {status === 'active' ? '● Active' : status === 'completed' ? 'Completed' : 'Upcoming'}
-          </span>
-        </div>
-        {/* Compliance mode badge */}
-        <div className="flex items-center gap-2 mt-1">
+      {/* ── Header ── */}
+      <div style={{ background: 'var(--color-ink)', padding: 'var(--s-5) var(--s-5) var(--s-6)' }}>
+
+        {/* Top row: eyebrow + status pill */}
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--s-2)' }}>
           <span
-            className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
-            style={{ backgroundColor: `${complianceLevel.color}22`, color: complianceLevel.color }}
+            className="mono"
+            style={{ fontSize: 'var(--t-mono-xs)', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(244,239,230,0.55)', fontWeight: 600 }}
           >
-            {complianceLevel.icon} {complianceLevel.label}
+            Captain View
+          </span>
+          <span className={status === 'active' ? 'pill pill--ok' : 'pill pill--ghost'}
+            style={status !== 'active' ? { background: 'rgba(244,239,230,0.15)', color: 'var(--color-bone)', borderColor: 'transparent' } : {}}
+          >
+            <span className="pill-dot" aria-hidden="true" />
+            {status === 'active' ? 'Active' : status === 'completed' ? 'Completed' : 'Upcoming'}
           </span>
         </div>
-        <h1 className="text-[24px] font-bold mb-1">
+
+        {/* Compliance mode badge */}
+        <div style={{ marginBottom: 'var(--s-2)' }}>
+          <span
+            className="pill pill--brass"
+            style={{ fontSize: 'var(--t-mono-xs)', borderColor: 'var(--color-brass)', color: 'var(--color-brass)' }}
+          >
+            {complianceLevel.label}
+          </span>
+        </div>
+
+        {/* Boat name — Fraunces display */}
+        <h1
+          className="font-display"
+          style={{ fontSize: 'var(--t-card)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-bone)', marginBottom: 'var(--s-1)', lineHeight: 1.1 }}
+        >
           {liveSnapshot.boatName}
         </h1>
 
-        {/* Captain badge */}
+        {/* Captain row */}
         {liveSnapshot.captainName && (
-          <div className="flex items-center gap-2.5 mt-2 mb-2">
+          <div className="flex items-center" style={{ gap: 'var(--s-3)', margin: 'var(--s-3) 0 var(--s-2)' }}>
             {liveSnapshot.captainPhotoUrl ? (
-              <img
-                src={liveSnapshot.captainPhotoUrl}
-                alt={liveSnapshot.captainName}
-                className="w-8 h-8 rounded-full border-2 border-white/40 object-cover"
-              />
+              <div className="avatar avatar--sm" style={{ borderColor: 'rgba(244,239,230,0.3)' }}>
+                <img src={liveSnapshot.captainPhotoUrl} alt={liveSnapshot.captainName} />
+              </div>
             ) : (
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-[12px] font-bold">
-                {liveSnapshot.captainName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              <div
+                className="avatar avatar--sm"
+                style={{ background: 'rgba(244,239,230,0.15)', borderColor: 'rgba(244,239,230,0.25)', color: 'var(--color-bone)', fontFamily: 'var(--font-mono)', fontSize: 'var(--t-mono-xs)', fontWeight: 600 }}
+              >
+                {liveSnapshot.captainName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
               </div>
             )}
             <div>
-              <p className="text-[14px] font-semibold leading-tight">
+              <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 600, color: 'var(--color-bone)', lineHeight: 1.2 }}>
                 {liveSnapshot.captainName}
               </p>
               {liveSnapshot.captainLicense && (
-                <p className="text-[11px] text-white/60 leading-tight flex items-center gap-[4px]">
-                  <Briefcase size={10} /> {liveSnapshot.captainLicense}
+                <p className="mono flex items-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.55)', gap: '4px', marginTop: '2px' }}>
+                  <Briefcase size={10} strokeWidth={2} aria-hidden="true" /> {liveSnapshot.captainLicense}
                 </p>
               )}
             </div>
           </div>
         )}
 
-        <div className="flex flex-wrap gap-[6px] mt-[8px]">
-          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
-            <Calendar size={11} /> {formatTripDate(liveSnapshot.tripDate)}
+        {/* Trip meta — mono chips */}
+        <div className="flex flex-wrap" style={{ gap: 'var(--s-2)', marginTop: 'var(--s-2)' }}>
+          <span className="mono flex items-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.7)', gap: '4px' }}>
+            <Calendar size={11} strokeWidth={2} aria-hidden="true" />{formatTripDate(liveSnapshot.tripDate)}
           </span>
-          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
-            <Clock size={11} /> {formatTime(liveSnapshot.departureTime)}
+          <span className="mono" style={{ color: 'rgba(244,239,230,0.4)' }}>·</span>
+          <span className="mono flex items-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.7)', gap: '4px' }}>
+            <Clock size={11} strokeWidth={2} aria-hidden="true" />{formatTime(liveSnapshot.departureTime)}
           </span>
-          <span className="bg-white/20 text-white text-[12px] px-[10px] py-[4px] rounded-full flex items-center gap-[4px]">
-            <Clock size={11} /> {formatDuration(liveSnapshot.durationHours)}
+          <span className="mono" style={{ color: 'rgba(244,239,230,0.4)' }}>·</span>
+          <span className="mono flex items-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.7)', gap: '4px' }}>
+            <Clock size={11} strokeWidth={2} aria-hidden="true" />{formatDuration(liveSnapshot.durationHours)}
           </span>
         </div>
-        <p className="text-white/70 text-[13px] mt-[6px] flex items-center gap-[4px]">
-          <MapPin size={12} /> {liveSnapshot.marinaName}
+        <p className="mono flex items-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.55)', marginTop: 'var(--s-1)', gap: '4px' }}>
+          <MapPin size={11} strokeWidth={2} aria-hidden="true" />{liveSnapshot.marinaName}
           {liveSnapshot.slipNumber ? ` · Slip ${liveSnapshot.slipNumber}` : ''}
         </p>
 
-        {/* Weather */}
+        {/* Weather tile — sea color inside ink header */}
         {liveSnapshot.weather && (
-          <div className="mt-3 flex items-center gap-2 bg-white/10 rounded-[10px] px-3 py-2">
-            <span className="text-[20px]">{liveSnapshot.weather.icon}</span>
-            <span className="text-[13px] font-medium">
-              {liveSnapshot.weather.label} · {liveSnapshot.weather.temperature}°F
-            </span>
+          <div
+            className="flex items-center"
+            style={{
+              marginTop: 'var(--s-3)',
+              gap: 'var(--s-2)',
+              background: 'rgba(45, 93, 110, 0.4)', /* --sea at 40% */
+              border: '1px solid rgba(45, 93, 110, 0.6)',
+              borderRadius: 'var(--r-1)',
+              padding: '8px 12px',
+            }}
+          >
+            <span className="mono" style={{ fontSize: 'var(--t-body-md)', color: 'var(--color-bone)' }}>{liveSnapshot.weather.label}</span>
+            <span className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'rgba(244,239,230,0.7)' }}>{liveSnapshot.weather.temperature}°F</span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="px-4 py-4 space-y-3">
+      <div style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
 
         {/* Buoy insurance status */}
         {status === 'active' && (
-          <div className="p-card rounded-[14px] bg-teal-dim border border-teal-line">
-            <div className="flex items-center gap-[8px]">
-              <Shield size={20} className="text-teal" />
-              <div>
-                <p className="text-[14px] font-semibold text-teal">
-                  Insurance active
+          <div className="alert alert--ok">
+            <Shield size={18} strokeWidth={2} aria-hidden="true" />
+            <div className="alert__body">
+              <strong style={{ fontSize: 'var(--t-body-sm)' }}>Insurance active</strong>
+              {policyId && !policyId.startsWith('STUB') && !policyId.startsWith('FAIL') && (
+                <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+                  Policy: {policyId}
                 </p>
-                {policyId && !policyId.startsWith('STUB') && !policyId.startsWith('FAIL') && (
-                  <p className="text-[12px] text-text-mid">
-                    Policy: {policyId}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* ── Safety Briefing Confirmation Status ──────────────── */}
+        {/* ── Safety Briefing Confirmation ── */}
         {(briefingAttestation || liveSnapshot.safetyBriefingConfirmedAt) && (
-          <div className="p-card rounded-[14px] bg-[#EBF0F7] border-2 border-navy">
-            <div className="flex items-center gap-[10px]">
-              <Shield size={22} className="text-navy" />
-              <div>
-                <p className="text-[14px] font-bold text-[var(--color-navy)]">
-                  Safety Briefing Confirmed
-                </p>
-                <p className="text-[12px] text-text-mid mt-0.5">
-                  {briefingAttestation?.signature ?? liveSnapshot.safetyBriefingConfirmedBy} ·{' '}
-                  {briefingAttestation?.type?.replace(/_/g, ' ') ?? liveSnapshot.safetyBriefingType?.replace(/_/g, ' ')}
-                </p>
-              </div>
+          <div className="alert alert--info">
+            <Shield size={18} strokeWidth={2} aria-hidden="true" />
+            <div className="alert__body">
+              <strong style={{ fontSize: 'var(--t-body-sm)' }}>Safety Briefing Confirmed</strong>
+              <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+                {briefingAttestation?.signature ?? liveSnapshot.safetyBriefingConfirmedBy}
+                {' · '}
+                {(briefingAttestation?.type ?? liveSnapshot.safetyBriefingType)?.replace(/_/g, ' ')}
+              </p>
             </div>
           </div>
         )}
 
-        {/* ── USCG PRE-DEPARTURE COMPLIANCE BANNER ──────────────── */}
+        {/* ── USCG Pre-Departure Compliance Banner ── */}
         {status === 'upcoming' && (
           isReadyToDepart ? (
-            <div className="p-card rounded-[14px] bg-teal-dim border-2 border-teal">
-              <div className="flex items-center gap-[10px]">
-                <CheckCircle2 size={24} className="text-teal" />
-                <div>
-                  <p className="text-[16px] font-bold text-teal">
-                    ALL CLEAR — Ready for departure
-                  </p>
-                  <p className="text-[12px] text-text-mid mt-0.5">
-                    {mergedGuests.length} guest{mergedGuests.length !== 1 ? 's' : ''} · All waivers signed · Safety briefing complete
-                  </p>
-                </div>
+            <div className="alert alert--ok">
+              <CheckCircle2 size={18} strokeWidth={2} aria-hidden="true" />
+              <div className="alert__body">
+                <strong style={{ fontSize: 'var(--t-body-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>All Clear — Ready for departure</strong>
+                <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+                  {mergedGuests.length} guest{mergedGuests.length !== 1 ? 's' : ''} · All waivers signed · Safety briefing complete
+                </p>
               </div>
             </div>
           ) : (
-            <div className="p-card rounded-[14px] bg-warn-dim border-2 border-warn">
-              <div className="flex items-center gap-[10px]">
-                <AlertTriangle size={24} className="text-warn" />
-                <div>
-                  <p className="text-[16px] font-bold text-warn">
-                    WAITING ON GUESTS
-                  </p>
-                  <p className="text-[12px] text-text-mid mt-0.5">
-                    {nonCompliantCount} guest{nonCompliantCount !== 1 ? 's' : ''} still need to sign the waiver or complete the safety briefing
-                  </p>
-                </div>
+            <div className="alert alert--warn">
+              <AlertTriangle size={18} strokeWidth={2} aria-hidden="true" />
+              <div className="alert__body">
+                <strong style={{ fontSize: 'var(--t-body-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Waiting on Guests</strong>
+                <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
+                  {nonCompliantCount} guest{nonCompliantCount !== 1 ? 's' : ''} still need to sign the waiver or complete the safety briefing
+                </p>
               </div>
             </div>
           )
@@ -435,97 +442,86 @@ export function CaptainSnapshotView({
         )}
 
         {/* ── USCG Float Plan Download ── */}
-        <div className="bg-white rounded-[14px] border border-border overflow-hidden">
+        <div className="tile tile--hover" style={{ padding: 0, overflow: 'hidden' }}>
           <button
             onClick={() => downloadFloatPlan(liveSnapshot)}
-            className="
-              w-full px-5 py-4 flex items-center gap-3
-              text-left hover:bg-bg transition-colors
-            "
+            className="w-full flex items-center text-left"
+            style={{ padding: 'var(--s-5)', gap: 'var(--s-3)', background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            <FileText size={20} className="text-text-dim" />
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-navy">
+            <FileText size={18} strokeWidth={2} aria-hidden="true" style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600, color: 'var(--color-ink)' }}>
                 USCG Float Plan
               </p>
-              <p className="text-[12px] text-text-mid">
+              <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: '2px' }}>
                 Download pre-filled float plan for this trip
               </p>
             </div>
-            <span className="text-[11px] font-bold text-[var(--color-navy)] bg-[#EBF0F7] px-3 py-1.5 rounded-full">
-              Download
-            </span>
+            <span className="badge">Download</span>
           </button>
         </div>
 
         {/* Refresh indicator */}
-        <p className="text-[11px] text-text-mid text-center">
+        <p className="mono text-center" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', letterSpacing: '0.05em' }}>
           Live updates active · Fallback refresh every 30s
         </p>
 
         {/* Bottom action button */}
-        <div className="pt-2 pb-8">
+        <div style={{ paddingTop: 'var(--s-2)', paddingBottom: 'var(--s-10)' }}>
           {status === 'upcoming' && (
             <button
               onClick={() => setShowBriefingGate(true)}
               disabled={!isReadyToDepart}
-              className="
-                w-full h-[64px] rounded-[14px]
-                bg-teal text-white
-                font-bold text-[18px]
-                hover:bg-[#178a64] transition-colors
-                active:scale-[0.98]
-                disabled:opacity-40 disabled:cursor-not-allowed
-                disabled:hover:bg-teal
-              "
+              className="btn btn--rust w-full"
+              style={{ height: '64px', fontSize: 'var(--t-body-lg)', fontWeight: 600, justifyContent: 'center' }}
             >
-              {isReadyToDepart ? 'Safety Briefing & Start →' : 'Waiting on compliance...'}
+              {isReadyToDepart ? 'Safety Briefing & Start' : 'Waiting on compliance...'}
             </button>
           )}
 
           {status === 'active' && (
             <button
               onClick={() => setShowEndFlow(true)}
-              className="
-                w-full h-[64px] rounded-[14px]
-                bg-[#E8593C] text-white
-                font-bold text-[18px]
-                hover:bg-[#cc4a32] transition-colors
-              "
+              className="btn btn--danger w-full"
+              style={{ height: '64px', fontSize: 'var(--t-body-lg)', fontWeight: 600, justifyContent: 'center' }}
             >
-              End Trip →
+              End Trip
             </button>
           )}
 
           {status === 'completed' && (
-            <div className="
-              w-full h-[64px] rounded-[14px]
-              bg-[#E8F9F4] border border-[#1D9E75] border-opacity-30
-              flex items-center justify-center
-            ">
-              <span className="text-[16px] font-semibold text-teal">
-                Trip completed
-              </span>
+            <div className="alert alert--ok" style={{ justifyContent: 'center', height: '64px' }}>
+              <CheckCircle2 size={18} strokeWidth={2} aria-hidden="true" />
+              <span style={{ fontWeight: 600 }}>Trip completed</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── Floating Scan Mode button (shown when ≥3 guests) ── */}
+      {/* ── Floating QR Scanner button (shown when ≥3 guests) ── */}
       {mergedGuests.length >= 3 && status !== 'completed' && !showStartFlow && !showEndFlow && (
         <button
           onClick={() => setShowScanner(true)}
-          className="
-            fixed bottom-6 right-6 z-50
-            w-[56px] h-[56px] rounded-full
-            bg-[var(--color-navy)] text-white shadow-lg
-            flex items-center justify-center
-            hover:bg-[var(--color-navy)] transition-colors
-            active:scale-95
-          "
-          title="Open QR boarding scanner"
+          className="fixed z-50"
+          style={{
+            bottom: 'var(--s-6)',
+            right: 'var(--s-5)',
+            width: '52px',
+            height: '52px',
+            borderRadius: 'var(--r-1)', /* sharp — not rounded-full */
+            background: 'var(--color-ink)',
+            border: 'var(--border-w) solid var(--color-ink)',
+            color: 'var(--color-bone)',
+            boxShadow: 'var(--shadow-float)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'background var(--dur-fast) var(--ease)',
+          }}
+          aria-label="Open QR boarding scanner"
         >
-          <QrCode size={22} />
+          <QrCode size={20} strokeWidth={2} />
         </button>
       )}
 

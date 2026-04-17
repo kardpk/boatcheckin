@@ -1,4 +1,4 @@
-import { CloudSun, CloudRain, CloudLightning, AlertTriangle } from "lucide-react";
+import { CloudSun, CloudRain, CloudLightning, AlertTriangle, ChevronRight } from "lucide-react";
 import { evaluateWeatherAlert } from "@/lib/weather/alertRules";
 import type { WeatherData } from "@/lib/trip/getWeatherData";
 
@@ -25,38 +25,50 @@ export function TodayWeatherBar({
 
   const Icon = weatherIcons[alert.severity] ?? CloudSun;
 
+  // Map severity to MASTER_DESIGN alert variant
+  const alertClass =
+    alert.severity === "dangerous"
+      ? "alert alert--err"
+      : alert.severity === "poor"
+      ? "alert alert--warn"
+      : "alert alert--info";
+
   return (
     <a
       href={`/dashboard/trips/${tripId}`}
-      className="
-        relative overflow-hidden flex items-center gap-[10px] px-card py-[12px] rounded-[14px]
-        border transition-colors no-underline
-      "
-      style={{
-        background: alert.bgColour,
-        borderColor: alert.colour + "40",
-      }}
+      className={alertClass}
+      style={{ textDecoration: "none", cursor: "pointer" }}
     >
-      {/* Top bar */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[3px]"
-        style={{ background: alert.colour }}
-      />
-      <Icon size={20} style={{ color: alert.colour }} className="shrink-0" />
-      <div className="flex-1 min-w-0">
+      <Icon size={18} strokeWidth={2} aria-hidden="true" />
+      <div className="alert__body" style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="text-[14px] font-semibold truncate"
-          style={{ color: alert.colour }}
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "var(--t-body-sm)",
+            fontWeight: 600,
+            margin: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
         >
           {alert.headline} — {boatName}
         </p>
-        <p className="text-[12px] text-text-mid truncate">
+        <p
+          className="mono"
+          style={{
+            fontSize: "var(--t-mono-xs)",
+            color: "var(--color-ink-muted)",
+            margin: "2px 0 0",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {weather.label} · {weather.windspeed} mph wind
         </p>
       </div>
-      <span className="text-text-mid text-[13px] flex-shrink-0 font-medium">
-        View →
-      </span>
+      <ChevronRight size={14} strokeWidth={2} aria-hidden="true" style={{ color: "var(--color-ink-muted)", flexShrink: 0 }} />
     </a>
   );
 }

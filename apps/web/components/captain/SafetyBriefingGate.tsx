@@ -127,47 +127,42 @@ export function SafetyBriefingGate({
   // ─── Skip Warning Overlay ─────────────────────────────────────
   if (showSkipWarning) {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
-        <div className="bg-[#E8593C] px-5 pt-6 pb-5 text-white">
-          <h1 className="text-[22px] font-bold">Skip Safety Briefing?</h1>
+      <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-paper)' }}>
+        <div style={{ background: 'var(--color-status-err)', padding: 'var(--s-6) var(--s-5) var(--s-5)' }}>
+          <h1 className="font-display" style={{ fontSize: 'var(--t-card)', fontWeight: 500, color: 'var(--color-bone)', letterSpacing: '-0.025em' }}>
+            Skip Safety Briefing?
+          </h1>
         </div>
-        <div className="flex-1 px-5 py-6 space-y-4">
-          <div className="p-5 bg-warn-dim border-2 border-[#E5910A] rounded-[14px]">
-            <p className="text-[15px] font-bold text-[#92400E] mb-2">
+        <div className="flex-1" style={{ padding: 'var(--s-6) var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-4)' }}>
+          <div className="alert alert--warn" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <p style={{ fontWeight: 700, fontSize: 'var(--t-body-md)', marginBottom: 'var(--s-2)', color: 'var(--color-status-warn)' }}>
               Legal Exposure Warning
             </p>
-            <p className="text-[13px] text-[#78350F] leading-relaxed">
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.6 }}>
               By skipping the safety briefing confirmation, you acknowledge that:
             </p>
-            <ul className="mt-2 space-y-1.5">
-              <li className="text-[13px] text-[#78350F] flex items-start gap-2">
-                <span>•</span>
-                <span>No digital record will exist proving a safety orientation was given</span>
-              </li>
-              <li className="text-[13px] text-[#78350F] flex items-start gap-2">
-                <span>•</span>
-                <span>The USCG manifest will show &quot;Safety Briefing: NOT CONFIRMED&quot;</span>
-              </li>
-              <li className="text-[13px] text-[#78350F] flex items-start gap-2">
-                <span>•</span>
-                <span>This may affect insurance claims in the event of an incident</span>
-              </li>
+            <ul className="list" style={{ marginTop: 'var(--s-2)' }}>
+              <li>No digital record will exist proving a safety orientation was given</li>
+              <li>The USCG manifest will show &quot;Safety Briefing: NOT CONFIRMED&quot;</li>
+              <li>This may affect insurance claims in the event of an incident</li>
             </ul>
-            <p className="text-[12px] text-[#92400E] mt-3 font-semibold">
-              This skip option will be removed in future updates.
+            <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 'var(--s-3)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              This skip option will be removed in a future update.
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex" style={{ gap: 'var(--s-3)' }}>
             <button
               onClick={() => setShowSkipWarning(false)}
-              className="flex-1 h-[52px] rounded-[12px] border border-border text-navy font-semibold hover:bg-bg transition-colors"
+              className="btn flex-1"
+              style={{ height: '52px', justifyContent: 'center' }}
             >
               ← Go Back
             </button>
             <button
               onClick={() => onSkip?.()}
-              className="flex-1 h-[52px] rounded-[12px] bg-[#E8593C] text-white font-semibold hover:bg-[#cc4a32] transition-colors"
+              className="btn btn--danger flex-1"
+              style={{ height: '52px', justifyContent: 'center' }}
             >
               Skip Anyway
             </button>
@@ -180,69 +175,76 @@ export function SafetyBriefingGate({
   // ─── Main UI ──────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-paper)' }}>
 
       {/* Header */}
-      <div className="bg-[var(--color-navy)] px-5 pt-6 pb-5 text-white">
-        <div className="flex items-center justify-between mb-3">
+      <div style={{ background: 'var(--color-ink)', padding: 'var(--s-6) var(--s-5) var(--s-5)' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--s-3)' }}>
           <button
             onClick={onCancel}
-            className="text-white/70 hover:text-white text-[14px]"
+            className="btn btn--ghost btn--sm"
+            style={{ color: 'rgba(244,239,230,0.7)', paddingLeft: 0 }}
           >
             ← Back
           </button>
-          <span className="text-[11px] font-bold tracking-wider opacity-70">
+          <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', letterSpacing: '0.15em', color: 'rgba(244,239,230,0.4)', fontWeight: 600, textTransform: 'uppercase' }}>
             46 CFR §185.506
           </span>
         </div>
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-navy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+        <div className="flex items-center" style={{ gap: 'var(--s-3)', marginBottom: 'var(--s-2)' }}>
+          <span style={{ color: 'var(--color-brass)' }}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
           <div>
-            <h1 className="text-[20px] font-bold">Safety Briefing Confirmation</h1>
-            <p className="text-white/80 text-[13px]">
+            <h1 className="font-display" style={{ fontSize: 'var(--t-card)', fontWeight: 500, color: 'var(--color-bone)', letterSpacing: '-0.025em' }}>
+              Safety Briefing Confirmation
+            </h1>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'rgba(244,239,230,0.65)', marginTop: '2px' }}>
               Confirm you&apos;ve verbally briefed all {guestCount} passenger{guestCount !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
-        <p className="text-white/60 text-[12px]">
+        <p className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'rgba(244,239,230,0.4)' }}>
           {boatName} · {tripDate}
           {complianceLevel === 'full' && ' · FULL COMPLIANCE'}
         </p>
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+      <div className="flex-1 overflow-y-auto" style={{ padding: 'var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
 
         {/* Step 1: Briefing Type */}
         <div>
-          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
+          <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
             Step 1 — How did you brief?
           </h2>
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
             {BRIEFING_TYPES.map(bt => (
               <button
                 key={bt.id}
                 onClick={() => setSelectedType(bt.id)}
                 className={cn(
-                  'w-full p-4 rounded-[14px] border-2 text-left transition-all',
-                  selectedType === bt.id
-                    ? 'border-[var(--color-navy)] bg-[#EBF0F7]'
-                    : 'border-border bg-white hover:bg-bg'
+                  'tile tile--hover text-left',
+                  selectedType === bt.id && 'tile--featured'
                 )}
+                style={selectedType === bt.id ? {
+                  borderColor: 'var(--color-rust)',
+                  background: 'var(--color-bone-warm)',
+                } : {}}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-[22px]">{bt.icon}</span>
+                <div className="flex items-center" style={{ gap: 'var(--s-3)' }}>
                   <div>
-                    <p className={cn(
-                      'text-[14px] font-semibold',
-                      selectedType === bt.id ? 'text-[var(--color-navy)]' : 'text-navy'
-                    )}>
+                    <p style={{
+                      fontSize: 'var(--t-body-sm)',
+                      fontWeight: 600,
+                      color: selectedType === bt.id ? 'var(--color-rust)' : 'var(--color-ink)',
+                    }}>
                       {bt.label}
                     </p>
-                    <p className="text-[12px] text-text-mid">{bt.desc}</p>
+                    <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: '2px' }}>{bt.desc}</p>
                   </div>
                   {selectedType === bt.id && (
-                    <span className="ml-auto text-teal"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                    <span style={{ marginLeft: 'auto', color: 'var(--color-rust)' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </span>
                   )}
                 </div>
               </button>
@@ -252,53 +254,54 @@ export function SafetyBriefingGate({
 
         {/* Step 2: Topic Checklist */}
         <div>
-          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
+          <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
             Step 2 — Topics Covered
           </h2>
-          <div className="bg-bg rounded-[14px] p-4 space-y-1">
+          <div style={{ background: 'var(--color-bone)', borderRadius: 'var(--r-1)', border: '1px solid var(--color-line-soft)', padding: 'var(--s-4)' }}>
             {briefingTopics.map(topic => (
               <label
                 key={topic.id}
-                className="flex items-start gap-3 py-3 cursor-pointer border-b border-border last:border-0"
+                className="check"
+                style={{ padding: 'var(--s-3) 0', borderBottom: '1px dashed var(--color-line-soft)', display: 'flex', alignItems: 'flex-start', gap: 'var(--s-3)', cursor: 'pointer' }}
               >
                 <div
                   onClick={() => toggleTopic(topic.id)}
                   className={cn(
-                    'w-6 h-6 rounded-[6px] border-2 flex items-center justify-center',
-                    'transition-all duration-150 flex-shrink-0 mt-0.5',
-                    checkedTopics.has(topic.id)
-                      ? 'bg-teal border-[#1D9E75]'
-                      : 'bg-white border-border'
+                    'check-box',
+                    checkedTopics.has(topic.id) && 'bg-[var(--color-rust)] border-[var(--color-rust)]'
                   )}
+                  style={checkedTopics.has(topic.id) ? { background: 'var(--color-rust)', borderColor: 'var(--color-rust)' } : {}}
                 >
                   {checkedTopics.has(topic.id) && (
-                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2"
-                            strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="10" height="8" viewBox="0 0 12 10" fill="none">
+                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </div>
-                <div className="flex-1">
-                  <p className={cn(
-                    'text-[14px] font-medium leading-tight',
-                    checkedTopics.has(topic.id) ? 'text-text-mid line-through' : 'text-navy'
-                  )}>
+                <div style={{ flex: 1 }}>
+                  <p style={{
+                    fontSize: 'var(--t-body-sm)',
+                    fontWeight: 500,
+                    lineHeight: 1.35,
+                    color: checkedTopics.has(topic.id) ? 'var(--color-ink-muted)' : 'var(--color-ink)',
+                    textDecoration: checkedTopics.has(topic.id) ? 'line-through' : 'none',
+                  }}>
                     {topic.label}
-                    {topic.required && <span className="text-error ml-1">*</span>}
+                    {topic.required && <span style={{ color: 'var(--color-status-err)', marginLeft: '4px' }}>*</span>}
                   </p>
-                  <p className="text-[12px] text-text-mid mt-0.5">{topic.description}</p>
+                  <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: '2px' }}>{topic.description}</p>
                 </div>
-                <span className="text-[10px] text-[var(--color-navy)] bg-[#EBF0F7] px-2 py-0.5 rounded-full font-bold flex-shrink-0 mt-0.5">
+                <span className="badge badge--brass" style={{ flexShrink: 0, marginTop: '2px' }}>
                   {topic.cfrRef}
                 </span>
               </label>
             ))}
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-[12px] text-text-mid">
+            <div className="flex items-center justify-between" style={{ marginTop: 'var(--s-3)' }}>
+              <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', letterSpacing: '0.08em' }}>
                 {checkedTopics.size} / {briefingTopics.length} confirmed
               </span>
               {allRequiredChecked && (
-                <span className="text-[12px] font-semibold text-teal">
+                <span className="mono" style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, color: 'var(--color-status-ok)', letterSpacing: '0.08em' }}>
                   All required topics covered
                 </span>
               )}
@@ -306,13 +309,13 @@ export function SafetyBriefingGate({
           </div>
         </div>
 
-        {/* Step 3: Attestation */}
+        {/* Step 3: Captain Attestation */}
         <div>
-          <h2 className="text-[14px] font-bold text-text-mid uppercase tracking-wider mb-3">
+          <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
             Step 3 — Captain Attestation
           </h2>
-          <div className="bg-bg rounded-[14px] p-4 space-y-3">
-            <p className="text-[13px] text-navy leading-relaxed">
+          <div style={{ background: 'var(--color-bone)', borderRadius: 'var(--r-1)', border: '1px solid var(--color-line-soft)', padding: 'var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.7, fontStyle: 'italic' }}>
               &ldquo;I, <strong>{signature || '___'}</strong>, attest that I have verbally
               delivered the required safety orientation to all{' '}
               <strong>{guestCount} passenger{guestCount !== 1 ? 's' : ''}</strong>{' '}
@@ -320,17 +323,15 @@ export function SafetyBriefingGate({
               compliance with 46 CFR §185.506.&rdquo;
             </p>
 
-            <div>
-              <label className="block text-[12px] font-medium text-text-mid mb-1.5">
-                Your signature (type your name)
-              </label>
+            <div className="field">
+              <label className="field-label">Your signature (type your name)</label>
               <input
                 type="text"
                 value={signature}
                 onChange={e => setSignature(e.target.value)}
                 placeholder="Captain name"
-                style={{ fontFamily: 'var(--font-satisfy, cursive)', fontSize: '22px', color: 'var(--color-navy)' }}
-                className="w-full h-[52px] px-4 rounded-[10px] border border-border placeholder:text-text-dim focus:outline-none focus:border-[var(--color-navy)] bg-white"
+                className="field-input"
+                style={{ fontFamily: 'var(--font-satisfy, var(--font-display))', fontSize: '20px', color: 'var(--color-ink)' }}
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -340,19 +341,15 @@ export function SafetyBriefingGate({
       </div>
 
       {/* Bottom CTA */}
-      <div className="px-5 pb-8 pt-4 bg-white border-t border-border space-y-3">
+      <div className="form-actions" style={{ flexDirection: 'column', gap: 'var(--s-2)' }}>
         <button
           onClick={handleConfirm}
           disabled={!canConfirm || isSaving}
           className={cn(
-            'w-full h-[56px] rounded-[14px] font-bold text-[16px]',
-            'flex items-center justify-center gap-2',
-            'transition-all duration-150',
-            'disabled:opacity-40 disabled:cursor-not-allowed',
-            canConfirm
-              ? 'bg-teal text-white hover:bg-[#178a64] active:scale-[0.98]'
-              : 'bg-border text-text-mid'
+            'btn w-full',
+            canConfirm ? 'btn--rust' : ''
           )}
+          style={{ height: '56px', justifyContent: 'center', fontSize: 'var(--t-body-md)', fontWeight: 600 }}
         >
           {isSaving ? (
             <AnchorLoader size="sm" color="white" />
@@ -367,7 +364,8 @@ export function SafetyBriefingGate({
         {allowSkip && (
           <button
             onClick={() => setShowSkipWarning(true)}
-            className="w-full text-[13px] text-text-mid underline py-2"
+            className="btn btn--ghost w-full"
+            style={{ fontSize: 'var(--t-body-sm)', justifyContent: 'center' }}
           >
             Skip for now (not recommended)
           </button>

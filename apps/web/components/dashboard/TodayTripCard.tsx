@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Copy, Check, FileText, MapPin, Calendar, Clock } from 'lucide-react'
+import { Copy, Check, FileText, MapPin, Calendar, Clock, ArrowRight, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatTime, formatTripDate, formatDuration } from '@/lib/utils/format'
 import { useTripGuests } from '@/hooks/useTripGuests'
@@ -61,32 +61,39 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
   }
 
   return (
-    <div className="bg-navy rounded-[14px] p-card text-white relative overflow-hidden">
-      {/* Subtle gold glow */}
-      <div className="absolute top-[-20px] right-[-20px] w-[140px] h-[140px] bg-[radial-gradient(circle,rgba(184,136,42,0.08)_0%,transparent_70%)] pointer-events-none" />
+    <div className="tile tile--dark" style={{ overflow: 'hidden' }}>
 
       {/* Trip header */}
-      <div className="flex items-start justify-between mb-[14px]">
+      <div className="flex items-start justify-between" style={{ marginBottom: 'var(--s-4)' }}>
         <div>
-          <p className="text-[17px] font-bold">{trip.boat.boatName}</p>
-          <p className="text-white/70 text-[13px] mt-[3px] flex items-center gap-[5px]">
-            <Calendar size={13} />
+          <p
+            className="font-display"
+            style={{ fontSize: 'var(--t-tile)', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--color-bone)' }}
+          >
+            {trip.boat.boatName}
+          </p>
+          <p
+            className="mono flex items-center"
+            style={{ color: 'rgba(244,239,230,0.7)', fontSize: 'var(--t-mono-sm)', marginTop: 'var(--s-1)', gap: 'var(--s-1)' }}
+          >
+            <Calendar size={12} strokeWidth={2} aria-hidden="true" />
             {formatTripDate(trip.tripDate)} · {formatTime(trip.departureTime)} · {formatDuration(trip.durationHours)}
           </p>
           {trip.boat.slipNumber && (
-            <p className="text-white/60 text-[12px] mt-[3px] flex items-center gap-[4px]">
-              <MapPin size={12} />
+            <p
+              className="mono flex items-center"
+              style={{ color: 'rgba(244,239,230,0.55)', fontSize: 'var(--t-mono-xs)', marginTop: '3px', gap: '4px' }}
+            >
+              <MapPin size={11} strokeWidth={2} aria-hidden="true" />
               Slip {trip.boat.slipNumber} · {trip.boat.marinaName}
             </p>
           )}
         </div>
-        <div className="flex items-center gap-[6px]">
+        <div className="flex items-center" style={{ gap: 'var(--s-2)' }}>
           <span className={cn(
-            'text-[10px] font-bold uppercase tracking-[0.05em] px-[10px] py-[4px] rounded-[5px]',
-            trip.status === 'active'
-              ? 'bg-teal text-white'
-              : 'bg-white/15 text-white'
-          )}>
+            'pill',
+            trip.status === 'active' ? 'pill--ok' : 'pill--ghost'
+          )} style={trip.status !== 'active' ? { background: 'rgba(244,239,230,0.15)', color: 'var(--color-bone)', borderColor: 'transparent' } : {}}>
             {trip.status === 'active' ? 'Active' : 'Today'}
           </span>
           <RealtimeIndicator status={connectionStatus} />
@@ -94,68 +101,94 @@ export function TodayTripCard({ trip }: { trip: OperatorTripDetail }) {
       </div>
 
       {/* Guest progress */}
-      <div className="mb-[14px]">
-        <div className="flex items-center justify-between mb-[6px]">
-          <span className="text-[14px] font-semibold">
+      <div style={{ marginBottom: 'var(--s-4)' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--s-2)' }}>
+          <span
+            className="mono"
+            style={{ fontSize: 'var(--t-mono-md)', fontWeight: 600, color: 'var(--color-bone)' }}
+          >
             {total} / {trip.maxGuests} checked in
           </span>
-          <span className="text-[13px] text-white/70">
+          <span
+            className="mono"
+            style={{ fontSize: 'var(--t-mono-sm)', color: 'rgba(244,239,230,0.7)' }}
+          >
             {signed} signed · {pending > 0 ? (
-              <span className="text-gold">{pending} pending</span>
+              <span style={{ color: 'var(--color-rust-soft)' }}>{pending} pending</span>
             ) : (
-              <span className="text-teal">all signed</span>
+              <span style={{ color: 'var(--color-status-ok)' }}>all signed</span>
             )}
           </span>
         </div>
-        <div className="w-full h-[6px] bg-white/15 rounded-full overflow-hidden">
+        <div
+          style={{
+            width: '100%',
+            height: '4px',
+            background: 'rgba(244,239,230,0.15)',
+            borderRadius: 'var(--r-1)',
+            overflow: 'hidden',
+          }}
+        >
           <div
-            className="h-full bg-teal rounded-full transition-all duration-700"
-            style={{ width: `${Math.min(progress, 100)}%` }}
+            style={{
+              height: '100%',
+              width: `${Math.min(progress, 100)}%`,
+              background: 'var(--color-status-ok)',
+              borderRadius: 'var(--r-1)',
+              transition: 'width 700ms var(--ease)',
+            }}
           />
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="grid grid-cols-2 gap-[8px]">
+      <div className="grid grid-cols-2" style={{ gap: 'var(--s-2)' }}>
         <button
           onClick={downloadPdf}
           disabled={downloadingPdf || guests.length === 0}
-          className="
-            flex items-center justify-center gap-[6px]
-            h-[42px] rounded-[10px]
-            bg-white/12 hover:bg-white/20
-            text-[13px] font-medium text-white
-            transition-colors disabled:opacity-40
-          "
+          className="btn btn--sm"
+          style={{
+            background: 'rgba(244,239,230,0.12)',
+            border: '1px solid rgba(244,239,230,0.15)',
+            color: 'var(--color-bone)',
+          }}
         >
-          <FileText size={15} />
+          {downloadingPdf ? (
+            <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+          ) : (
+            <FileText size={14} strokeWidth={2} aria-hidden="true" />
+          )}
           {downloadingPdf ? 'Generating...' : 'Download PDF'}
         </button>
 
         <button
           onClick={copyReminder}
-          className="
-            flex items-center justify-center gap-[6px]
-            h-[42px] rounded-[10px]
-            bg-white/12 hover:bg-white/20
-            text-[13px] font-medium text-white
-            transition-colors
-          "
+          className="btn btn--sm"
+          style={{
+            background: 'rgba(244,239,230,0.12)',
+            border: '1px solid rgba(244,239,230,0.15)',
+            color: 'var(--color-bone)',
+          }}
         >
-          {copiedMsg ? <Check size={15} /> : <Copy size={15} />}
-          {copiedMsg ? 'Copied!' : 'Copy reminder'}
+          {copiedMsg ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
+          {copiedMsg ? 'Copied' : 'Copy reminder'}
         </button>
       </div>
 
       <Link
         href={`/dashboard/trips/${trip.id}`}
-        className="
-          block text-center text-[13px] text-white/60
-          underline mt-[10px] min-h-[40px] flex items-center
-          justify-center hover:text-white transition-colors
-        "
+        className="editorial-link"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: 'var(--s-3)',
+          color: 'var(--color-bone)',
+          borderColor: 'rgba(244,239,230,0.3)',
+          fontSize: 'var(--t-mono-xs)',
+        }}
       >
-        View full guest list →
+        View full guest list
+        <ArrowRight size={12} strokeWidth={2} aria-hidden="true" />
       </Link>
     </div>
   )
