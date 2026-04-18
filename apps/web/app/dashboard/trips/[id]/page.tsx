@@ -88,22 +88,29 @@ export default async function TripDetailPage({
     role: a.role as string,
   }))
 
-  const whatsappMsg = [
-    `Hi! Everything for your charter is here:`,
+  // Build generic share message (no emojis, works for any channel)
+  const tripDate = new Date(trip.tripDate + 'T00:00:00')
+  const formattedDate = tripDate.toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric',
+  })
+  const shareMessage = [
+    `Hi! Everything for our ${formattedDate} charter is here:`,
     ``,
-    `👉 ${appUrl}/trip/${trip.slug}`,
-    `Code: *${trip.tripCode}*`,
+    `${appUrl}/trip/${trip.slug}`,
     ``,
-    `Sign your waiver and order any extras before you arrive.`,
+    `Your check-in code is: ${trip.tripCode}`,
+    ``,
+    `Sign your waiver and check the weather before you arrive.`,
   ].join('\n')
 
   return (
-    <div className="max-w-[720px] mx-auto px-4 py-5">
+    <div className="max-w-[560px] mx-auto px-5 pb-[100px]">
+      {/* ── Header ─────────────────────────────────────── */}
       <TripDetailHeader trip={trip} />
 
-      {/* Weather alert */}
+      {/* ── Weather alert ──────────────────────────────── */}
       {weather && (
-        <div className="mt-4">
+        <div style={{ marginTop: 'var(--s-4)' }}>
           <WeatherAlertCard
             tripId={trip.id}
             weather={weather}
@@ -112,6 +119,7 @@ export default async function TripDetailPage({
         </div>
       )}
 
+      {/* ── Guests ─────────────────────────────────────── */}
       <GuestManagementTable
         tripId={trip.id}
         initialGuests={trip.guests}
@@ -119,8 +127,8 @@ export default async function TripDetailPage({
         requiresApproval={trip.requiresApproval}
       />
 
-      {/* Crew Assignment */}
-      <div className="mt-4">
+      {/* ── Crew assignment ────────────────────────────── */}
+      <div style={{ marginTop: 'var(--s-4)' }}>
         <TripCrewPanel
           tripId={trip.id}
           tripStatus={trip.status}
@@ -128,7 +136,7 @@ export default async function TripDetailPage({
         />
       </div>
 
-      {/* Trip Control — Start/End + compliance banner */}
+      {/* ── Trip control (start/end + compliance) ──────── */}
       <TripStatusBar
         tripId={trip.id}
         tripSlug={trip.slug}
@@ -138,6 +146,7 @@ export default async function TripDetailPage({
         requiredSafetyCards={trip.boat.safetyCards?.length ?? 0}
       />
 
+      {/* ── Add-ons ────────────────────────────────────── */}
       {addonSummary.length > 0 && (
         <AddonOrdersSummary
           summary={addonSummary}
@@ -145,6 +154,7 @@ export default async function TripDetailPage({
         />
       )}
 
+      {/* ── Reviews (completed only) ───────────────────── */}
       {trip.status === 'completed' && (
         <TripReviewsSummary
           tripId={trip.id}
@@ -152,12 +162,12 @@ export default async function TripDetailPage({
         />
       )}
 
-      {/* Sticky action bar */}
+      {/* ── Share + Documents ──────────────────────────── */}
       <TripActionBar
         tripId={trip.id}
         tripSlug={trip.slug}
         status={trip.status}
-        whatsappMessage={whatsappMsg}
+        shareMessage={shareMessage}
       />
     </div>
   )

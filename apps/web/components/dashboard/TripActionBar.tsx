@@ -1,26 +1,50 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, MessageCircle, Share2, Check, Copy, Anchor } from 'lucide-react'
+import {
+  Copy, Check, ExternalLink, FileText, Anchor, Share2,
+} from 'lucide-react'
 import type { TripStatus } from '@/types'
 
 interface TripActionBarProps {
   tripId: string
   tripSlug: string
   status: TripStatus
-  whatsappMessage: string
+  shareMessage: string
   initialSnapshotUrl?: string | null
 }
 
+/**
+ * TripActionBar — MASTER_DESIGN editorial action section
+ *
+ * Pre-trip: Share card (trip link, copy message, share to captain)
+ * Active/Completed: Document downloads (Manifest PDF, USCG CSV)
+ */
 export function TripActionBar({
-  tripId, tripSlug, status, whatsappMessage, initialSnapshotUrl
+  tripId, tripSlug, status, shareMessage, initialSnapshotUrl,
 }: TripActionBarProps) {
+  const [copiedLink, setCopiedLink] = useState(false)
   const [copiedMsg, setCopiedMsg] = useState(false)
   const [downloadingPdf, setDownloadingPdf] = useState(false)
   const [downloadingCsv, setDownloadingCsv] = useState(false)
   const [generatingSnapshot, setGeneratingSnapshot] = useState(false)
   const [snapshotUrl, setSnapshotUrl] = useState<string | null>(initialSnapshotUrl || null)
   const [copiedSnapshot, setCopiedSnapshot] = useState(false)
+
+  const appUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const tripLink = `${appUrl}/trip/${tripSlug}`
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(tripLink)
+    setCopiedLink(true)
+    setTimeout(() => setCopiedLink(false), 2000)
+  }
+
+  async function copyMessage() {
+    await navigator.clipboard.writeText(shareMessage)
+    setCopiedMsg(true)
+    setTimeout(() => setCopiedMsg(false), 2000)
+  }
 
   async function downloadPdf() {
     setDownloadingPdf(true)
@@ -64,24 +88,17 @@ export function TripActionBar({
     }
   }
 
-  async function copyWhatsApp() {
-    await navigator.clipboard.writeText(whatsappMessage)
-    setCopiedMsg(true)
-    setTimeout(() => setCopiedMsg(false), 2000)
-  }
-
   async function generateSnapshot() {
-    if (!window.confirm(snapshotUrl ? 'Are you sure you want to revoke the current link and generate a new one?' : 'Generate a new captain link for this trip?')) return;
-    
+    if (!window.confirm(snapshotUrl ? 'Revoke the current link and generate a new one?' : 'Generate a captain link for this trip?')) return
     setGeneratingSnapshot(true)
     try {
       const res = await fetch(
         `/api/dashboard/trips/${tripId}/regenerate-captain-token`,
-        { method: 'POST' }
+        { method: 'POST' },
       )
       if (!res.ok) throw new Error()
       const json = await res.json()
-      setSnapshotUrl(`${window.location.origin}/snapshot/${json.token}`)
+      setSnapshotUrl(`${appUrl}/snapshot/${json.token}`)
     } catch {
       alert('Failed to generate captain link.')
     } finally {
@@ -96,114 +113,208 @@ export function TripActionBar({
     setTimeout(() => setCopiedSnapshot(false), 2000)
   }
 
+  const showDocs = status === 'active' || status === 'completed'
+
   return (
-    <div className="
-      fixed bottom-0 left-0 right-0 z-40
-      bg-white border-t border-border
-      px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3
-      md:relative md:bottom-auto md:border-none
-      md:bg-transparent md:px-0 md:pt-4 md:pb-0
-    ">
-      <div className="max-w-[720px] mx-auto">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-6)', marginTop: 'var(--s-6)' }}>
 
-        {/* Snapshot URL (shown after generation) */}
-        {snapshotUrl && (
-          <div className="
-            mb-3 flex items-center gap-2
-            p-3 rounded-[12px]
-            bg-gold-dim border border-border
-          ">
-            <p className="text-[13px] text-navy flex-1 truncate">
-              {snapshotUrl}
-            </p>
-            <button
-              onClick={copySnapshot}
-              className="
-                flex items-center gap-1 px-3 py-1.5
-                rounded-[8px] bg-navy text-white
-                text-[12px] font-medium flex-shrink-0
-              "
-            >
-              {copiedSnapshot ? <Check size={12} /> : <Copy size={12} />}
-              {copiedSnapshot ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-        )}
-
-        {/* Action buttons */}
-        <div className="grid grid-cols-4 gap-2">
-          <button
-            onClick={downloadPdf}
-            disabled={downloadingPdf}
-            className="
-              flex flex-col items-center justify-center gap-1
-              h-[60px] rounded-[12px]
-              bg-bg border border-border
-              text-navy hover:bg-gold-dim
-              transition-colors disabled:opacity-40
-              text-[11px] font-medium
-            "
-          >
-            <FileText size={18} />
-            {downloadingPdf ? 'Generating...' : 'Manifest PDF'}
-          </button>
-
-          <button
-            onClick={downloadUscgCsv}
-            disabled={downloadingCsv}
-            className="
-              flex flex-col items-center justify-center gap-1
-              h-[60px] rounded-[12px]
-              bg-[#E8F9F4] border border-[#1D9E75]/30
-              text-teal hover:bg-[#D0F0E6]
-              transition-colors disabled:opacity-40
-              text-[11px] font-medium
-            "
-          >
-            <Anchor size={18} />
-            {downloadingCsv ? 'Generating...' : 'USCG CSV'}
-          </button>
-
-          <button
-            onClick={copyWhatsApp}
-            className="
-              flex flex-col items-center justify-center gap-1
-              h-[60px] rounded-[12px]
-              bg-bg border border-border
-              text-navy hover:bg-gold-dim
-              transition-colors text-[11px] font-medium
-            "
-          >
-            {copiedMsg
-              ? <><Check size={18} /><span>Copied!</span></>
-              : <><MessageCircle size={18} /><span>WhatsApp msg</span></>
-            }
-          </button>
-
-          <button
-            onClick={generateSnapshot}
-            disabled={generatingSnapshot}
-            className={`
-              flex flex-col items-center justify-center gap-1
-              h-[60px] rounded-[12px]
-              text-white transition-colors
-              disabled:opacity-40 text-[11px] font-medium
-              ${snapshotUrl ? 'bg-[#D63B3B] hover:bg-[#b02a2a]' : 'bg-navy hover:bg-navy/90'}
-            `}
-          >
-            {generatingSnapshot ? (
-              <span>Generating...</span>
-            ) : snapshotUrl ? (
-              <><Share2 size={18} /><span>Renew captain link</span></>
-            ) : (
-              <><Share2 size={18} /><span>Share to captain</span></>
-            )}
-          </button>
+      {/* ══════════════════════════════════════════════════════
+          SHARE SECTION — always visible
+          ══════════════════════════════════════════════════════ */}
+      <section>
+        <div
+          className="font-mono"
+          style={{
+            fontSize: '13px', fontWeight: 700,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: 'var(--color-ink)',
+            paddingBottom: 'var(--s-3)',
+            borderBottom: 'var(--border-w) solid var(--color-ink)',
+            marginBottom: 'var(--s-4)',
+          }}
+        >
+          Share
         </div>
 
-        {/* Padding for mobile bottom nav */}
-        <div className="h-[72px] md:hidden" />
-      </div>
+        {/* Trip link card */}
+        <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
+          <div style={{ padding: 'var(--s-4) var(--s-5)' }}>
+            <span
+              className="font-mono"
+              style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}
+            >
+              Trip link
+            </span>
+            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', wordBreak: 'break-all', fontWeight: 500, marginTop: 'var(--s-1)' }}>
+              {tripLink}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid var(--color-line-soft)' }}>
+            <button
+              onClick={copyLink}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
+                height: 48, fontSize: 'var(--t-body-sm)', fontWeight: 600,
+                background: copiedLink ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
+                color: copiedLink ? 'var(--color-status-ok)' : 'var(--color-ink)',
+                border: 'none', borderRight: '1px solid var(--color-line-soft)',
+                cursor: 'pointer',
+                transition: 'background var(--dur-fast) var(--ease)',
+              }}
+            >
+              {copiedLink ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
+              {copiedLink ? 'Copied' : 'Copy link'}
+            </button>
+            <a
+              href={tripLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
+                height: 48, fontSize: 'var(--t-body-sm)', fontWeight: 500,
+                color: 'var(--color-ink-muted)',
+                textDecoration: 'none',
+              }}
+            >
+              <ExternalLink size={14} strokeWidth={2} />
+              Preview
+            </a>
+          </div>
+        </div>
+
+        {/* Copy message */}
+        <button
+          onClick={copyMessage}
+          className="tile"
+          style={{
+            width: '100%', marginTop: 'var(--s-3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
+            height: 48, cursor: 'pointer',
+            fontSize: 'var(--t-body-sm)', fontWeight: 600,
+            background: copiedMsg ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
+            color: copiedMsg ? 'var(--color-status-ok)' : 'var(--color-ink)',
+            transition: 'background var(--dur-fast) var(--ease)',
+          }}
+        >
+          {copiedMsg ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
+          {copiedMsg ? 'Copied to clipboard' : 'Copy message for guests'}
+        </button>
+
+        {/* Share to captain */}
+        <div style={{ marginTop: 'var(--s-3)' }}>
+          {snapshotUrl ? (
+            <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
+              <div style={{ padding: 'var(--s-3) var(--s-5)', background: 'var(--color-bone)' }}>
+                <span
+                  className="font-mono"
+                  style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}
+                >
+                  Captain link
+                </span>
+                <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', wordBreak: 'break-all', fontWeight: 500, marginTop: 'var(--s-1)' }}>
+                  {snapshotUrl}
+                </p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid var(--color-line-soft)' }}>
+                <button
+                  onClick={copySnapshot}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
+                    height: 44, fontSize: 'var(--t-body-sm)', fontWeight: 600,
+                    background: copiedSnapshot ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
+                    color: copiedSnapshot ? 'var(--color-status-ok)' : 'var(--color-ink)',
+                    border: 'none', borderRight: '1px solid var(--color-line-soft)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {copiedSnapshot ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
+                  {copiedSnapshot ? 'Copied' : 'Copy link'}
+                </button>
+                <button
+                  onClick={generateSnapshot}
+                  disabled={generatingSnapshot}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
+                    height: 44, fontSize: 'var(--t-body-sm)', fontWeight: 500,
+                    background: 'var(--color-paper)',
+                    color: 'var(--color-status-err)',
+                    border: 'none', cursor: 'pointer',
+                    opacity: generatingSnapshot ? 0.5 : 1,
+                  }}
+                >
+                  {generatingSnapshot ? 'Generating...' : 'Revoke and renew'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={generateSnapshot}
+              disabled={generatingSnapshot}
+              className="btn btn--primary"
+              style={{ width: '100%', justifyContent: 'center', height: 48 }}
+            >
+              <Share2 size={14} strokeWidth={2.5} />
+              {generatingSnapshot ? 'Generating...' : 'Share to captain'}
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          DOCUMENTS SECTION — active/completed only
+          ══════════════════════════════════════════════════════ */}
+      {showDocs && (
+        <section>
+          <div
+            className="font-mono"
+            style={{
+              fontSize: '13px', fontWeight: 700,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'var(--color-ink)',
+              paddingBottom: 'var(--s-3)',
+              borderBottom: 'var(--border-w) solid var(--color-ink)',
+              marginBottom: 'var(--s-4)',
+            }}
+          >
+            Documents
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s-3)' }}>
+            <button
+              onClick={downloadPdf}
+              disabled={downloadingPdf}
+              className="tile"
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 'var(--s-2)', height: 80, cursor: 'pointer',
+                fontSize: 'var(--t-body-sm)', fontWeight: 600,
+                color: 'var(--color-ink)',
+                opacity: downloadingPdf ? 0.5 : 1,
+              }}
+            >
+              <FileText size={20} strokeWidth={1.8} />
+              {downloadingPdf ? 'Generating...' : 'Manifest PDF'}
+            </button>
+
+            <button
+              onClick={downloadUscgCsv}
+              disabled={downloadingCsv}
+              className="tile"
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 'var(--s-2)', height: 80, cursor: 'pointer',
+                fontSize: 'var(--t-body-sm)', fontWeight: 600,
+                color: 'var(--color-ink)',
+                opacity: downloadingCsv ? 0.5 : 1,
+              }}
+            >
+              <Anchor size={20} strokeWidth={1.8} />
+              {downloadingCsv ? 'Generating...' : 'USCG CSV'}
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   )
 }
