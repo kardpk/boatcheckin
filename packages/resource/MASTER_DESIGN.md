@@ -932,6 +932,85 @@ Operator fleet view.
 </article>
 ```
 
+### 9.6 Color Banner List
+
+Used when categorized content must be **instantly distinguishable** by type — rules vs. guidance vs. prohibitions, permit tiers, grouped checklists. This is the primary pattern for guest-facing compliance lists and any surface where the user must process categorized items quickly.
+
+**Structure:** Each category is a separate `.tile` with a **full-width solid-color banner header** and a **tinted body** containing striped item cards.
+
+```tsx
+{/* House Rules — Navy banner, neutral body */}
+<div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
+  <div style={{
+    background: 'var(--ink)',
+    padding: 'var(--s-3) var(--s-4)',
+    display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
+  }}>
+    <Anchor size={14} strokeWidth={2.5} style={{ color: '#fff' }} />
+    <span style={{
+      fontFamily: "'Inter', sans-serif",
+      fontSize: '13px', fontWeight: 800,
+      letterSpacing: '0.08em', textTransform: 'uppercase',
+      color: '#fff',
+    }}>
+      House Rules
+    </span>
+    <span className="font-mono" style={{
+      marginLeft: 'auto', fontSize: '10px',
+      color: 'rgba(255,255,255,0.5)',
+    }}>
+      8 rules
+    </span>
+  </div>
+  <div style={{ padding: 'var(--s-2) var(--s-3) var(--s-3)' }}>
+    {/* Item cards here */}
+  </div>
+</div>
+```
+
+**Banner color assignments** (non-negotiable):
+
+| Category | Banner background | Body background | Stripe color | Icon |
+|---|---|---|---|---|
+| **House Rules / Authority** | `--ink` (navy) | `--paper` | `--ink` | `Anchor` |
+| **DOs / Encouraged** | `--status-ok` (green) | `--status-ok-soft` | `--status-ok` | `Check` |
+| **DON'Ts / Prohibited** | `--rust` (rusty red) | `--status-err-soft` | `--rust` | `X` |
+| **Custom / Neutral** | `--bone` | `--paper` | `--line` | (varies) |
+
+**Banner header specs:**
+- Full-width solid background in the category color
+- Padding `var(--s-3) var(--s-4)`
+- Inter font, 13px, weight 800, `letter-spacing: 0.08em`, uppercase, white
+- Leading lucide icon (14px, strokeWidth 2.5, white)
+- Trailing item count right-aligned (mono, 10px, `rgba(255,255,255,0.5)`)
+
+**Item card specs:**
+- Each item is a individual bordered card (not inline text)
+- Background `--paper`, border `1px solid var(--line-soft)`, radius `--r-1`
+- Left border `3px solid` in the category stripe color
+- Padding `var(--s-2) var(--s-3)`, min-height 40px
+- Leading icon: `Check` (12px, green) for DOs, `X` (12px, rust) for DON'Ts, numbered index (mono, 11px) for House Rules
+- Text: `--t-body-sm` (13px), `--ink`, `line-height: 1.45`
+
+**When to use:**
+- Guest trip page → boat rules, safety points
+- Boat Wizard preview → rules summary (read-only mirror of the edit view)
+- Captain snapshot → guest verification requirements
+- Any list where 3+ categories of items must be visually separated at a glance
+
+**When NOT to use:**
+- Simple bulleted lists with one category → use `10.2 List (Simple)` instead
+- Status-only displays → use pills (Section 7.2)
+- Editable lists → use DraggableList (Boat Wizard internal component)
+
+**Rules:**
+- Never mix categories inside one tile — each category gets its own tile
+- Categories must stack vertically with `var(--s-3)` gap between them
+- Banner must always include the icon + uppercase label + item count
+- Item cards must always have the 3px left stripe (never omit)
+- Body area must use the tinted background for double color-coding reinforcement
+- House Rules always use numbered items; DOs always use `Check`; DON'Ts always use `X`
+
 ---
 
 ## 10. Data Display
