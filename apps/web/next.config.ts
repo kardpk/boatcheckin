@@ -16,8 +16,9 @@ import type { NextConfig } from "next";
  * }
  */
 const nextConfig: NextConfig = {
-  // Server Actions security
+  // Server Actions security + View Transitions (native cross-fade on navigation)
   experimental: {
+    viewTransition: true,
     serverActions: {
       allowedOrigins: [
         "boatcheckin.com",

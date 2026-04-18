@@ -3,8 +3,8 @@
 // Handles: push notifications, static caching, offline pages
 // ═══════════════════════════════════════════════════════════════
 
-const CACHE_NAME = "dockpass-v1";
-const STATIC_ASSETS = ["/", "/offline"];
+const CACHE_NAME = "dockpass-v2";
+const STATIC_ASSETS = ["/", "/offline", "/login", "/dashboard"];
 
 // ─── Install ──────────────────────────────────────────────────
 self.addEventListener("install", (event) => {

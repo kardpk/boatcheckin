@@ -1,12 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { z } from "zod";
 import { WizardField } from "@/components/ui/WizardField";
 import { ContinueButton } from "@/components/ui/ContinueButton";
-import { LocationPicker } from "@/components/shared/LocationPicker";
 import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
 import type { WizardData, BoatTypeKey } from "../types";
+
+// Dynamic import — mapbox-gl is 250KB+, only load when Step 2 renders
+const LocationPicker = dynamic(
+  () => import("@/components/shared/LocationPicker").then(m => m.LocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          width: '100%',
+          height: 200,
+          background: 'var(--color-bone)',
+          borderRadius: 'var(--r-2)',
+          border: 'var(--border-w) solid var(--color-line-soft)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--color-ink-muted)',
+          fontSize: 'var(--t-body-sm)',
+        }}
+      >
+        Loading map…
+      </div>
+    ),
+  }
+);
 
 const OPERATING_AREA_PLACEHOLDERS: Partial<Record<BoatTypeKey, string>> = {
   motor_yacht: "Biscayne Bay and surrounding coastal waters",
