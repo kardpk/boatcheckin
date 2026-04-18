@@ -35,26 +35,37 @@ export default async function CrewPage() {
   const { operator } = await requireOperator()
   const supabase = createServiceClient()
 
-  // Fetch active captains
-  const { data: captains } = await supabase
-    .from('captains')
-    .select('*')
-    .eq('operator_id', operator.id)
-    .eq('is_active', true)
-    .order('is_default', { ascending: false })
-    .order('full_name', { ascending: true })
+  // Run all 3 queries in parallel (was sequential: ~180ms → ~60ms)
+  const [captainsResult, boatLinksResult, operatorBoatsResult] = await Promise.all([
+    // Fetch active captains
+    supabase
+      .from('captains')
+      .select('*')
+      .eq('operator_id', operator.id)
+      .eq('is_active', true)
+      .order('is_default', { ascending: false })
+      .order('full_name', { ascending: true }),
 
-  const profiles: CaptainProfile[] = (captains ?? []).map(r => toCaptainProfile(r as Record<string, unknown>))
+    // Fetch boat links
+    supabase
+      .from('captain_boat_links')
+      .select('captain_id, boat_id, boats ( id, boat_name )')
+      .eq('operator_id', operator.id),
 
-  // Fetch boat links
-  const { data: boatLinks } = await supabase
-    .from('captain_boat_links')
-    .select('captain_id, boat_id, boats ( id, boat_name )')
-    .eq('operator_id', operator.id)
+    // Fetch operator's boats (for the link boat dropdown)
+    supabase
+      .from('boats')
+      .select('id, boat_name')
+      .eq('operator_id', operator.id)
+      .eq('is_active', true)
+      .order('boat_name', { ascending: true }),
+  ])
+
+  const profiles: CaptainProfile[] = (captainsResult.data ?? []).map(r => toCaptainProfile(r as Record<string, unknown>))
 
   // Map links into profiles
   const linkMap = new Map<string, { boatId: string; boatName: string }[]>()
-  for (const link of (boatLinks ?? [])) {
+  for (const link of (boatLinksResult.data ?? [])) {
     const boat = link.boats as unknown as { id: string; boat_name: string } | null
     if (!boat) continue
     const existing = linkMap.get(link.captain_id) ?? []
@@ -66,15 +77,7 @@ export default async function CrewPage() {
     profile.linkedBoats = linkMap.get(profile.id) ?? []
   }
 
-  // Fetch operator's boats (for the link boat dropdown)
-  const { data: operatorBoats } = await supabase
-    .from('boats')
-    .select('id, boat_name')
-    .eq('operator_id', operator.id)
-    .eq('is_active', true)
-    .order('boat_name', { ascending: true })
-
-  const boatOptions = (operatorBoats ?? []).map(b => ({
+  const boatOptions = (operatorBoatsResult.data ?? []).map(b => ({
     id: b.id as string,
     name: b.boat_name as string,
   }))

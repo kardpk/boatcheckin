@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Ship, Anchor, Users, Settings, Plus } from "lucide-react";
@@ -16,6 +17,25 @@ const tabs = [
 export function BottomNav() {
   const pathname = usePathname();
   const isTripsRoot = pathname === "/dashboard/trips";
+
+  // Optimistic tab: immediately highlight the tapped tab before
+  // the server responds. Clears on actual pathname change.
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  const handleTabClick = useCallback((href: string) => {
+    setPendingHref(href);
+    // Clear after navigation completes (pathname will update)
+    // Safety timeout in case navigation is very fast
+    setTimeout(() => setPendingHref(null), 2000);
+  }, []);
+
+  // Clear pending state when pathname actually changes
+  if (pendingHref && pathname.startsWith(pendingHref === "/dashboard" ? "/dashboard" : pendingHref)) {
+    if (pendingHref !== null) {
+      // Schedule clear on next tick to avoid setState during render
+      setTimeout(() => setPendingHref(null), 0);
+    }
+  }
 
   return (
     <>
@@ -56,8 +76,10 @@ export function BottomNav() {
           }}
         >
           {tabs.map((tab) => {
-            const isActive =
-              tab.href === "/dashboard"
+            // Highlight if this is the current route OR the optimistically tapped tab
+            const isActive = pendingHref
+              ? tab.href === pendingHref
+              : tab.href === "/dashboard"
                 ? pathname === "/dashboard"
                 : pathname.startsWith(tab.href);
 
@@ -65,18 +87,17 @@ export function BottomNav() {
               <Link
                 key={tab.href}
                 href={tab.href}
+                prefetch={true}
+                onClick={() => handleTabClick(tab.href)}
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center",
                   "transition-colors"
                 )}
                 style={{
                   gap: "3px",
-                  /* Active: rust color per §12.2 */
                   color: isActive
                     ? "var(--color-rust)"
                     : "var(--color-ink-muted)",
-                  /* Active left-border is only practical for sidebar, not bottom nav
-                     — use color + font weight as the active signal here */
                 }}
               >
                 <tab.icon size={22} strokeWidth={isActive ? 2.5 : 2} />

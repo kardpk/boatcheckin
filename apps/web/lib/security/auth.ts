@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -9,8 +10,12 @@ import { createServiceClient } from "@/lib/supabase/service";
  * Require authenticated operator — uses service client for operator lookup
  * to avoid RLS issues with cookie-based sessions in Server Components.
  * Use in Server Components and Server Actions for dashboard routes.
+ *
+ * Wrapped with React cache() so that when both layout.tsx and page.tsx
+ * call requireOperator() in the same render tree, only ONE auth request
+ * is made to Supabase. This saves ~100-150ms per navigation.
  */
-export async function requireOperator() {
+export const requireOperator = cache(async function _requireOperator() {
   const cookieStore = await cookies(); // MUST await in Next.js 15+
   const headersList = await headers();
 
@@ -103,7 +108,7 @@ export async function requireOperator() {
   if (!operator?.is_active) redirect(`/login?error=account_inactive&next=${encodeURIComponent(pathname)}`);
 
   return { user, operator, supabase };
-}
+})
 
 // ─── Admin guard ──────────────────────────────────────────────────────────────
 

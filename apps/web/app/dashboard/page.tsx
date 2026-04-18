@@ -1,16 +1,16 @@
+import { Suspense } from "react";
 import { requireOperator } from "@/lib/security/auth";
 import { getDashboardHomeData } from "@/lib/dashboard/getDashboardData";
-import { getWeatherData } from "@/lib/trip/getWeatherData";
 import { DashboardGreeting } from "@/components/dashboard/DashboardGreeting";
 import { TodayTripCard } from "@/components/dashboard/TodayTripCard";
-import { TodayWeatherBar } from "@/components/dashboard/TodayWeatherBar";
+import { TodayWeatherBarAsync } from "@/components/dashboard/TodayWeatherBarAsync";
 import { DashboardStatsRow } from "@/components/dashboard/DashboardStatsRow";
 import { UpcomingTripsList } from "@/components/dashboard/UpcomingTripsList";
 import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
+import { ShimmerLine } from "@/components/dashboard/TabSkeleton";
 import { Anchor } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { WeatherData } from "@/lib/trip/getWeatherData";
 
 export const metadata: Metadata = { title: "Dashboard — BoatCheckin" };
 
@@ -27,21 +27,6 @@ export default async function DashboardPage() {
     );
   }
 
-  // Fetch weather for today's trips (parallel)
-  const weatherMap = new Map<string, WeatherData>();
-  await Promise.all(
-    data.todaysTrips.map(async (trip) => {
-      if (trip.boat.lat && trip.boat.lng) {
-        const w = await getWeatherData(
-          trip.boat.lat,
-          trip.boat.lng,
-          trip.tripDate
-        );
-        if (w) weatherMap.set(trip.id, w);
-      }
-    })
-  );
-
   return (
     <div style={{ padding: "var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-3)" }}>
       {/* Greeting */}
@@ -50,22 +35,23 @@ export default async function DashboardPage() {
         todayTripCount={data.todaysTrips.length}
       />
 
-      {/* Today's charter(s) */}
-      {data.todaysTrips.map((trip) => {
-        const tripWeather = weatherMap.get(trip.id);
-        return (
-          <div key={trip.id} style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
-            {tripWeather && (
-              <TodayWeatherBar
-                weather={tripWeather}
-                boatName={trip.boat.boatName}
+      {/* Today's charter(s) — weather streams in via Suspense */}
+      {data.todaysTrips.map((trip) => (
+        <div key={trip.id} style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+          {trip.boat.lat && trip.boat.lng && (
+            <Suspense fallback={<ShimmerLine width="100%" height={40} style={{ borderRadius: 'var(--r-2)' }} />}>
+              <TodayWeatherBarAsync
                 tripId={trip.id}
+                boatName={trip.boat.boatName}
+                lat={trip.boat.lat}
+                lng={trip.boat.lng}
+                tripDate={trip.tripDate}
               />
-            )}
-            <TodayTripCard trip={trip} />
-          </div>
-        );
-      })}
+            </Suspense>
+          )}
+          <TodayTripCard trip={trip} />
+        </div>
+      ))}
 
       {/* Stats row */}
       <DashboardStatsRow stats={data.stats} />
