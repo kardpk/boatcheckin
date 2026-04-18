@@ -286,15 +286,16 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
 
         {/* ── LOCATION ── */}
         {boat.marina_name && (
-          <section style={{ marginBottom: "var(--s-4)" }}>
-            <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "var(--s-2)" }}>
-              Location
-            </p>
-            <div className="tile" style={{ padding: 0, overflow: "hidden" }}>
+          <section style={{ marginBottom: "var(--s-5)" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)', paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+              <MapPin size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+              <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>Location</span>
+            </div>
+            <div className="tile" style={{ padding: 0, overflow: "hidden", borderLeft: '4px solid var(--color-ink)' }}>
               <div style={{ padding: "var(--s-4)", display: "flex", alignItems: "flex-start", gap: "var(--s-3)" }}>
                 <MapPin size={16} strokeWidth={1.5} style={{ color: "var(--color-ink-muted)", flexShrink: 0, marginTop: 2 }} />
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontWeight: 500, fontSize: "var(--t-body-sm)", color: "var(--color-ink)" }}>
+                  <p style={{ fontWeight: 600, fontSize: '15px', color: "var(--color-ink)" }}>
                     {boat.marina_name}
                     {boat.slip_number && (
                       <span className="pill pill--ok" style={{ marginLeft: "var(--s-2)", fontSize: "var(--t-mono-xs)" }}>
@@ -326,11 +327,12 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
 
         {/* ── CAPTAIN & CREW ── */}
         {(primaryCaptain || boat.captain_name) && (
-          <section style={{ marginBottom: "var(--s-4)" }}>
-            <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "var(--s-2)" }}>
-              Captain & Crew
-            </p>
-            <div className="tile" style={{ padding: "var(--s-4)" }}>
+          <section style={{ marginBottom: "var(--s-5)" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)', paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+              <UserCog size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+              <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>Captain & Crew</span>
+            </div>
+            <div className="tile" style={{ padding: "var(--s-4)", borderLeft: '4px solid var(--color-ink)' }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--s-3)" }}>
                 {/* Captain photo or avatar */}
                 <div
@@ -356,7 +358,7 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: 500, fontSize: "var(--t-body-sm)", color: "var(--color-ink)" }}>
+                  <p className="font-display" style={{ fontWeight: 500, fontSize: '17px', color: "var(--color-ink)", letterSpacing: '-0.01em' }}>
                     {primaryCaptain?.full_name ?? boat.captain_name}
                   </p>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--s-2)", marginTop: 3, flexWrap: "wrap" }}>
@@ -393,11 +395,12 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
         )}
 
         {/* ── TRIP READINESS ── */}
-        <section style={{ marginBottom: "var(--s-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--s-2)" }}>
-            <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              Trip Readiness
-            </p>
+        <section style={{ marginBottom: "var(--s-5)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--s-2)", paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}>
+              <Shield size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+              <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>Trip Readiness</span>
+            </div>
             <span
               className={readinessScore === readinessChecks.length ? "pill pill--ok" : "pill pill--warn"}
               style={{ fontSize: "var(--t-mono-xs)" }}
@@ -467,10 +470,11 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
 
         {/* ── HOUSE RULES ── */}
         {(rulesFromText.length > 0 || dos.length > 0 || donts.length > 0) && (
-          <section style={{ marginBottom: "var(--s-4)" }}>
-            <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "var(--s-2)" }}>
-              House Rules
-            </p>
+          <section style={{ marginBottom: "var(--s-5)" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)', paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+              <BookOpen size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+              <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>House Rules</span>
+            </div>
             <BoatDetailClient
               rules={rulesFromText}
               dos={dos}
@@ -481,10 +485,11 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
 
         {/* ── WHAT TO BRING ── */}
         {(bringItems.length > 0 || dontBringItems.length > 0) && (
-          <section style={{ marginBottom: "var(--s-4)" }}>
-            <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "var(--s-2)" }}>
-              What to Bring
-            </p>
+          <section style={{ marginBottom: "var(--s-5)" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)', paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+              <ClipboardList size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+              <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>What to Bring</span>
+            </div>
             <div className="tile" style={{ padding: "var(--s-4)", overflow: "hidden" }}>
               {bringItems.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--s-2)" }}>
@@ -543,10 +548,11 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
         )}
 
         {/* ── QR / BOARDING LINK ── */}
-        <section style={{ marginBottom: "var(--s-4)" }}>
-          <p className="mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "var(--s-2)" }}>
-            Boarding QR
-          </p>
+        <section style={{ marginBottom: "var(--s-5)" }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)', paddingBottom: 'var(--s-2)', borderBottom: '2px solid var(--color-ink)' }}>
+            <Anchor size={14} strokeWidth={2} style={{ color: 'var(--color-ink)' }} />
+            <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)' }}>Boarding QR</span>
+          </div>
           <BoatQRSection
             boatId={boat.id as string}
             boatName={boat.boat_name as string}
