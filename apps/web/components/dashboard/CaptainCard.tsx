@@ -4,32 +4,16 @@ import { useState, useCallback } from 'react'
 import {
   Shield, Anchor, HardHat, Users,
   Phone, Mail, Ship, Link2, Pencil, Trash2,
-  AlertTriangle, Ban, MoreVertical, X, Briefcase, Globe
+  AlertTriangle, Ban, MoreVertical, X, Briefcase, Globe, ChevronDown,
 } from 'lucide-react'
-import { cn } from '@/lib/utils/cn'
 import { Avatar } from '@/components/ui/Avatar'
 import type { CaptainProfile, CrewRole } from '@/types'
 
-const ROLE_CONFIG: Record<CrewRole, {
-  label: string; Icon: typeof Shield;
-  color: string; bg: string; border: string;
-}> = {
-  captain: {
-    label: 'Captain', Icon: Shield,
-    color: 'text-gold', bg: 'bg-gold-dim', border: 'border-gold-line',
-  },
-  first_mate: {
-    label: 'First Mate', Icon: Anchor,
-    color: 'text-teal', bg: 'bg-teal-dim', border: 'border-teal-line',
-  },
-  crew: {
-    label: 'Crew', Icon: Users,
-    color: 'text-[#7C5A0C]', bg: 'bg-[rgba(124,90,12,0.06)]', border: 'border-[rgba(124,90,12,0.18)]',
-  },
-  deckhand: {
-    label: 'Deckhand', Icon: HardHat,
-    color: 'text-[#6B4C93]', bg: 'bg-[rgba(107,76,147,0.06)]', border: 'border-[rgba(107,76,147,0.18)]',
-  },
+const ROLE_LABEL: Record<CrewRole, { label: string; Icon: typeof Shield }> = {
+  captain:    { label: 'Captain',    Icon: Shield },
+  first_mate: { label: 'First Mate', Icon: Anchor },
+  crew:       { label: 'Crew',       Icon: Users },
+  deckhand:   { label: 'Deckhand',   Icon: HardHat },
 }
 
 interface BoatOption { id: string; name: string }
@@ -50,7 +34,7 @@ export function CaptainCard({
   const [showBoatPicker, setShowBoatPicker] = useState(false)
   const [linkLoading, setLinkLoading] = useState(false)
 
-  const role = ROLE_CONFIG[captain.defaultRole] ?? ROLE_CONFIG.captain
+  const role = ROLE_LABEL[captain.defaultRole] ?? ROLE_LABEL.captain
   const RoleIcon = role.Icon
 
   const daysUntilExpiry = captain.licenseExpiry
@@ -103,130 +87,181 @@ export function CaptainCard({
 
   return (
     <div
-      className={cn(
-        'relative overflow-hidden bg-white rounded-[14px] border p-card transition-all',
-        isExpired ? 'border-error/40' : isExpiringSoon ? 'border-warn/40' : 'border-border',
-      )}
+      className="tile"
+      style={{
+        padding: 'var(--s-4) var(--s-5)',
+        position: 'relative',
+        borderColor: isExpired ? 'var(--color-status-err)' : isExpiringSoon ? 'var(--color-status-warn)' : undefined,
+      }}
     >
-      {/* State top bar */}
-      {isExpired && <div className="absolute top-0 left-0 right-0 h-[3px] bg-error" />}
-      {isExpiringSoon && !isExpired && <div className="absolute top-0 left-0 right-0 h-[3px] bg-warn" />}
+      {/* ── Top accent bar for expiry states ──────────── */}
+      {isExpired && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'var(--color-status-err)', borderRadius: 'var(--r-1) var(--r-1) 0 0' }} />}
+      {isExpiringSoon && !isExpired && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'var(--color-status-warn)', borderRadius: 'var(--r-1) var(--r-1) 0 0' }} />}
 
-      {/* Header: avatar + info + menu */}
-      <div className="flex items-start gap-[12px]">
+      {/* ── Header: avatar + info + menu ──────────────── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--s-3)' }}>
         <Avatar
           name={captain.fullName}
           role={captain.defaultRole === 'first_mate' ? 'first-mate' : captain.defaultRole === 'deckhand' ? 'deckhand' : 'captain'}
           size="lg"
         />
 
-        <div className="flex-1 min-w-0">
-          <p className="text-[16px] font-bold text-navy truncate">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Name */}
+          <p style={{ fontSize: 'var(--t-body-md)', fontWeight: 700, color: 'var(--color-ink)', lineHeight: 1.2 }}>
             {captain.fullName}
           </p>
 
-          {/* Role badge */}
-          <span className={cn(
-            'inline-flex items-center gap-[4px] mt-[4px] px-[10px] py-[3px] rounded-[5px]',
-            'text-[11px] font-bold uppercase tracking-[0.04em] border',
-            role.bg, role.color, role.border
-          )}>
-            <RoleIcon size={12} />
-            {role.label}
-          </span>
-
-          {captain.isDefault && (
-            <span className="ml-[6px] text-[10px] font-bold uppercase tracking-[0.04em] text-gold bg-gold-dim border border-gold-line px-[8px] py-[3px] rounded-[5px]">
-              Default
+          {/* Role pill */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginTop: 'var(--s-1)' }}>
+            <span className="pill pill--ink" style={{ padding: '3px 8px' }}>
+              <RoleIcon size={10} strokeWidth={2.5} />
+              {role.label}
             </span>
-          )}
+            {captain.isDefault && (
+              <span className="pill pill--rust" style={{ padding: '3px 8px' }}>
+                Default
+              </span>
+            )}
+          </div>
         </div>
 
+        {/* Menu toggle */}
         <button
           onClick={() => setShowActions(!showActions)}
-          className="w-[32px] h-[32px] rounded-full hover:bg-bg flex items-center justify-center text-text-dim shrink-0"
+          style={{
+            width: 32, height: 32, flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: 'var(--r-1)',
+            background: showActions ? 'var(--color-bone)' : 'transparent',
+            border: 'none', cursor: 'pointer',
+            color: 'var(--color-ink-muted)',
+            transition: 'background var(--dur-fast) var(--ease)',
+          }}
         >
-          <MoreVertical size={16} />
+          <MoreVertical size={16} strokeWidth={2} />
         </button>
       </div>
 
-      {/* License */}
+      {/* ── License info ─────────────────────────────── */}
       {captain.licenseType && (
-        <div className="flex items-center gap-[6px] mt-[10px]">
-          <span className="inline-flex items-center gap-[4px] text-[12px] text-navy-mid font-medium bg-[#EBF0F7] px-[8px] py-[3px] rounded-[5px]">
-            <Briefcase size={11} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginTop: 'var(--s-3)' }}>
+          <span className="badge">
+            <Briefcase size={10} strokeWidth={2} />
             {captain.licenseType}
           </span>
           {captain.licenseNumber && (
-            <span className="text-[11px] text-text-dim font-medium">
+            <span
+              className="font-mono"
+              style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}
+            >
               #{captain.licenseNumber}
             </span>
           )}
         </div>
       )}
 
-      {/* Expiry warning */}
+      {/* ── Expiry warning ───────────────────────────── */}
       {captain.licenseExpiry && (
-        <p className={cn(
-          'text-[11px] mt-[6px] flex items-center gap-[4px] font-medium',
-          isExpired ? 'text-error font-bold' :
-          isExpiringSoon ? 'text-warn font-semibold' :
-          'text-text-dim'
-        )}>
-          {isExpired ? <><Ban size={12} /> License EXPIRED</> :
-           isExpiringSoon ? <><AlertTriangle size={12} /> Expires in {daysUntilExpiry} days</> :
+        <p
+          style={{
+            fontSize: 'var(--t-body-sm)',
+            marginTop: 'var(--s-1)',
+            display: 'flex', alignItems: 'center', gap: 'var(--s-1)',
+            fontWeight: 600,
+            color: isExpired
+              ? 'var(--color-status-err)'
+              : isExpiringSoon
+                ? 'var(--color-status-warn)'
+                : 'var(--color-ink-muted)',
+          }}
+        >
+          {isExpired ? <><Ban size={12} strokeWidth={2} /> License expired</> :
+           isExpiringSoon ? <><AlertTriangle size={12} strokeWidth={2} /> Expires in {daysUntilExpiry} days</> :
            `Expires: ${new Date(captain.licenseExpiry).toLocaleDateString()}`}
         </p>
       )}
 
-      {/* Meta row */}
-      <div className="flex items-center gap-[10px] mt-[8px] flex-wrap">
+      {/* ── Meta row ─────────────────────────────────── */}
+      <div
+        className="font-mono"
+        style={{
+          display: 'flex', alignItems: 'center', gap: 'var(--s-3)',
+          flexWrap: 'wrap',
+          marginTop: 'var(--s-3)',
+          fontSize: '12px',
+          fontWeight: 500,
+          color: 'var(--color-ink-muted)',
+          letterSpacing: '0.02em',
+        }}
+      >
         {captain.yearsExperience != null && (
-          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
-            <Briefcase size={11} />
-            {captain.yearsExperience}yr exp
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Briefcase size={11} strokeWidth={2} />
+            {captain.yearsExperience}yr
           </span>
         )}
         {captain.phone && (
-          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
-            <Phone size={11} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Phone size={11} strokeWidth={2} />
             {captain.phone}
           </span>
         )}
         {captain.email && (
-          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
-            <Mail size={11} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Mail size={11} strokeWidth={2} />
             {captain.email}
           </span>
         )}
         {captain.languages && captain.languages.length > 0 && (
-          <span className="text-[11px] text-text-mid flex items-center gap-[3px] font-medium">
-            <Globe size={11} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Globe size={11} strokeWidth={2} />
             {captain.languages.join(', ')}
           </span>
         )}
       </div>
 
-      {/* Linked boats */}
-      <div className="mt-[12px] pt-[12px] border-t border-border">
-        <p className="text-[10px] font-bold text-text-dim uppercase tracking-[0.06em] mb-[6px] flex items-center gap-[4px]">
-          <Ship size={11} />
-          Linked Boats
-        </p>
-        <div className="flex flex-wrap gap-[6px]">
+      {/* ── Linked boats ─────────────────────────────── */}
+      <div
+        style={{
+          marginTop: 'var(--s-3)',
+          paddingTop: 'var(--s-3)',
+          borderTop: '1px dashed var(--color-line-soft)',
+        }}
+      >
+        <span
+          className="font-mono"
+          style={{
+            fontSize: '11px', fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: 'var(--color-ink-muted)',
+            display: 'flex', alignItems: 'center', gap: 'var(--s-1)',
+            marginBottom: 'var(--s-2)',
+          }}
+        >
+          <Ship size={11} strokeWidth={2} />
+          Linked boats
+        </span>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s-2)' }}>
           {captain.linkedBoats.map(lb => (
             <span
               key={lb.boatId}
-              className="inline-flex items-center gap-[4px] text-[12px] text-navy bg-[#EBF0F7] border border-border px-[10px] py-[4px] rounded-[8px] font-medium"
+              className="badge"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
-              <Ship size={12} className="text-text-dim" />
+              <Ship size={11} strokeWidth={2} />
               {lb.boatName}
               <button
                 onClick={() => handleUnlinkBoat(lb.boatId)}
-                className="text-text-dim hover:text-error ml-[2px]"
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--color-ink-muted)', padding: 0, marginLeft: 2,
+                  display: 'flex',
+                }}
                 title={`Unlink ${lb.boatName}`}
               >
-                <X size={12} />
+                <X size={11} strokeWidth={2} />
               </button>
             </span>
           ))}
@@ -234,33 +269,60 @@ export function CaptainCard({
           {availableBoats.length > 0 && (
             <button
               onClick={() => setShowBoatPicker(!showBoatPicker)}
-              className="inline-flex items-center gap-[4px] text-[12px] text-gold font-semibold bg-gold-dim border border-gold-line px-[10px] py-[4px] rounded-[8px] hover:bg-gold/10 transition-colors"
+              className="badge badge--rust"
+              style={{
+                cursor: 'pointer', background: 'transparent', border: '1px solid var(--color-rust)',
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+              }}
             >
-              <Link2 size={12} />
-              Link Boat
+              <Link2 size={11} strokeWidth={2} />
+              Link boat
+              <ChevronDown size={10} strokeWidth={2} style={{ transform: showBoatPicker ? 'rotate(180deg)' : 'none', transition: 'transform var(--dur-fast) var(--ease)' }} />
             </button>
           )}
 
           {captain.linkedBoats.length === 0 && availableBoats.length === 0 && (
-            <span className="text-[11px] text-text-dim italic">No boats available</span>
+            <span style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', fontStyle: 'italic' }}>No boats available</span>
           )}
 
           {captain.linkedBoats.length === 0 && availableBoats.length > 0 && !showBoatPicker && (
-            <span className="text-[11px] text-text-dim italic">Not linked to any boat</span>
+            <span style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', fontStyle: 'italic' }}>Not linked to any boat</span>
           )}
         </div>
 
         {/* Boat picker */}
         {showBoatPicker && (
-          <div className="mt-[8px] p-[8px] bg-white border border-border rounded-[10px] shadow-card space-y-[4px]">
+          <div
+            className="tile"
+            style={{
+              marginTop: 'var(--s-2)',
+              padding: 'var(--s-2)',
+              display: 'flex', flexDirection: 'column', gap: 2,
+            }}
+          >
             {availableBoats.map(boat => (
               <button
                 key={boat.id}
                 disabled={linkLoading}
                 onClick={() => handleLinkBoat(boat.id)}
-                className="w-full text-left px-[12px] py-[8px] rounded-[8px] text-[13px] text-navy font-medium hover:bg-gold-dim disabled:opacity-50 transition-colors flex items-center gap-[6px]"
+                style={{
+                  width: '100%', textAlign: 'left',
+                  padding: 'var(--s-2) var(--s-3)',
+                  borderRadius: 'var(--r-1)',
+                  fontSize: 'var(--t-body-sm)',
+                  fontWeight: 600,
+                  color: 'var(--color-ink)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: linkLoading ? 'not-allowed' : 'pointer',
+                  opacity: linkLoading ? 0.5 : 1,
+                  display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
+                  transition: 'background var(--dur-fast) var(--ease)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bone)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <Ship size={14} className="text-text-dim" />
+                <Ship size={14} strokeWidth={1.8} style={{ color: 'var(--color-ink-muted)' }} />
                 {boat.name}
               </button>
             ))}
@@ -268,21 +330,30 @@ export function CaptainCard({
         )}
       </div>
 
-      {/* Action buttons */}
+      {/* ── Action buttons ───────────────────────────── */}
       {showActions && (
-        <div className="mt-[12px] pt-[12px] border-t border-border flex gap-[8px]">
+        <div
+          style={{
+            marginTop: 'var(--s-3)',
+            paddingTop: 'var(--s-3)',
+            borderTop: '1px solid var(--color-line-soft)',
+            display: 'flex',
+            gap: 'var(--s-2)',
+          }}
+        >
           <button
             onClick={() => { onEdit(captain); setShowActions(false) }}
-            className="flex-1 h-[36px] rounded-[10px] border border-border text-[13px] font-semibold text-navy hover:bg-bg transition-colors flex items-center justify-center gap-[5px]"
+            className="btn btn--sm"
+            style={{ flex: 1 }}
           >
-            <Pencil size={13} />
+            <Pencil size={13} strokeWidth={2} />
             Edit
           </button>
           <button
             onClick={() => { onDeactivate(captain); setShowActions(false) }}
-            className="h-[36px] px-[16px] rounded-[10px] border border-error/30 text-[13px] font-semibold text-error hover:bg-error-dim transition-colors flex items-center justify-center gap-[5px]"
+            className="btn btn--sm btn--danger"
           >
-            <Trash2 size={13} />
+            <Trash2 size={13} strokeWidth={2} />
             Remove
           </button>
         </div>

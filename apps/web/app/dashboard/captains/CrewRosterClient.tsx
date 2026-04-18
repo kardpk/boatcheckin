@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship } from 'lucide-react'
+import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight } from 'lucide-react'
 import { CaptainCard } from '@/components/dashboard/CaptainCard'
 import { CaptainFormSheet } from '@/components/dashboard/CaptainFormSheet'
 import type { CaptainProfile, CrewRole } from '@/types'
@@ -78,75 +78,75 @@ export function CrewRosterClient({
 
   return (
     <>
-      {/* ── Page Header ─────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+      {/* ── Page header ─────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-6)' }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-ink)', margin: 0, lineHeight: 1.1 }}>
-            Crew Roster
+          <h1
+            className="font-display"
+            style={{ fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1 }}
+          >
+            Crew roster
           </h1>
-          <p className="mono" style={{ fontSize: 12, color: 'var(--color-ink-muted)', marginTop: 4, letterSpacing: '0.03em' }}>
+          <p
+            className="font-mono"
+            style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-ink-soft)', marginTop: 'var(--s-1)' }}
+          >
             {captains.length} member{captains.length !== 1 ? 's' : ''} in your roster
           </p>
         </div>
         <button
           onClick={() => { setEditingCaptain(null); setShowForm(true) }}
-          className="btn btn--ink"
-          style={{ height: 40, paddingInline: 16, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}
+          className="btn btn--rust"
         >
-          <UserPlus size={15} strokeWidth={2} />
-          Add Crew
+          <UserPlus size={14} strokeWidth={2.5} />
+          Add crew
         </button>
       </div>
 
-      {/* ── License expiry alerts ───────────────────────────────────── */}
+      {/* ── License expiry alert ─────────────────────────── */}
       {expiringCaptains.length > 0 && (
-        <div
-          style={{
-            marginBottom: 16,
-            padding: '12px 16px',
-            borderRadius: 'var(--r-1)',
-            background: 'rgba(212,160,23,0.06)',
-            border: '1px solid rgba(212,160,23,0.25)',
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-          }}
-        >
-          <AlertTriangle size={15} strokeWidth={2} style={{ color: 'var(--color-brass)', flexShrink: 0, marginTop: 1 }} />
+        <div className="alert alert--warn" style={{ marginBottom: 'var(--s-5)' }}>
+          <AlertTriangle size={16} strokeWidth={2} />
           <div>
-            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-ink)', margin: '0 0 2px' }}>
-              License Alert
-            </p>
-            <p style={{ fontSize: 12, color: 'var(--color-ink-muted)', margin: 0 }}>
-              {expiringCaptains.length} crew member{expiringCaptains.length !== 1 ? 's have' : ' has a'} license
-              {expiringCaptains.length !== 1 ? 's' : ''} expiring within 30 days: {expiringCaptains.map(c => c.fullName).join(', ')}
-            </p>
+            <strong>License alert</strong>
+            <div style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 2 }}>
+              {expiringCaptains.length} crew member{expiringCaptains.length !== 1 ? 's have' : ' has a'} license{expiringCaptains.length !== 1 ? 's' : ''}{' '}
+              expiring within 30 days: {expiringCaptains.map(c => c.fullName).join(', ')}
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── Crew cards or empty state ───────────────────────────────── */}
+      {/* ── Crew cards or empty state ───────────────────── */}
       {captains.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)' }}>
           {grouped.map(group => (
-            <div key={group.role}>
-              {/* Section label */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <group.config.Icon size={14} strokeWidth={1.75} style={{ color: 'var(--color-ink-muted)' }} />
-                <p className="mono" style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--color-ink-muted)',
-                  textTransform: 'uppercase', letterSpacing: '0.06em', flex: 1,
-                }}>
+            <section key={group.role}>
+              {/* Section kicker */}
+              <div
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  paddingBottom: 'var(--s-3)',
+                  borderBottom: 'var(--border-w) solid var(--color-ink)',
+                  marginBottom: 'var(--s-3)',
+                }}
+              >
+                <div
+                  className="font-mono"
+                  style={{
+                    fontSize: '13px', fontWeight: 700,
+                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                    color: 'var(--color-ink)',
+                    display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
+                  }}
+                >
+                  <group.config.Icon size={14} strokeWidth={2} />
                   {group.config.label}
-                </p>
-                <span style={{
-                  padding: '1px 8px', borderRadius: 9999,
-                  background: 'var(--color-bone)',
-                  border: '1px solid var(--color-line)',
-                  fontSize: 11, color: 'var(--color-ink-muted)',
-                }}>
-                  {group.members.length}
-                </span>
+                </div>
+                <span className="pill pill--ghost">{group.members.length}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
                 {group.members.map(captain => (
                   <CaptainCard
                     key={captain.id}
@@ -159,46 +159,42 @@ export function CrewRosterClient({
                   />
                 ))}
               </div>
-            </div>
+            </section>
           ))}
         </div>
       ) : (
-        /* ── Empty state ──────────────────────────────────────────── */
+        /* ── Empty state ─────────────────────────────────── */
         <div
+          className="tile text-center"
           style={{
-            textAlign: 'center',
-            paddingTop: 56, paddingBottom: 56,
-            paddingLeft: 24, paddingRight: 24,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: 'var(--s-16) var(--s-8)',
+            gap: 'var(--s-4)',
+            borderStyle: 'dashed',
           }}
         >
-          <div
-            style={{
-              width: 64, height: 64, borderRadius: 'var(--r-2)',
-              background: 'var(--color-bone)',
-              border: '1px solid var(--color-line)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px',
-            }}
+          <Ship size={32} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} />
+          <h2
+            className="font-display"
+            style={{ fontSize: '22px', fontWeight: 500, color: 'var(--color-ink)', letterSpacing: '-0.02em' }}
           >
-            <Ship size={28} strokeWidth={1.25} style={{ color: 'var(--color-ink-muted)' }} />
-          </div>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-ink)', margin: '0 0 6px' }}>
             No crew members yet
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--color-ink-muted)', maxWidth: 280, margin: '0 auto 24px', lineHeight: 1.55 }}>
-            Add your first crew member to start assigning them to trips. Their profile appears on guest boarding passes.
+          <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', maxWidth: 280 }}>
+            Add your first crew member to start assigning them to trips.
           </p>
           <button
             onClick={() => { setEditingCaptain(null); setShowForm(true) }}
-            className="btn btn--ink"
-            style={{ height: 48, paddingInline: 24, fontSize: 14, fontWeight: 600 }}
+            className="btn btn--rust"
+            style={{ marginTop: 'var(--s-2)' }}
           >
-            + Add your first crew member
+            Add your first crew member
+            <ArrowRight size={14} strokeWidth={2.5} />
           </button>
         </div>
       )}
 
-      {/* ── Form sheet overlay ──────────────────────────────────────── */}
+      {/* ── Form sheet overlay ───────────────────────────── */}
       {showForm && (
         <CaptainFormSheet
           key={editingCaptain?.id ?? 'new'}
