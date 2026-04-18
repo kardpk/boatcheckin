@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { MapPin, ChevronRight } from 'lucide-react'
-import { formatTripDate, formatDuration } from '@/lib/utils/format'
+import { formatDuration } from '@/lib/utils/format'
 import { TripStatusBadge } from '@/components/ui/TripStatusBadge'
 import type { TripStatus } from '@/types'
 
@@ -23,16 +23,23 @@ interface TripCardProps {
   requiresApproval: boolean
 }
 
+/** Status → left accent stripe color */
+const ACCENT: Record<string, string> = {
+  active:    'var(--color-status-ok)',
+  upcoming:  'var(--color-brass)',
+  completed: 'var(--color-ink-muted)',
+  cancelled: 'var(--color-status-err)',
+}
+
 /**
- * TripCard — Editorial trip row tile (MASTER_DESIGN §9.3)
+ * TripCard — Editorial trip row tile (MASTER_DESIGN §9.3 + §9.7)
  *
- * Layout: departure time on the left, trip info on the right.
- * Uses .tile border system, mono data, proper pill status.
+ * Dense, scannable card with left status accent stripe,
+ * Fraunces boat name, promoted trip code badge.
  */
 export function TripCard({
   tripId,
   tripCode,
-  tripDate,
   departureTime,
   durationHours,
   maxGuests,
@@ -44,118 +51,148 @@ export function TripCard({
   waiversSigned,
   requiresApproval,
 }: TripCardProps) {
+  const accentColor = ACCENT[status] ?? 'var(--color-ink-muted)'
+  const checkinRatio = maxGuests > 0 ? guestCount / maxGuests : 0
+
   return (
     <Link
       href={`/dashboard/trips/${tripId}`}
       className="tile"
       style={{
         display: 'flex',
-        gap: 'var(--s-4)',
-        padding: 'var(--s-4) var(--s-5)',
+        gap: 'var(--s-3)',
+        padding: '12px 16px',
         textDecoration: 'none',
         transition: 'background var(--dur-fast) var(--ease)',
         cursor: 'pointer',
+        borderLeft: `4px solid ${accentColor}`,
+        position: 'relative',
       }}
     >
-      {/* ── Departure time (left column) ──────────────────────── */}
+      {/* ── Departure time (left column) ──────────────── */}
       <div
         className="font-mono"
         style={{
           flexShrink: 0,
-          width: 56,
+          width: 52,
           paddingTop: 2,
-          fontSize: '18px',
-          fontWeight: 700,
-          color: 'var(--color-ink)',
-          letterSpacing: '0.02em',
-          lineHeight: 1,
         }}
       >
-        {departureTime.slice(0, 5)}
         <div
           style={{
-            fontSize: '10px',
+            fontSize: '20px',
+            fontWeight: 700,
+            color: 'var(--color-ink)',
+            letterSpacing: '0.02em',
+            lineHeight: 1,
+          }}
+        >
+          {departureTime.slice(0, 5)}
+        </div>
+        <div
+          style={{
+            fontSize: '11px',
             fontWeight: 600,
             color: 'var(--color-ink-muted)',
-            letterSpacing: '0.06em',
-            marginTop: 'var(--s-1)',
+            letterSpacing: '0.04em',
+            marginTop: 4,
           }}
         >
           {formatDuration(durationHours)}
         </div>
       </div>
 
-      {/* ── Trip info (main column) ───────────────────────────── */}
+      {/* ── Trip info (main column) ───────────────────── */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Row 1: Boat name + status */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--s-3)' }}>
+        {/* Row 1: Boat name + trip code badge */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--s-2)' }}>
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 'var(--t-body-md)', fontWeight: 700, color: 'var(--color-ink)', lineHeight: 1.2 }}>
-              {boatName}
-            </p>
-            <div
+            {/* Boat name — display font, prominent */}
+            <p
+              className="font-display"
               style={{
-                display: 'flex', alignItems: 'center', gap: 'var(--s-1)',
-                marginTop: 'var(--s-1)',
-                fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)',
+                fontSize: '19px',
+                fontWeight: 500,
+                color: 'var(--color-ink)',
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                margin: 0,
               }}
             >
-              <MapPin size={12} strokeWidth={2} />
+              {boatName}
+            </p>
+            {/* Location — inline, compact */}
+            <div
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                marginTop: 4,
+                fontSize: '13px', color: 'var(--color-ink-muted)',
+              }}
+            >
+              <MapPin size={11} strokeWidth={2} />
               <span>{marinaName}{slipNumber ? ` · Slip ${slipNumber}` : ''}</span>
             </div>
           </div>
+
+          {/* Trip code badge + status */}
           <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}>
-            <TripStatusBadge status={status} />
+            <span
+              className="font-mono"
+              style={{
+                fontSize: '13px',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                color: 'var(--color-rust)',
+                background: 'rgba(184,74,31,0.08)',
+                padding: '2px 8px',
+                borderRadius: 'var(--r-1)',
+              }}
+            >
+              {tripCode}
+            </span>
             <ChevronRight size={16} strokeWidth={2} style={{ color: 'var(--color-ink-muted)' }} />
           </div>
         </div>
 
-        {/* Row 2: Guest stats (separated by soft divider) */}
+        {/* Row 2: Guest stats + status + waiver count */}
         <div
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginTop: 'var(--s-3)',
-            paddingTop: 'var(--s-3)',
-            borderTop: '1px dashed var(--color-line-soft)',
+            marginTop: 10,
+            paddingTop: 8,
+            borderTop: '1px solid var(--color-line-soft)',
           }}
         >
           <div className="font-mono" style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-4)' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink)', letterSpacing: '0.04em' }}>
-              {guestCount}
-              <span style={{ color: 'var(--color-ink-muted)', fontWeight: 500 }}>/{maxGuests}</span>
-              {' '}
-              <span style={{ color: 'var(--color-ink-muted)', fontWeight: 500 }}>checked in</span>
-            </span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}>
+            {/* Check-in count with progress bar */}
+            <div>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-ink)' }}>
+                {guestCount}
+              </span>
+              <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-ink-muted)' }}>
+                /{maxGuests}
+              </span>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-ink-muted)', marginLeft: 4 }}>
+                checked in
+              </span>
+              {/* Mini progress bar */}
+              <div style={{ marginTop: 3, height: 2, width: 60, background: 'var(--color-line-soft)', borderRadius: 1 }}>
+                <div style={{ height: '100%', width: `${Math.min(checkinRatio * 100, 100)}%`, background: checkinRatio >= 1 ? 'var(--color-status-ok)' : 'var(--color-rust)', borderRadius: 1, transition: 'width 300ms ease' }} />
+              </div>
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink-muted)' }}>
               {waiversSigned} waiver{waiversSigned !== 1 ? 's' : ''}
             </span>
           </div>
-        </div>
 
-        {/* Row 3: Trip code + approval badge */}
-        <div
-          style={{
-            display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
-            marginTop: 'var(--s-2)',
-          }}
-        >
-          <span
-            className="font-mono"
-            style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}
-          >
-            Code
-          </span>
-          <span
-            className="font-mono"
-            style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-rust)', letterSpacing: '0.1em' }}
-          >
-            {tripCode}
-          </span>
-          {requiresApproval && (
-            <span className="pill pill--warn" style={{ marginLeft: 'auto' }}>
-              Manual approval
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}>
+            {requiresApproval && (
+              <span className="pill pill--warn" style={{ fontSize: '9px' }}>
+                Approval
+              </span>
+            )}
+            <TripStatusBadge status={status} />
+          </div>
         </div>
       </div>
     </Link>

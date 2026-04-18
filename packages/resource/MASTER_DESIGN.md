@@ -1011,6 +1011,40 @@ Used when categorized content must be **instantly distinguishable** by type — 
 - Body area must use the tinted background for double color-coding reinforcement
 - House Rules always use numbered items; DOs always use `Check`; DON'Ts always use `X`
 
+### 9.7 Status Accent Stripe
+
+A **4px solid left border** on `.tile` cards that communicates entity status or category at a glance — without requiring the user to read text or find a pill. This is the primary scanning affordance across all dashboard list views.
+
+```tsx
+<div className="tile" style={{ borderLeft: '4px solid var(--status-ok)' }}>
+  {/* Card content */}
+</div>
+```
+
+**Status color assignments:**
+
+| Status | Stripe color | Token | Used on |
+|---|---|---|---|
+| **Active / Ready** | Green | `--status-ok` | Trip cards (active status) |
+| **Upcoming / Pending** | Brass | `--brass` | Trip cards (upcoming status) |
+| **Default / Base entity** | Navy | `--ink` | Boat cards, Crew cards (healthy) |
+| **Expiring Soon** | Amber | `--status-warn` | Crew cards (license expiring within 30 days) |
+| **Cancelled / Expired / Error** | Red | `--status-err` | Trip cards (cancelled), Crew cards (license expired) |
+| **Completed / Archived** | Muted | `--ink-muted` | Trip cards (completed) |
+
+**Specs:**
+- Width: exactly `4px` — thinner looks insignificant, thicker competes with content
+- Applied via `borderLeft` on the `.tile` element — not a pseudo-element
+- Replaces the default 1.5px `--ink` left border on the tile
+- The rest of the tile border stays at default (`1.5px solid var(--line)`)
+
+**Rules:**
+- Every card in a dashboard list view **must** have a status accent stripe
+- The stripe color must map to one of the assignments above — never invent new stripe colors
+- Do not use stripes on nested tiles (e.g., boat picker dropdowns inside a card)
+- Do not combine with the Color Banner List pattern (§9.6) on the same tile — they serve different purposes
+- The stripe is independent of any pill or badge on the card — both coexist
+
 ---
 
 ## 10. Data Display

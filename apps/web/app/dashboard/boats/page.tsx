@@ -1,7 +1,7 @@
 import { requireOperator } from "@/lib/security/auth";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getToday } from "@/lib/utils/tripStatus";
-import { Plus, Ship, ChevronRight, MapPin, ArrowRight } from "lucide-react";
+import { Plus, Ship, ChevronRight, MapPin, ArrowRight, Users, Calendar } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -82,39 +82,39 @@ export default async function BoatsPage() {
                 className="tile"
                 style={{
                   display: "flex",
-                  gap: "var(--s-4)",
-                  padding: "var(--s-4) var(--s-5)",
+                  gap: "var(--s-3)",
+                  padding: "12px 16px",
                   textDecoration: "none",
                   transition: "background var(--dur-fast) var(--ease)",
                   cursor: "pointer",
+                  borderLeft: "4px solid var(--color-ink)",
                 }}
               >
-                {/* Ship icon */}
+                {/* Ship icon — compact ink box */}
                 <div
                   style={{
                     flexShrink: 0,
-                    width: 44,
-                    height: 44,
+                    width: 36,
+                    height: 36,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "var(--color-bone)",
-                    border: "var(--border-w) solid var(--color-line)",
+                    background: "var(--color-ink)",
                     borderRadius: "var(--r-1)",
                   }}
                 >
-                  <Ship size={20} strokeWidth={1.8} style={{ color: "var(--color-ink-muted)" }} />
+                  <Ship size={18} strokeWidth={1.8} style={{ color: "#fff" }} />
                 </div>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  {/* Type label */}
+                  {/* Type label — promoted to 12px */}
                   <span
                     className="font-mono"
                     style={{
-                      fontSize: "10px",
+                      fontSize: "12px",
                       fontWeight: 600,
-                      letterSpacing: "0.14em",
+                      letterSpacing: "0.1em",
                       textTransform: "uppercase",
                       color: "var(--color-ink-muted)",
                     }}
@@ -123,67 +123,70 @@ export default async function BoatsPage() {
                     {charterLabel ? ` · ${charterLabel}` : ""}
                   </span>
 
-                  {/* Boat name */}
+                  {/* Boat name — Fraunces display */}
                   <p
+                    className="font-display"
                     style={{
-                      fontSize: "var(--t-body-md)",
-                      fontWeight: 700,
+                      fontSize: "19px",
+                      fontWeight: 500,
                       color: "var(--color-ink)",
-                      lineHeight: 1.2,
+                      lineHeight: 1.15,
+                      letterSpacing: "-0.02em",
                       marginTop: 2,
+                      margin: "2px 0 0",
                     }}
                   >
                     {boat.boat_name}
                   </p>
 
-                  {/* Location + stats */}
+                  {/* Location + stats — single dense row */}
                   <div
                     style={{
-                      marginTop: "var(--s-2)",
-                      paddingTop: "var(--s-2)",
-                      borderTop: "1px dashed var(--color-line-soft)",
+                      marginTop: 8,
+                      paddingTop: 8,
+                      borderTop: "1px solid var(--color-line-soft)",
                       display: "flex",
-                      flexDirection: "column",
-                      gap: "var(--s-1)",
+                      alignItems: "center",
+                      gap: "var(--s-3)",
+                      flexWrap: "wrap",
                     }}
                   >
                     {boat.marina_name && (
-                      <div
+                      <span
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "var(--s-1)",
-                          fontSize: "var(--t-body-sm)",
-                          color: "var(--color-ink-muted)",
+                          display: "flex", alignItems: "center", gap: 4,
+                          fontSize: "13px", color: "var(--color-ink-muted)",
                         }}
                       >
-                        <MapPin size={12} strokeWidth={2} />
-                        <span>
-                          {boat.marina_name}
-                          {boat.slip_number ? ` · Slip ${boat.slip_number}` : ""}
-                        </span>
-                      </div>
+                        <MapPin size={11} strokeWidth={2} />
+                        {boat.marina_name}
+                        {boat.slip_number ? ` · ${boat.slip_number}` : ""}
+                      </span>
                     )}
 
-                    <div
+                    <span
                       className="font-mono"
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "var(--s-3)",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        letterSpacing: "0.04em",
-                        color: "var(--color-ink-muted)",
+                        display: "flex", alignItems: "center", gap: 4,
+                        fontSize: "12px", fontWeight: 600, color: "var(--color-ink)",
                       }}
                     >
-                      <span>{boat.max_capacity} guests</span>
-                      {tripCount > 0 && (
-                        <span style={{ color: "var(--color-ink)" }}>
-                          {tripCount} upcoming trip{tripCount !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </div>
+                      <Users size={11} strokeWidth={2} />
+                      {boat.max_capacity} pax
+                    </span>
+
+                    {tripCount > 0 && (
+                      <span
+                        className="font-mono"
+                        style={{
+                          display: "flex", alignItems: "center", gap: 4,
+                          fontSize: "12px", fontWeight: 700, color: "var(--color-rust)",
+                        }}
+                      >
+                        <Calendar size={11} strokeWidth={2} />
+                        {tripCount} trip{tripCount !== 1 ? "s" : ""}
+                      </span>
+                    )}
                   </div>
                 </div>
 
