@@ -1,5 +1,6 @@
 import { requireOperator } from "@/lib/security/auth";
 import { createServiceClient } from "@/lib/supabase/service";
+import { getToday } from "@/lib/utils/tripStatus";
 import { Plus, Ship, ChevronRight, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -28,7 +29,8 @@ export default async function BoatsPage() {
       .from("trips")
       .select("boat_id")
       .in("boat_id", boatIds)
-      .in("status", ["upcoming", "active"]);
+      .in("status", ["upcoming", "active"])
+      .gte("trip_date", getToday());
 
     if (tripCounts) {
       tripCountMap = tripCounts.reduce<Record<string, number>>((acc, t) => {

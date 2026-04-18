@@ -3,6 +3,7 @@ import { requireOperator } from '@/lib/security/auth'
 import { createServiceClient } from '@/lib/supabase/service'
 import { shapeTripDetail, buildAddonSummary } from '@/lib/dashboard/getDashboardData'
 import { getWeatherData } from '@/lib/trip/getWeatherData'
+import { correctTripStatus } from '@/lib/utils/tripStatus'
 import { TripDetailHeader } from '@/components/dashboard/TripDetailHeader'
 import { GuestManagementTable } from '@/components/dashboard/GuestManagementTable'
 import { TripStatusBar } from '@/components/dashboard/TripStatusBar'
@@ -65,7 +66,12 @@ export default async function TripDetailPage({
     notFound()
   }
 
-  const trip = shapeTripDetail(raw as Record<string, unknown>)
+  const rawTrip = shapeTripDetail(raw as Record<string, unknown>)
+  // Read-time date correction — ensure correct status regardless of cron
+  const trip = {
+    ...rawTrip,
+    status: correctTripStatus(rawTrip.tripDate, rawTrip.status),
+  }
   const addonSummary = buildAddonSummary(trip.guests)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!
 

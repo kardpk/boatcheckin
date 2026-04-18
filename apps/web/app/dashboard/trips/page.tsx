@@ -1,6 +1,7 @@
 import { requireOperator } from '@/lib/security/auth'
 import { createServiceClient } from '@/lib/supabase/service'
 import { TripCard } from '@/components/dashboard/TripCard'
+import { correctTripStatus, isTripRelevant } from '@/lib/utils/tripStatus'
 import { Anchor, Plus, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -61,7 +62,14 @@ export default async function TripsPage() {
     .order('departure_time', { ascending: true })
     .limit(50)
 
-  const upcomingTrips = (trips ?? []) as unknown as TripRow[]
+  const rawTrips = (trips ?? []) as unknown as TripRow[]
+
+  // ── Read-time date correction ──────────────────────────────
+  // Filter out past trips and correct stale statuses
+  const upcomingTrips = rawTrips
+    .filter(t => isTripRelevant(t.trip_date))
+    .map(t => ({ ...t, status: correctTripStatus(t.trip_date, t.status) }))
+    .filter(t => t.status === 'upcoming' || t.status === 'active')
 
   // Group by date
   const grouped = new Map<string, TripRow[]>()
