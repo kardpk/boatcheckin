@@ -1,35 +1,40 @@
-import { cn } from '@/lib/utils/cn'
 import type { TripStatus } from '@/types'
 
-const STATUS_CONFIG: Record<TripStatus, { label: string; className: string }> = {
+/**
+ * TripStatusBadge — MASTER_DESIGN §7.2 pill primitive
+ *
+ * Uses the canonical pill classes with pill-dot for active status.
+ * Mono font, uppercase, proper --r-pill radius.
+ */
+
+const STATUS_CONFIG: Record<TripStatus, { label: string; pillClass: string; hasDot: boolean }> = {
   upcoming: {
     label: 'Upcoming',
-    className: 'bg-gold-dim text-gold border border-gold-line',
+    pillClass: 'pill pill--brass',
+    hasDot: false,
   },
   active: {
-    label: 'Active ●',
-    className: 'bg-teal-dim text-teal border border-teal-line',
+    label: 'Active',
+    pillClass: 'pill pill--ok',
+    hasDot: true,
   },
   completed: {
     label: 'Completed',
-    className: 'bg-[#F0F2F5] text-text-mid',
+    pillClass: 'pill pill--ghost',
+    hasDot: false,
   },
   cancelled: {
     label: 'Cancelled',
-    className: 'bg-error-dim text-error',
+    pillClass: 'pill pill--err',
+    hasDot: false,
   },
 }
 
 export function TripStatusBadge({ status }: { status: TripStatus }) {
   const config = STATUS_CONFIG[status]
   return (
-    <span
-      className={cn(
-        'inline-flex items-center px-[10px] py-[4px]',
-        'text-[10px] font-bold uppercase tracking-[0.05em] rounded-[5px]',
-        config.className,
-      )}
-    >
+    <span className={config.pillClass}>
+      {config.hasDot && <span className="pill-dot" />}
       {config.label}
     </span>
   )

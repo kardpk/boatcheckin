@@ -1,11 +1,45 @@
 import { requireOperator } from '@/lib/security/auth'
 import { createServiceClient } from '@/lib/supabase/service'
 import { TripCard } from '@/components/dashboard/TripCard'
-import { Anchor, Plus } from 'lucide-react'
+import { Anchor, Plus, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Trips — BoatCheckin' }
+
+// ─── Date grouping helpers ────────────────────────────────────────────────────
+
+function formatGroupDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T00:00:00')
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  if (date.getTime() === today.getTime()) return 'Today'
+  if (date.getTime() === tomorrow.getTime()) return 'Tomorrow'
+
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).toUpperCase()
+}
+
+interface TripRow {
+  id: string
+  slug: string
+  trip_code: string
+  trip_date: string
+  departure_time: string
+  duration_hours: number
+  max_guests: number
+  status: string
+  special_notes: string | null
+  requires_approval: boolean
+  boats: { boat_name: string; marina_name: string; slip_number: string | null; lat: number | null; lng: number | null } | null
+  guests: { id: string; waiver_signed: boolean }[]
+}
 
 export default async function TripsPage() {
   const { operator } = await requireOperator()
@@ -27,76 +61,124 @@ export default async function TripsPage() {
     .order('departure_time', { ascending: true })
     .limit(50)
 
-  const upcomingTrips = trips ?? []
+  const upcomingTrips = (trips ?? []) as unknown as TripRow[]
+
+  // Group by date
+  const grouped = new Map<string, TripRow[]>()
+  for (const trip of upcomingTrips) {
+    const key = trip.trip_date
+    if (!grouped.has(key)) grouped.set(key, [])
+    grouped.get(key)!.push(trip)
+  }
 
   return (
-    <div className="px-page py-[16px]">
-      <div className="flex items-center justify-between mb-[16px]">
+    <div className="max-w-[640px] mx-auto px-5 pb-[100px]" style={{ paddingTop: 'var(--s-4)' }}>
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-6)' }}>
         <div>
-          <h1 className="text-[22px] font-bold text-navy">Trips</h1>
-          <p className="text-[14px] text-text-mid mt-[3px] font-medium">
+          <h1
+            className="font-display"
+            style={{ fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1 }}
+          >
+            Trips
+          </h1>
+          <p
+            className="font-mono"
+            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 'var(--s-1)' }}
+          >
             {upcomingTrips.length} upcoming
           </p>
         </div>
         <Link
           href="/dashboard/trips/new"
-          className="
-            h-[42px] px-[18px] rounded-[10px]
-            bg-gold text-white font-semibold text-[14px]
-            flex items-center gap-[6px]
-            hover:bg-gold-hi transition-colors
-          "
+          className="btn btn--rust"
         >
-          <Plus size={16} />
+          <Plus size={14} strokeWidth={2.5} />
           New trip
         </Link>
       </div>
 
+      {/* ── Content ────────────────────────────────────────── */}
       {upcomingTrips.length === 0 ? (
-        <div className="text-center py-[48px]">
-          <div className="w-[64px] h-[64px] mx-auto mb-[14px] rounded-full bg-gold-dim border border-gold-line flex items-center justify-center">
-            <Anchor size={28} className="text-gold" />
-          </div>
-          <h2 className="text-[18px] font-bold text-navy mb-[6px]">No trips yet</h2>
-          <p className="text-[15px] text-text-mid mb-[20px]">
-            Create your first trip and share the link with guests
+        /* Empty state */
+        <div
+          className="tile text-center"
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: 'var(--s-16) var(--s-8)',
+            gap: 'var(--s-4)',
+            borderStyle: 'dashed',
+          }}
+        >
+          <Anchor size={32} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} />
+          <h2
+            className="font-display"
+            style={{ fontSize: '22px', fontWeight: 500, color: 'var(--color-ink)', letterSpacing: '-0.02em' }}
+          >
+            No trips yet
+          </h2>
+          <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', maxWidth: 280 }}>
+            Create your first trip and share the link with your guests.
           </p>
           <Link
             href="/dashboard/trips/new"
-            className="
-              inline-flex items-center justify-center gap-[6px]
-              h-[48px] px-[24px] rounded-[10px]
-              bg-gold text-white font-semibold text-[15px]
-              hover:bg-gold-hi transition-colors
-            "
+            className="btn btn--rust"
+            style={{ marginTop: 'var(--s-2)' }}
           >
-            Create my first trip →
+            Create my first trip
+            <ArrowRight size={14} strokeWidth={2.5} />
           </Link>
         </div>
       ) : (
-        <div className="space-y-[10px]">
-          {upcomingTrips.map((trip) => {
-            const guests = (trip.guests as { id: string; waiver_signed: boolean }[]) ?? []
-            return (
-              <TripCard
-                key={trip.id}
-                tripId={trip.id}
-                slug={trip.slug}
-                tripCode={trip.trip_code}
-                tripDate={trip.trip_date}
-                departureTime={trip.departure_time}
-                durationHours={trip.duration_hours}
-                maxGuests={trip.max_guests}
-                status={trip.status as 'upcoming' | 'active' | 'completed' | 'cancelled'}
-                boatName={(trip.boats as unknown as { boat_name: string } | null)?.boat_name ?? ''}
-                marinaName={(trip.boats as unknown as { marina_name: string } | null)?.marina_name ?? ''}
-                slipNumber={(trip.boats as unknown as { slip_number: string | null } | null)?.slip_number ?? null}
-                guestCount={guests.length}
-                waiversSigned={guests.filter((g) => g.waiver_signed).length}
-                requiresApproval={trip.requires_approval}
-              />
-            )
-          })}
+        /* Date-grouped trip list */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)' }}>
+          {Array.from(grouped.entries()).map(([dateKey, dateTrips]) => (
+            <section key={dateKey}>
+              {/* Date group kicker */}
+              <div
+                className="font-mono"
+                style={{
+                  fontSize: 'var(--t-mono-xs)',
+                  fontWeight: 600,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-ink-muted)',
+                  paddingBottom: 'var(--s-3)',
+                  borderBottom: '1px solid var(--color-line-soft)',
+                  marginBottom: 'var(--s-3)',
+                }}
+              >
+                {formatGroupDate(dateKey)}
+              </div>
+
+              {/* Trip cards for this date */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
+                {dateTrips.map((trip) => {
+                  const guests = trip.guests ?? []
+                  return (
+                    <TripCard
+                      key={trip.id}
+                      tripId={trip.id}
+                      slug={trip.slug}
+                      tripCode={trip.trip_code}
+                      tripDate={trip.trip_date}
+                      departureTime={trip.departure_time}
+                      durationHours={trip.duration_hours}
+                      maxGuests={trip.max_guests}
+                      status={trip.status as 'upcoming' | 'active' | 'completed' | 'cancelled'}
+                      boatName={(trip.boats as unknown as { boat_name: string } | null)?.boat_name ?? ''}
+                      marinaName={(trip.boats as unknown as { marina_name: string } | null)?.marina_name ?? ''}
+                      slipNumber={(trip.boats as unknown as { slip_number: string | null } | null)?.slip_number ?? null}
+                      guestCount={guests.length}
+                      waiversSigned={guests.filter((g) => g.waiver_signed).length}
+                      requiresApproval={trip.requires_approval}
+                    />
+                  )
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       )}
     </div>
