@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { updateBoatStep } from "../../new/actions";
 import { Step1Vessel } from "../../new/steps/Step1Vessel";
@@ -20,6 +20,9 @@ interface BoatEditStepClientProps {
   boatType: string;
   prefill: Partial<WizardData>;
 }
+
+/** Steps that change guest-facing content — require confirmation before save */
+const CONFIRM_STEPS = new Set([1, 2, 5]);
 
 export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEditStepClientProps) {
   const router = useRouter();
@@ -59,41 +62,53 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
     setData((prev) => ({ ...prev, ...patch }));
   }
 
-  async function handleSave() {
+  // ── Save handler — accepts partial from step's onNext ──────────────────
+  const handleSave = useCallback(async (partial?: Partial<WizardData>) => {
+    // Merge any incoming partial from the step component into data
+    const merged = partial ? { ...data, ...partial } : data;
+
+    // For guest-facing steps, ask for confirmation
+    if (CONFIRM_STEPS.has(step)) {
+      const confirmed = window.confirm(
+        `Save changes to "${merged.boatName || 'this boat'}"?\nThis will update the boat immediately for all future trips.`
+      );
+      if (!confirmed) return;
+    }
+
     setSaved(false);
     setError(null);
 
     startTransition(async () => {
       const result = await updateBoatStep(boatId, step, {
         // Step 1
-        boatName: data.boatName,
-        boatType: data.boatType,
-        charterType: data.charterType,
-        yearBuilt: data.yearBuilt,
-        lengthFt: data.lengthFt,
-        maxCapacity: data.maxCapacity,
+        boatName: merged.boatName,
+        boatType: merged.boatType,
+        charterType: merged.charterType,
+        yearBuilt: merged.yearBuilt,
+        lengthFt: merged.lengthFt,
+        maxCapacity: merged.maxCapacity,
         // Step 2
-        marinaName: data.marinaName,
-        marinaAddress: data.marinaAddress,
-        slipNumber: data.slipNumber,
-        parkingInstructions: data.parkingInstructions,
-        lat: data.lat,
-        lng: data.lng,
+        marinaName: merged.marinaName,
+        marinaAddress: merged.marinaAddress,
+        slipNumber: merged.slipNumber,
+        parkingInstructions: merged.parkingInstructions,
+        lat: merged.lat,
+        lng: merged.lng,
         // Step 4
-        selectedEquipment: data.selectedEquipment,
-        selectedAmenities: data.selectedAmenities,
-        specificFieldValues: data.specificFieldValues,
-        customDetails: data.customDetails,
+        selectedEquipment: merged.selectedEquipment,
+        selectedAmenities: merged.selectedAmenities,
+        specificFieldValues: merged.specificFieldValues,
+        customDetails: merged.customDetails,
         // Step 5
-        standardRules: data.standardRules,
-        customDos: data.customDos,
-        customDonts: data.customDonts,
-        customRuleSections: data.customRuleSections,
+        standardRules: merged.standardRules,
+        customDos: merged.customDos,
+        customDonts: merged.customDonts,
+        customRuleSections: merged.customRuleSections,
         // Step 6
-        whatToBring: data.whatToBring,
-        whatNotToBring: data.whatNotToBring,
+        whatToBring: merged.whatToBring,
+        whatNotToBring: merged.whatNotToBring,
         // Step 7
-        safetyCards: data.safetyCards,
+        safetyCards: merged.safetyCards,
       });
 
       if (result.success) {
@@ -106,12 +121,17 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
         setError(result.error ?? "Save failed. Please try again.");
       }
     });
-  }
+  }, [data, boatId, step, router]);
+
+  // No-op handler for edit mode — boatType change doesn't trigger template reload here
+  const handleBoatTypeSelected = useCallback((_type: BoatTypeKey) => {
+    // In edit mode, boat type changes are saved on form submit
+  }, []);
 
   const stepProps = {
     data,
     update,
-    onNext: handleSave, // treat "Next" as "Save" in edit mode
+    onNext: handleSave, // treat "Continue" as "Save" in edit mode
   };
 
   return (
@@ -119,7 +139,10 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
       {/* Step form */}
       <div style={{ marginBottom: "var(--s-6)" }}>
         {step === 1 && (
-          <Step1Vessel {...stepProps} />
+          <Step1Vessel
+            {...stepProps}
+            onBoatTypeSelected={handleBoatTypeSelected}
+          />
         )}
         {step === 2 && (
           <Step2Marina {...stepProps} />
@@ -195,7 +218,7 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
         }}
       >
         <button
-          onClick={handleSave}
+          onClick={() => handleSave()}
           disabled={isPending || saved}
           className="btn btn--ink"
           style={{
