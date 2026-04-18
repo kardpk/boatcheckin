@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, X, Trash2, ChevronDown, ChevronUp, Anchor, ExternalLink } from 'lucide-react'
-import { cn } from '@/lib/utils/cn'
-import { LANGUAGE_FLAGS } from '@/lib/i18n/constants'
+import {
+  Users, Check, X, Trash2, ChevronDown, ChevronUp,
+  ExternalLink, AlertTriangle, FileSignature, Shield,
+} from 'lucide-react'
 import { useTripGuests } from '@/hooks/useTripGuests'
 import { RealtimeIndicator } from './RealtimeIndicator'
 import type { DashboardGuest } from '@/types'
@@ -15,424 +16,462 @@ interface GuestManagementTableProps {
   requiresApproval: boolean
 }
 
+function initials(name: string) {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+}
+
 export function GuestManagementTable({
   tripId, initialGuests, maxGuests, requiresApproval,
 }: GuestManagementTableProps) {
-  const { guests, connectionStatus, lastUpdated } = useTripGuests(tripId, initialGuests)
+  const { guests, connectionStatus } = useTripGuests(tripId, initialGuests)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [actioning, setActioning] = useState<string | null>(null)
   const [liveryVerifyId, setLiveryVerifyId] = useState<string | null>(null)
   const [liveryVerifierName, setLiveryVerifierName] = useState('')
 
   const total = guests.length
-  const signed = guests.filter(g => g.waiverSigned).length
-  const pendingApproval = guests.filter(
-    g => g.approvalStatus === 'pending'
-  ).length
-  const pendingLivery = guests.filter(
-    g => g.approvalStatus === 'pending_livery_briefing'
-  ).length
+  const signed = guests.filter(g => g.waiverSigned || g.waiverTextHash === 'firma_template').length
+  const pendingApproval = guests.filter(g => g.approvalStatus === 'pending').length
+  const progressPct = maxGuests > 0 ? Math.min((total / maxGuests) * 100, 100) : 0
 
   async function verifyLiveryBriefing(guestId: string) {
     if (!liveryVerifierName.trim()) return
     setActioning(guestId)
     try {
-      await fetch(
-        `/api/dashboard/guests/${guestId}/verify-livery`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ verifierName: liveryVerifierName.trim() }),
-        }
-      )
+      await fetch(`/api/dashboard/guests/${guestId}/verify-livery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verifierName: liveryVerifierName.trim() }),
+      })
       setLiveryVerifyId(null)
       setLiveryVerifierName('')
-    } finally {
-      setActioning(null)
-    }
+    } finally { setActioning(null) }
   }
 
   async function approve(guestId: string) {
     setActioning(guestId)
     try {
-      await fetch(
-        `/api/dashboard/guests/${guestId}/approve`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'approved' }),
-        }
-      )
-      // Realtime subscription will push the update
-    } finally {
-      setActioning(null)
-    }
+      await fetch(`/api/dashboard/guests/${guestId}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approved' }),
+      })
+    } finally { setActioning(null) }
   }
 
   async function decline(guestId: string) {
     setActioning(guestId)
     try {
-      await fetch(
-        `/api/dashboard/guests/${guestId}/approve`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'declined' }),
-        }
-      )
-      // Realtime subscription will push the update
-    } finally {
-      setActioning(null)
-    }
+      await fetch(`/api/dashboard/guests/${guestId}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'declined' }),
+      })
+    } finally { setActioning(null) }
   }
 
   async function remove(guestId: string) {
     if (!confirm('Remove this guest from the trip?')) return
     setActioning(guestId)
     try {
-      await fetch(
-        `/api/dashboard/guests/${guestId}/remove`,
-        { method: 'DELETE' }
-      )
-      // Realtime subscription will push the update
-    } finally {
-      setActioning(null)
-    }
+      await fetch(`/api/dashboard/guests/${guestId}/remove`, { method: 'DELETE' })
+    } finally { setActioning(null) }
   }
 
   return (
-    <div className="
-      bg-white rounded-[14px] border border-border
-      shadow-[0_1px_4px_rgba(12,68,124,0.06)]
-      overflow-hidden
-    ">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold text-navy">
-            Guests
-          </h2>
-          <div className="flex items-center gap-3">
-            <span className="text-[13px] font-semibold text-navy">
-              {total} / {maxGuests}
-            </span>
-            <RealtimeIndicator status={connectionStatus} />
-            {lastUpdated && (
-              <span className="text-[11px] text-text-mid">
-                Updated {lastUpdated.toLocaleTimeString([], {
-                  hour: '2-digit', minute: '2-digit'
-                })}
-              </span>
-            )}
-            {pendingApproval > 0 && (
-              <span className="
-                text-[11px] font-semibold px-2 py-0.5
-                rounded-full bg-warn-dim text-[#E5910A]
-              ">
-                {pendingApproval} pending approval
-              </span>
-            )}
-            {pendingLivery > 0 && (
-              <span className="
-                text-[11px] font-semibold px-2 py-0.5
-                rounded-full bg-[#FFF8E1] text-[#92400E]
-              ">
-                {pendingLivery} livery briefing
-              </span>
-            )}
-          </div>
-        </div>
+    <section style={{ marginTop: 'var(--s-6)' }}>
 
-        {/* Progress bar */}
-        <div className="mt-3 w-full h-1.5 bg-gold-dim rounded-full overflow-hidden">
+      {/* ── Section kicker ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: 'var(--s-3)',
+          borderBottom: 'var(--border-w) solid var(--color-ink)',
+          marginBottom: 'var(--s-4)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}>
+          <Users size={14} strokeWidth={2} style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+          <span
+            className="font-mono"
+            style={{
+              fontSize: '13px', fontWeight: 700,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'var(--color-ink)',
+            }}
+          >
+            Guests
+          </span>
+          <span
+            className="font-mono"
+            style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink-muted)' }}
+          >
+            {total} / {maxGuests}
+          </span>
+          {pendingApproval > 0 && (
+            <span className="pill pill--warn">
+              <span className="pill-dot" />
+              {pendingApproval} pending
+            </span>
+          )}
+        </div>
+        <RealtimeIndicator status={connectionStatus} />
+      </div>
+
+      {/* ── Waiver progress ── */}
+      <div style={{ marginBottom: 'var(--s-4)' }}>
+        <div
+          style={{
+            height: 4,
+            background: 'var(--color-line-soft)',
+            borderRadius: 'var(--r-1)',
+            overflow: 'hidden',
+            marginBottom: 'var(--s-2)',
+          }}
+        >
           <div
-            className="h-full bg-[#1D9E75] rounded-full transition-all duration-500"
-            style={{ width: `${Math.min((total / maxGuests) * 100, 100)}%` }}
+            style={{
+              height: '100%',
+              width: `${progressPct}%`,
+              background: signed === total && total > 0
+                ? 'var(--color-status-ok)'
+                : 'var(--color-ink)',
+              transition: 'width 0.4s var(--ease)',
+              borderRadius: 'var(--r-1)',
+            }}
           />
         </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[11px] text-text-mid">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span
+            className="font-mono"
+            style={{ fontSize: '11px', color: 'var(--color-ink-muted)' }}
+          >
             {signed} waiver{signed !== 1 ? 's' : ''} signed
           </span>
           {total - signed > 0 && (
-            <span className="text-[11px] text-[#E5910A]">
-              {total - signed} pending
+            <span
+              className="font-mono"
+              style={{ fontSize: '11px', color: 'var(--color-status-warn)' }}
+            >
+              {total - signed} unsigned
+            </span>
+          )}
+          {signed === total && total > 0 && (
+            <span className="pill pill--ok">
+              <Check size={10} strokeWidth={2.5} />
+              All signed
             </span>
           )}
         </div>
       </div>
 
-      {/* Guest list */}
+      {/* ── Guest list ── */}
       {guests.length === 0 ? (
-        <div className="px-5 py-10 text-center">
-          <p className="text-[15px] text-text-mid">
+        <div
+          className="tile"
+          style={{
+            padding: 'var(--s-10)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 'var(--s-2)',
+            textAlign: 'center',
+          }}
+        >
+          <Users
+            size={32}
+            strokeWidth={1.5}
+            style={{ color: 'var(--color-ink-muted)', opacity: 0.4 }}
+          />
+          <p
+            className="font-display"
+            style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-ink)' }}
+          >
             No guests yet
           </p>
-          <p className="text-[13px] text-text-mid mt-1">
+          <p style={{ fontSize: '13px', color: 'var(--color-ink-muted)' }}>
             Share the trip link to start receiving check-ins
           </p>
         </div>
       ) : (
-        <div className="divide-y divide-border">
-          {guests.map(guest => (
-            <div
-              key={guest.id}
-              className={cn(
-                'transition-colors',
-                guest.approvalStatus === 'pending_livery_briefing'
-                  ? 'bg-[#FFFBEB]'
-                  : guest.approvalStatus === 'pending'
-                  ? 'bg-[#FEF9EE]'
-                  : guest.approvalStatus === 'declined'
-                  ? 'bg-[#FFF4F4]'
-                  : 'bg-white hover:bg-bg'
-              )}
-            >
-              {/* Guest row */}
-              <div className="px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  {/* Avatar */}
-                  <div className="
-                    w-9 h-9 rounded-full bg-gold-dim
-                    flex items-center justify-center
-                    text-[12px] font-bold text-navy
-                    flex-shrink-0
-                  ">
-                    {guest.fullName.split(' ')
-                      .map(n => n[0]).join('').slice(0, 2)}
-                  </div>
+        <div
+          className="tile"
+          style={{ overflow: 'hidden', padding: 0 }}
+        >
+          {guests.map((guest, idx) => {
+            const isWaiverSigned = guest.waiverSigned || guest.waiverTextHash === 'firma_template'
+            const isFirma = guest.waiverTextHash === 'firma_template'
+            const isExpanded = expanded === guest.id
+            const isLast = idx === guests.length - 1
 
-                  {/* Name + meta */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="
-                        text-[14px] font-medium text-navy
-                        truncate
-                      ">
-                        {guest.fullName}
-                      </span>
-                      <span className="text-[14px] flex-shrink-0">
-                        {LANGUAGE_FLAGS[guest.languagePreference as keyof typeof LANGUAGE_FLAGS] ?? '🌐'}
-                      </span>
+            // Left accent stripe color
+            let accentColor = 'var(--color-line-soft)'
+            if (guest.approvalStatus === 'declined') accentColor = 'var(--color-status-err)'
+            else if (guest.approvalStatus === 'pending') accentColor = 'var(--color-status-warn)'
+            else if (isWaiverSigned) accentColor = 'var(--color-status-ok)'
+
+            return (
+              <div
+                key={guest.id}
+                style={{
+                  borderLeft: `4px solid ${accentColor}`,
+                  borderBottom: isLast ? 'none' : '1px solid var(--color-line-soft)',
+                  transition: 'border-left-color 0.2s',
+                }}
+              >
+                {/* ── Guest row ── */}
+                <div style={{ padding: 'var(--s-3) var(--s-4)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)' }}>
+
+                    {/* Initials */}
+                    <div
+                      style={{
+                        width: 36, height: 36,
+                        borderRadius: 'var(--r-1)',
+                        background: 'var(--color-ink)',
+                        color: 'var(--color-bone)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '12px', fontWeight: 700,
+                        flexShrink: 0,
+                        fontFamily: 'var(--font-mono)',
+                      }}
+                    >
+                      {initials(guest.fullName)}
                     </div>
 
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {/* Waiver status — Firma vs Legacy */}
-                      {guest.waiverTextHash === 'firma_template' ? (
-                        <span className="text-[11px] font-medium text-navy">
-                          Firma
+                    {/* Name + meta */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-1)' }}>
+                        <span
+                          style={{
+                            fontSize: '14px', fontWeight: 600,
+                            color: 'var(--color-ink)',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {guest.fullName}
                         </span>
-                      ) : guest.waiverSigned ? (
-                        <span className="text-[11px] font-medium text-teal">
-                          ✓ Signed
-                        </span>
-                      ) : (
-                        <span className="text-[11px] font-medium text-[#E5910A]">
-                          ⏳ Pending
-                        </span>
-                      )}
+                      </div>
 
-                      {/* Safety card counter */}
-                      <span className={cn(
-                        'text-[11px] font-medium',
-                        (guest.safetyAcknowledgments?.length ?? 0) > 0 ? 'text-teal' : 'text-text-mid'
-                      )}>
-                        {guest.safetyAcknowledgments?.length ?? 0} cards
-                      </span>
+                      {/* Status pills row */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', flexWrap: 'wrap' }}>
+                        {/* Waiver */}
+                        {isFirma ? (
+                          <span className="pill pill--ghost">
+                            <FileSignature size={9} strokeWidth={2.5} />
+                            Firma
+                          </span>
+                        ) : isWaiverSigned ? (
+                          <span className="pill pill--ok">
+                            <Check size={9} strokeWidth={2.5} />
+                            Signed
+                          </span>
+                        ) : (
+                          <span className="pill pill--warn">Unsigned</span>
+                        )}
 
-                      {/* Addon emojis */}
-                      {guest.addonOrders.length > 0 && (
-                        <span className="text-[13px]">
-                          {guest.addonOrders.map(o => o.emoji).join('')}
-                        </span>
-                      )}
+                        {/* Safety cards */}
+                        {(guest.safetyAcknowledgments?.length ?? 0) > 0 && (
+                          <span className="pill pill--ok">
+                            <Shield size={9} strokeWidth={2.5} />
+                            {guest.safetyAcknowledgments!.length} cards
+                          </span>
+                        )}
 
-                      {/* Flags */}
-                      {guest.isNonSwimmer && (
-                        <span className="text-[11px] bg-error-dim text-error px-1.5 py-0.5 rounded-full">
-                          Non-swimmer
-                        </span>
-                      )}
-                      {guest.dietaryRequirements && (
-                        <span className="text-[11px] bg-warn-dim text-[#E5910A] px-1.5 py-0.5 rounded-full truncate max-w-[80px]">
-                          {guest.dietaryRequirements}
-                        </span>
-                      )}
+                        {/* Flags */}
+                        {guest.isNonSwimmer && (
+                          <span className="pill pill--err">Non-swimmer</span>
+                        )}
+                        {guest.isSeasicknessProne && (
+                          <span className="pill pill--warn">Seasickness</span>
+                        )}
+                        {guest.dietaryRequirements && (
+                          <span className="pill pill--ghost" style={{ maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {guest.dietaryRequirements}
+                          </span>
+                        )}
+
+                        {/* Approval */}
+                        {guest.approvalStatus === 'declined' && (
+                          <span className="pill pill--err">Declined</span>
+                        )}
+                        {guest.approvalStatus === 'pending_livery_briefing' && (
+                          <span className="pill pill--brass">Livery briefing</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    {requiresApproval && guest.approvalStatus === 'pending' && (
-                      <>
+                    {/* Row actions */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-1)', flexShrink: 0 }}>
+                      {requiresApproval && guest.approvalStatus === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => approve(guest.id)}
+                            disabled={actioning === guest.id}
+                            className="btn btn--sm"
+                            style={{
+                              background: 'var(--color-status-ok)',
+                              borderColor: 'var(--color-status-ok)',
+                              color: 'var(--color-paper)',
+                              padding: '4px 10px',
+                            }}
+                            aria-label="Approve"
+                          >
+                            <Check size={12} strokeWidth={2.5} />
+                          </button>
+                          <button
+                            onClick={() => decline(guest.id)}
+                            disabled={actioning === guest.id}
+                            className="btn btn--sm btn--danger"
+                            style={{ padding: '4px 10px' }}
+                            aria-label="Decline"
+                          >
+                            <X size={12} strokeWidth={2.5} />
+                          </button>
+                        </>
+                      )}
+                      {guest.approvalStatus === 'pending_livery_briefing' && (
                         <button
-                          onClick={() => approve(guest.id)}
+                          onClick={() => {
+                            setLiveryVerifyId(liveryVerifyId === guest.id ? null : guest.id)
+                            setLiveryVerifierName('')
+                          }}
                           disabled={actioning === guest.id}
-                          className="
-                            w-8 h-8 rounded-full bg-[#E8F9F4]
-                            flex items-center justify-center
-                            text-teal hover:bg-[#1D9E75] hover:text-white
-                            transition-colors disabled:opacity-40
-                          "
-                          aria-label="Approve"
+                          className="btn btn--sm btn--rust"
+                          style={{ fontSize: '11px' }}
                         >
-                          <Check size={14} />
+                          Verify briefing
                         </button>
-                        <button
-                          onClick={() => decline(guest.id)}
-                          disabled={actioning === guest.id}
-                          className="
-                            w-8 h-8 rounded-full bg-error-dim
-                            flex items-center justify-center
-                            text-error hover:bg-[#D63B3B] hover:text-white
-                            transition-colors disabled:opacity-40
-                          "
-                          aria-label="Decline"
-                        >
-                          <X size={14} />
-                        </button>
-                      </>
-                    )}
-
-                    {/* Livery briefing verify button */}
-                    {guest.approvalStatus === 'pending_livery_briefing' && (
+                      )}
                       <button
-                        onClick={() => {
-                          setLiveryVerifyId(liveryVerifyId === guest.id ? null : guest.id)
-                          setLiveryVerifierName('')
+                        onClick={() => setExpanded(isExpanded ? null : guest.id)}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          width: 28, height: 28, borderRadius: 'var(--r-1)',
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: 'var(--color-ink-muted)',
                         }}
-                        disabled={actioning === guest.id}
-                        className="
-                          flex items-center gap-1.5 px-3 py-1.5
-                          rounded-full bg-[#FFF8E1] border border-[#FFD54F]
-                          text-[12px] font-semibold text-[#92400E]
-                          hover:bg-[#FFECB3] transition-colors
-                          disabled:opacity-40
-                        "
-                        aria-label="Verify livery briefing"
+                        aria-label="Toggle details"
                       >
-                        <Anchor size={12} />
-                        Verify Briefing
+                        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </button>
-                    )}
+                    </div>
+                  </div>
 
-                    {/* Show verified badge */}
-                    {guest.approvalStatus === 'approved' && guest.liveryBriefingVerifiedAt && (
-                      <span className="text-[11px] font-medium text-teal bg-[#E8F9F4] px-2 py-1 rounded-full">
-                        Briefed by {guest.liveryBriefingVerifiedBy}
-                      </span>
-                    )}
-
-                    {/* Expand toggle */}
-                    <button
-                      onClick={() => setExpanded(
-                        expanded === guest.id ? null : guest.id
+                  {/* ── Expanded detail ── */}
+                  {isExpanded && (
+                    <div
+                      style={{
+                        marginTop: 'var(--s-3)',
+                        paddingTop: 'var(--s-3)',
+                        borderTop: '1px dashed var(--color-line-soft)',
+                        paddingLeft: 48,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 'var(--s-2)',
+                      }}
+                    >
+                      {guest.dietaryRequirements && (
+                        <p style={{ fontSize: '12px', color: 'var(--color-ink-muted)' }}>
+                          <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Dietary: </span>
+                          {guest.dietaryRequirements}
+                        </p>
                       )}
-                      className="
-                        w-8 h-8 rounded-full
-                        flex items-center justify-center
-                        text-text-mid hover:bg-bg
-                      "
-                      aria-label="Toggle details"
-                    >
-                      {expanded === guest.id
-                        ? <ChevronUp size={14} />
-                        : <ChevronDown size={14} />
-                      }
-                    </button>
-                  </div>
-                </div>
-
-                {/* Expanded detail */}
-                {expanded === guest.id && (
-                  <>
-                  <div className="mt-3 pl-12 space-y-1.5">
-                    {guest.dietaryRequirements && (
-                      <p className="text-[12px] text-text-mid">
-                        <span className="font-medium">Dietary:</span>{' '}
-                        {guest.dietaryRequirements}
-                      </p>
-                    )}
-                    {guest.waiverSignedAt && (
-                      <p className="text-[12px] text-text-mid">
-                        <span className="font-medium">Waiver signed:</span>{' '}
-                        {new Date(guest.waiverSignedAt).toLocaleString()}
-                      </p>
-                    )}
-                    {guest.addonOrders.length > 0 && (
-                      <div className="text-[12px] text-text-mid">
-                        <span className="font-medium">Add-ons:</span>{' '}
-                        {guest.addonOrders.map(o =>
-                          `${o.emoji} ${o.addonName} ×${o.quantity}`
-                        ).join(', ')}
-                      </div>
-                    )}
-                    <button
-                      onClick={() => remove(guest.id)}
-                      disabled={actioning === guest.id}
-                      className="
-                        flex items-center gap-1.5 text-[12px]
-                        text-error hover:underline mt-1
-                        disabled:opacity-40
-                      "
-                    >
-                      <Trash2 size={12} />
-                      Remove from trip
-                    </button>
-
-                    {/* FWC license link */}
-                    {guest.fwcLicenseUrl && (
-                      <a
-                        href={guest.fwcLicenseUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[12px] text-navy hover:underline"
+                      {guest.waiverSignedAt && (
+                        <p className="font-mono" style={{ fontSize: '11px', color: 'var(--color-ink-muted)' }}>
+                          Waiver signed: {new Date(guest.waiverSignedAt).toLocaleString()}
+                        </p>
+                      )}
+                      {guest.addonOrders.length > 0 && (
+                        <p style={{ fontSize: '12px', color: 'var(--color-ink-muted)' }}>
+                          <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Add-ons: </span>
+                          {guest.addonOrders.map(o => `${o.addonName} ×${o.quantity}`).join(', ')}
+                        </p>
+                      )}
+                      {guest.fwcLicenseUrl && (
+                        <a
+                          href={guest.fwcLicenseUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 'var(--s-1)',
+                            fontSize: '12px', color: 'var(--color-ink)', fontWeight: 500,
+                            textDecoration: 'underline', textDecorationColor: 'var(--color-line)',
+                          }}
+                        >
+                          <ExternalLink size={11} strokeWidth={2} />
+                          FWC Boater Safety ID
+                        </a>
+                      )}
+                      <button
+                        onClick={() => remove(guest.id)}
+                        disabled={actioning === guest.id}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 'var(--s-1)',
+                          fontSize: '12px', color: 'var(--color-status-err)', background: 'none',
+                          border: 'none', cursor: 'pointer', padding: 0, fontWeight: 500,
+                        }}
                       >
-                        <ExternalLink size={10} />
-                        View FWC Boater Safety ID
-                      </a>
-                    )}
-                  </div>
+                        <Trash2 size={11} strokeWidth={2} />
+                        Remove from trip
+                      </button>
 
-                  {/* Livery verify inline confirmation */}
-                  {liveryVerifyId === guest.id && (
-                    <div className="mt-3 pl-12 p-3 bg-[#FFF8E1] border border-[#FFD54F] rounded-[10px] space-y-2">
-                      <p className="text-[12px] text-[#92400E] leading-relaxed">
-                        <strong>I confirm</strong> I have briefed <strong>{guest.fullName}</strong> on 
-                        vessel operation, safety equipment locations, and emergency procedures 
-                        for this specific hull.
-                      </p>
-                      <input
-                        type="text"
-                        placeholder="Your name (Dockmaster / Operator)"
-                        value={liveryVerifierName}
-                        onChange={e => setLiveryVerifierName(e.target.value)}
-                        className="w-full h-[40px] px-3 rounded-[8px] text-[13px] border border-[#FFD54F] bg-white text-navy placeholder:text-text-mid focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => verifyLiveryBriefing(guest.id)}
-                          disabled={!liveryVerifierName.trim() || actioning === guest.id}
-                          className="flex-1 h-[36px] rounded-[8px] bg-[#1D9E75] text-white text-[13px] font-semibold hover:bg-[#178a65] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      {/* Livery verify inline */}
+                      {liveryVerifyId === guest.id && (
+                        <div
+                          className="alert alert--warn"
+                          style={{ marginTop: 'var(--s-2)', flexDirection: 'column', alignItems: 'stretch' }}
                         >
-                          ✓ Confirm Vessel Briefing
-                        </button>
-                        <button
-                          onClick={() => setLiveryVerifyId(null)}
-                          className="h-[36px] px-4 rounded-[8px] bg-white border border-border text-[13px] text-text-mid hover:bg-bg"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 'var(--s-2)' }}>
+                            <AlertTriangle size={14} strokeWidth={2} />
+                            <strong style={{ fontSize: '13px' }}>Confirm vessel briefing</strong>
+                          </div>
+                          <p style={{ fontSize: '12px', lineHeight: 1.5, marginBottom: 'var(--s-3)' }}>
+                            I confirm I have briefed <strong>{guest.fullName}</strong> on vessel operation,
+                            safety equipment, and emergency procedures for this hull.
+                          </p>
+                          <input
+                            type="text"
+                            placeholder="Your name (Dockmaster / Operator)"
+                            value={liveryVerifierName}
+                            onChange={e => setLiveryVerifierName(e.target.value)}
+                            className="field-input"
+                            style={{ marginBottom: 'var(--s-2)' }}
+                          />
+                          <div style={{ display: 'flex', gap: 'var(--s-2)' }}>
+                            <button
+                              onClick={() => verifyLiveryBriefing(guest.id)}
+                              disabled={!liveryVerifierName.trim() || actioning === guest.id}
+                              className="btn btn--sm"
+                              style={{
+                                flex: 1,
+                                background: 'var(--color-status-ok)',
+                                borderColor: 'var(--color-status-ok)',
+                                color: 'var(--color-paper)',
+                              }}
+                            >
+                              <Check size={12} strokeWidth={2.5} />
+                              Confirm briefing
+                            </button>
+                            <button
+                              onClick={() => setLiveryVerifyId(null)}
+                              className="btn btn--sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-                  </>
-                )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
-    </div>
+    </section>
   )
 }

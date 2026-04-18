@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { cn } from '@/lib/utils/cn'
+import { UserRound, Plus, X, ArrowRight, ChevronRight } from 'lucide-react'
 
 interface CaptainOption {
   id: string
@@ -23,10 +23,12 @@ interface TripCrewPanelProps {
   initialAssignments: Assignment[]
 }
 
+function initials(name: string) {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+}
+
 export function TripCrewPanel({
-  tripId,
-  tripStatus,
-  initialAssignments,
+  tripId, tripStatus, initialAssignments,
 }: TripCrewPanelProps) {
   const [assignments, setAssignments] = useState(initialAssignments)
   const [captains, setCaptains] = useState<CaptainOption[]>([])
@@ -34,7 +36,6 @@ export function TripCrewPanel({
   const [loading, setLoading] = useState(false)
   const isLocked = tripStatus !== 'upcoming'
 
-  // Fetch captain roster
   useEffect(() => {
     if (showPicker && captains.length === 0) {
       fetch('/api/dashboard/captains')
@@ -64,14 +65,13 @@ export function TripCrewPanel({
       })
       if (res.ok) {
         setAssignments(prev => {
-          // Replace existing captain, keep other crew
           const filtered = prev.filter(a => a.role !== 'captain')
           return [...filtered, { captainId, captainName, role: 'captain' }]
         })
         setShowPicker(false)
       }
     } catch {
-      // Silent fail
+      // silent
     } finally {
       setLoading(false)
     }
@@ -87,7 +87,7 @@ export function TripCrewPanel({
       })
       setAssignments(prev => prev.filter(a => a.captainId !== captainId))
     } catch {
-      // Silent fail
+      // silent
     }
   }, [tripId])
 
@@ -95,143 +95,344 @@ export function TripCrewPanel({
   const otherCrew = assignments.filter(a => a.role !== 'captain')
 
   return (
-    <div className="bg-white rounded-[16px] border border-border overflow-hidden">
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-navy">
-          Crew Assignment
-        </h2>
-        {isLocked && (
-          <span className="text-[11px] text-text-mid bg-bg px-2 py-0.5 rounded-full">
-            Locked
+    <section style={{ marginTop: 'var(--s-8)' }}>
+
+      {/* ── Section kicker ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: 'var(--s-3)',
+          borderBottom: 'var(--border-w) solid var(--color-ink)',
+          marginBottom: 'var(--s-4)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}>
+          <UserRound size={14} strokeWidth={2} style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+          <span
+            className="font-mono"
+            style={{
+              fontSize: '13px', fontWeight: 700,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'var(--color-ink)',
+            }}
+          >
+            Crew assignment
           </span>
+        </div>
+        {isLocked && (
+          <span className="pill pill--ghost">Locked</span>
         )}
       </div>
 
-      <div className="p-5 space-y-3">
-        {/* Current captain */}
+      {/* ── Captain tile ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+
         {currentCaptain ? (
-          <div className="flex items-center gap-3 p-3 rounded-[12px] bg-gold-dim border border-border">
-            <div className="w-10 h-10 rounded-full bg-navy flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
-              {currentCaptain.captainName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-navy truncate">
-                {currentCaptain.captainName}
-              </p>
-              <p className="text-[12px] text-navy font-medium">Captain · PIC</p>
-            </div>
-            {!isLocked && (
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => setShowPicker(true)}
-                  className="text-[12px] text-navy hover:underline font-medium"
-                >
-                  Swap
-                </button>
-                <span className="text-[#D0E2F3]">·</span>
-                <button
-                  onClick={() => handleRemove(currentCaptain.captainId)}
-                  className="text-[12px] text-error hover:underline font-medium"
-                >
-                  Remove
-                </button>
+          <div
+            className="tile"
+            style={{
+              padding: 0,
+              overflow: 'hidden',
+              borderLeft: '4px solid var(--color-ink)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--s-3)',
+                padding: 'var(--s-3) var(--s-4)',
+              }}
+            >
+              {/* Avatar */}
+              <div
+                style={{
+                  width: 40, height: 40,
+                  borderRadius: 'var(--r-1)',
+                  background: 'var(--color-ink)',
+                  color: 'var(--color-bone)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '13px', fontWeight: 700,
+                  fontFamily: 'var(--font-mono)',
+                  flexShrink: 0,
+                }}
+              >
+                {initials(currentCaptain.captainName)}
               </div>
-            )}
+
+              {/* Info */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  className="font-display"
+                  style={{ fontSize: '15px', fontWeight: 500, color: 'var(--color-ink)', lineHeight: 1.2 }}
+                >
+                  {currentCaptain.captainName}
+                </p>
+                <p
+                  className="font-mono"
+                  style={{
+                    fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    color: 'var(--color-ink-muted)',
+                    marginTop: 2,
+                  }}
+                >
+                  Captain · PIC
+                </p>
+              </div>
+
+              {/* Actions */}
+              {!isLocked && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)', flexShrink: 0 }}>
+                  <button
+                    onClick={() => setShowPicker(true)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: '13px', fontWeight: 500, color: 'var(--color-ink)',
+                      textDecoration: 'underline', textDecorationColor: 'var(--color-line)',
+                      padding: 0,
+                    }}
+                  >
+                    Swap
+                  </button>
+                  <button
+                    onClick={() => handleRemove(currentCaptain.captainId)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: '13px', fontWeight: 500, color: 'var(--color-status-err)',
+                      textDecoration: 'underline', textDecorationColor: 'var(--color-status-err)',
+                      padding: 0,
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
-          <div className="text-center py-4">
-            <p className="text-[14px] text-text-mid mb-2">
-              No captain assigned
+          /* No captain assigned */
+          <div
+            className="tile"
+            style={{
+              padding: 'var(--s-5)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 'var(--s-3)',
+              textAlign: 'center',
+              borderStyle: isLocked ? 'solid' : 'dashed',
+            }}
+          >
+            <UserRound
+              size={24}
+              strokeWidth={1.5}
+              style={{ color: 'var(--color-ink-muted)', opacity: 0.5 }}
+            />
+            <p style={{ fontSize: '13px', color: 'var(--color-ink-muted)' }}>
+              {isLocked ? 'No captain assigned' : 'No captain assigned yet'}
             </p>
             {!isLocked && (
               <button
                 onClick={() => setShowPicker(true)}
-                className="h-[36px] px-4 rounded-[8px] bg-navy text-white text-[13px] font-semibold hover:bg-navy/90 transition-colors"
+                className="btn btn--sm"
+                style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}
               >
-                + Assign Captain
+                <Plus size={13} strokeWidth={2.5} />
+                Assign captain
               </button>
             )}
           </div>
         )}
 
-        {/* Other crew */}
+        {/* Other crew members */}
         {otherCrew.map(member => (
-          <div key={member.captainId} className="flex items-center gap-3 p-3 rounded-[12px] bg-bg">
-            <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center text-[12px] font-bold text-navy">
-              {member.captainName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-navy truncate">{member.captainName}</p>
-              <p className="text-[11px] text-text-mid capitalize">{member.role.replace(/_/g, ' ')}</p>
-            </div>
-            {!isLocked && (
-              <button
-                onClick={() => handleRemove(member.captainId)}
-                className="text-[11px] text-error hover:underline"
+          <div
+            key={member.captainId}
+            className="tile"
+            style={{
+              padding: 0,
+              overflow: 'hidden',
+              borderLeft: '4px solid var(--color-line-soft)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--s-3)',
+                padding: 'var(--s-3) var(--s-4)',
+              }}
+            >
+              <div
+                style={{
+                  width: 32, height: 32,
+                  borderRadius: 'var(--r-1)',
+                  background: 'var(--color-bone)',
+                  border: '1px solid var(--color-line-soft)',
+                  color: 'var(--color-ink)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', fontWeight: 700,
+                  fontFamily: 'var(--font-mono)',
+                  flexShrink: 0,
+                }}
               >
-                Remove
-              </button>
-            )}
+                {initials(member.captainName)}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-ink)' }}>
+                  {member.captainName}
+                </p>
+                <p
+                  className="font-mono"
+                  style={{
+                    fontSize: '10px', fontWeight: 600,
+                    textTransform: 'uppercase', letterSpacing: '0.08em',
+                    color: 'var(--color-ink-muted)', marginTop: 1,
+                  }}
+                >
+                  {member.role.replace(/_/g, ' ')}
+                </p>
+              </div>
+              {!isLocked && (
+                <button
+                  onClick={() => handleRemove(member.captainId)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--color-ink-muted)', flexShrink: 0, padding: 4,
+                  }}
+                  aria-label="Remove crew member"
+                >
+                  <X size={14} strokeWidth={2} />
+                </button>
+              )}
+            </div>
           </div>
         ))}
 
-        {/* Captain picker overlay */}
+        {/* Captain picker */}
         {showPicker && (
-          <div className="mt-2 p-3 border border-[#0C447C] rounded-[12px] bg-white space-y-2">
-            <p className="text-[12px] font-bold text-text-mid uppercase tracking-wider mb-2">
-              Select from roster
-            </p>
-            {captains.length === 0 && (
-              <p className="text-[13px] text-text-mid py-2">Loading roster...</p>
-            )}
-            {captains.map(captain => (
-              <button
-                key={captain.id}
-                type="button"
-                disabled={loading}
-                onClick={() => handleAssign(captain.id, captain.fullName)}
-                className={cn(
-                  'w-full flex items-center gap-3 p-2.5 rounded-[8px] text-left transition-all',
-                  'hover:bg-gold-dim disabled:opacity-50',
-                  assignments.some(a => a.captainId === captain.id)
-                    ? 'bg-gold-dim border border-[#0C447C]'
-                    : 'border border-transparent'
-                )}
-              >
-                <div className="w-8 h-8 rounded-full bg-gold-dim flex items-center justify-center text-[12px] font-bold text-navy">
-                  {captain.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-navy truncate">
-                    {captain.fullName}
-                    {captain.isDefault && (
-                      <span className="ml-1 text-[9px] font-bold text-navy bg-gold-dim px-1.5 py-0.5 rounded-full"> ★</span>
-                    )}
-                  </p>
-                  {captain.licenseType && (
-                    <p className="text-[11px] text-text-mid">{captain.licenseType}</p>
-                  )}
-                </div>
-              </button>
-            ))}
-            <button
-              onClick={() => setShowPicker(false)}
-              className="w-full h-[32px] text-[12px] text-text-mid hover:text-navy"
+          <div
+            className="tile"
+            style={{ overflow: 'hidden', padding: 0 }}
+          >
+            <div
+              style={{
+                padding: 'var(--s-3) var(--s-4)',
+                background: 'var(--color-ink)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
-              Cancel
-            </button>
+              <span
+                className="font-mono"
+                style={{
+                  fontSize: '11px', fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  color: 'var(--color-bone)',
+                }}
+              >
+                Select from roster
+              </span>
+              <button
+                onClick={() => setShowPicker(false)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--color-bone)', opacity: 0.6, display: 'flex', padding: 0,
+                }}
+              >
+                <X size={16} strokeWidth={2} />
+              </button>
+            </div>
+            <div>
+              {captains.length === 0 && (
+                <p style={{ padding: 'var(--s-4)', fontSize: '13px', color: 'var(--color-ink-muted)' }}>
+                  Loading roster...
+                </p>
+              )}
+              {captains.map((captain, idx) => {
+                const isAssigned = assignments.some(a => a.captainId === captain.id)
+                return (
+                  <button
+                    key={captain.id}
+                    type="button"
+                    disabled={loading}
+                    onClick={() => handleAssign(captain.id, captain.fullName)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--s-3)',
+                      padding: 'var(--s-3) var(--s-4)',
+                      borderBottom: idx === captains.length - 1 ? 'none' : '1px solid var(--color-line-soft)',
+                      background: isAssigned ? 'var(--color-bone)' : 'var(--color-paper)',
+                      borderLeft: isAssigned ? '4px solid var(--color-ink)' : '4px solid transparent',
+                      cursor: 'pointer',
+                      opacity: loading ? 0.5 : 1,
+                      transition: 'background 0.12s',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 32, height: 32,
+                        borderRadius: 'var(--r-1)',
+                        background: 'var(--color-ink)',
+                        color: 'var(--color-bone)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '11px', fontWeight: 700,
+                        fontFamily: 'var(--font-mono)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {initials(captain.fullName)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink)' }}>
+                        {captain.fullName}
+                        {captain.isDefault && (
+                          <span
+                            className="font-mono"
+                            style={{ marginLeft: 6, fontSize: '10px', color: 'var(--color-brass)' }}
+                          >
+                            Default
+                          </span>
+                        )}
+                      </p>
+                      {captain.licenseType && (
+                        <p className="font-mono" style={{ fontSize: '10px', color: 'var(--color-ink-muted)', marginTop: 1 }}>
+                          {captain.licenseType}
+                        </p>
+                      )}
+                    </div>
+                    <ChevronRight size={14} strokeWidth={2} style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+                  </button>
+                )
+              })}
+            </div>
           </div>
         )}
 
-        {/* Link to roster */}
+        {/* Roster link */}
         {!isLocked && (
-          <p className="text-[11px] text-text-mid text-center pt-1">
-            <a href="/dashboard/captains" className="text-navy underline">
-              Manage crew roster →
-            </a>
-          </p>
+          <a
+            href="/dashboard/captains"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 'var(--s-1)',
+              fontSize: '12px', color: 'var(--color-ink-muted)',
+              textDecoration: 'none', marginTop: 'var(--s-1)',
+              justifyContent: 'center',
+            }}
+          >
+            Manage crew roster
+            <ArrowRight size={12} strokeWidth={2.5} />
+          </a>
         )}
       </div>
-    </div>
+    </section>
   )
 }

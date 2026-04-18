@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import {
-  Copy, Check, ExternalLink, FileText, Anchor, Share2,
+  Copy, Check, ExternalLink, Download, Anchor,
+  Share2, Link as LinkIcon, RefreshCw,
 } from 'lucide-react'
 import type { TripStatus } from '@/types'
 
@@ -10,25 +11,29 @@ interface TripActionBarProps {
   tripId: string
   tripSlug: string
   status: TripStatus
-  shareMessage: string
-  initialSnapshotUrl?: string | null
+  /** allWaiversSigned — USCG CSV only shown when this is true + trip active/completed */
+  allWaiversSigned: boolean
 }
 
 /**
- * TripActionBar — MASTER_DESIGN editorial action section
+ * TripActionBar — Share + contextual documents
  *
- * Pre-trip: Share card (trip link, copy message, share to captain)
- * Active/Completed: Document downloads (Manifest PDF, USCG CSV)
+ * SHARE section — always visible
+ *   Trip link (copy + preview)
+ *   Captain snapshot link (generate/revoke/copy)
+ *
+ * DOCUMENTS section — contextual:
+ *   Manifest PDF  → status active or completed
+ *   USCG CSV      → status active/completed AND allWaiversSigned
  */
 export function TripActionBar({
-  tripId, tripSlug, status, shareMessage, initialSnapshotUrl,
+  tripId, tripSlug, status, allWaiversSigned,
 }: TripActionBarProps) {
   const [copiedLink, setCopiedLink] = useState(false)
-  const [copiedMsg, setCopiedMsg] = useState(false)
   const [downloadingPdf, setDownloadingPdf] = useState(false)
   const [downloadingCsv, setDownloadingCsv] = useState(false)
   const [generatingSnapshot, setGeneratingSnapshot] = useState(false)
-  const [snapshotUrl, setSnapshotUrl] = useState<string | null>(initialSnapshotUrl || null)
+  const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null)
   const [copiedSnapshot, setCopiedSnapshot] = useState(false)
   const [snapshotError, setSnapshotError] = useState<string | null>(null)
   const [downloadError, setDownloadError] = useState<string | null>(null)
@@ -40,12 +45,6 @@ export function TripActionBar({
     await navigator.clipboard.writeText(tripLink)
     setCopiedLink(true)
     setTimeout(() => setCopiedLink(false), 2000)
-  }
-
-  async function copyMessage() {
-    await navigator.clipboard.writeText(shareMessage)
-    setCopiedMsg(true)
-    setTimeout(() => setCopiedMsg(false), 2000)
   }
 
   async function downloadPdf() {
@@ -93,7 +92,6 @@ export function TripActionBar({
   }
 
   async function generateSnapshot() {
-    if (!window.confirm(snapshotUrl ? 'Revoke the current link and generate a new one?' : 'Generate a captain link for this trip?')) return
     setGeneratingSnapshot(true)
     setSnapshotError(null)
     try {
@@ -108,7 +106,11 @@ export function TripActionBar({
       const json = await res.json()
       setSnapshotUrl(`${appUrl}/snapshot/${json.token}`)
     } catch (err) {
-      setSnapshotError(err instanceof Error ? err.message : 'Failed to generate captain link. Check that CAPTAIN_TOKEN_SECRET is set in your environment variables.')
+      setSnapshotError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to generate captain link. Check CAPTAIN_TOKEN_SECRET is set in environment variables.'
+      )
     } finally {
       setGeneratingSnapshot(false)
     }
@@ -122,136 +124,176 @@ export function TripActionBar({
   }
 
   const showDocs = status === 'active' || status === 'completed'
+  const showUscg = showDocs && allWaiversSigned
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-6)', marginTop: 'var(--s-6)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)', marginTop: 'var(--s-8)' }}>
 
       {/* ══════════════════════════════════════════════════════
-          SHARE SECTION — always visible
+          SHARE SECTION
           ══════════════════════════════════════════════════════ */}
       <section>
+        {/* Section kicker */}
         <div
-          className="font-mono"
           style={{
-            fontSize: '13px', fontWeight: 700,
-            letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: 'var(--color-ink)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--s-2)',
             paddingBottom: 'var(--s-3)',
             borderBottom: 'var(--border-w) solid var(--color-ink)',
             marginBottom: 'var(--s-4)',
           }}
         >
-          Share
+          <Share2 size={14} strokeWidth={2} style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+          <span
+            className="font-mono"
+            style={{
+              fontSize: '13px', fontWeight: 700,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: 'var(--color-ink)',
+            }}
+          >
+            Share
+          </span>
         </div>
 
-        {/* Trip link card */}
-        <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
-          <div style={{ padding: 'var(--s-4) var(--s-5)' }}>
-            <span
-              className="font-mono"
-              style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}
-            >
-              Trip link
-            </span>
-            <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', wordBreak: 'break-all', fontWeight: 500, marginTop: 'var(--s-1)' }}>
-              {tripLink}
-            </p>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid var(--color-line-soft)' }}>
-            <button
-              onClick={copyLink}
+          {/* Trip link tile */}
+          <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
+            <div
               style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
-                height: 48, fontSize: 'var(--t-body-sm)', fontWeight: 600,
-                background: copiedLink ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
-                color: copiedLink ? 'var(--color-status-ok)' : 'var(--color-ink)',
-                border: 'none', borderRight: '1px solid var(--color-line-soft)',
-                cursor: 'pointer',
-                transition: 'background var(--dur-fast) var(--ease)',
+                padding: 'var(--s-3) var(--s-4)',
+                background: 'var(--color-bone)',
+                borderBottom: '1px solid var(--color-line-soft)',
               }}
             >
-              {copiedLink ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
-              {copiedLink ? 'Copied' : 'Copy link'}
-            </button>
-            <a
-              href={tripLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
-                height: 48, fontSize: 'var(--t-body-sm)', fontWeight: 500,
-                color: 'var(--color-ink-muted)',
-                textDecoration: 'none',
-              }}
-            >
-              <ExternalLink size={14} strokeWidth={2} />
-              Preview
-            </a>
-          </div>
-        </div>
-
-        {/* Copy message */}
-        <button
-          onClick={copyMessage}
-          className="tile"
-          style={{
-            width: '100%', marginTop: 'var(--s-3)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
-            height: 48, cursor: 'pointer',
-            fontSize: 'var(--t-body-sm)', fontWeight: 600,
-            background: copiedMsg ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
-            color: copiedMsg ? 'var(--color-status-ok)' : 'var(--color-ink)',
-            transition: 'background var(--dur-fast) var(--ease)',
-          }}
-        >
-          {copiedMsg ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
-          {copiedMsg ? 'Copied to clipboard' : 'Copy message for guests'}
-        </button>
-
-        {/* Share to captain */}
-        <div style={{ marginTop: 'var(--s-3)' }}>
-          {snapshotUrl ? (
-            <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
-              <div style={{ padding: 'var(--s-3) var(--s-5)', background: 'var(--color-bone)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)', marginBottom: 4 }}>
+                <LinkIcon size={11} strokeWidth={2} style={{ color: 'var(--color-ink-muted)' }} />
                 <span
                   className="font-mono"
-                  style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}
+                  style={{
+                    fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    color: 'var(--color-ink-muted)',
+                  }}
                 >
-                  Captain link
+                  Trip link
                 </span>
-                <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', wordBreak: 'break-all', fontWeight: 500, marginTop: 'var(--s-1)' }}>
+              </div>
+              <p
+                className="font-mono"
+                style={{
+                  fontSize: '12px', color: 'var(--color-ink)',
+                  wordBreak: 'break-all', lineHeight: 1.5, margin: 0,
+                }}
+              >
+                {tripLink}
+              </p>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+              }}
+            >
+              <button
+                onClick={copyLink}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: 'var(--s-2)', height: 44,
+                  fontSize: '13px', fontWeight: 600,
+                  background: copiedLink ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
+                  color: copiedLink ? 'var(--color-status-ok)' : 'var(--color-ink)',
+                  border: 'none', borderRight: '1px solid var(--color-line-soft)',
+                  cursor: 'pointer',
+                  transition: 'background var(--dur-fast) var(--ease)',
+                }}
+              >
+                {copiedLink ? <Check size={13} strokeWidth={2.5} /> : <Copy size={13} strokeWidth={2} />}
+                {copiedLink ? 'Copied' : 'Copy link'}
+              </button>
+              <a
+                href={tripLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: 'var(--s-2)', height: 44,
+                  fontSize: '13px', fontWeight: 500,
+                  color: 'var(--color-ink-muted)',
+                  textDecoration: 'none',
+                  background: 'var(--color-paper)',
+                }}
+              >
+                <ExternalLink size={13} strokeWidth={2} />
+                Preview
+              </a>
+            </div>
+          </div>
+
+          {/* Captain snapshot */}
+          {snapshotUrl ? (
+            <div className="tile" style={{ overflow: 'hidden', padding: 0 }}>
+              <div
+                style={{
+                  padding: 'var(--s-3) var(--s-4)',
+                  background: 'var(--color-bone)',
+                  borderBottom: '1px solid var(--color-line-soft)',
+                }}
+              >
+                <span
+                  className="font-mono"
+                  style={{
+                    fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    color: 'var(--color-ink-muted)',
+                    display: 'block', marginBottom: 4,
+                  }}
+                >
+                  Captain link · valid 72h
+                </span>
+                <p
+                  className="font-mono"
+                  style={{
+                    fontSize: '11px', color: 'var(--color-ink)',
+                    wordBreak: 'break-all', lineHeight: 1.5, margin: 0,
+                  }}
+                >
                   {snapshotUrl}
                 </p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid var(--color-line-soft)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
                 <button
                   onClick={copySnapshot}
                   style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
-                    height: 44, fontSize: 'var(--t-body-sm)', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: 'var(--s-2)', height: 44,
+                    fontSize: '13px', fontWeight: 600,
                     background: copiedSnapshot ? 'var(--color-status-ok-soft)' : 'var(--color-paper)',
                     color: copiedSnapshot ? 'var(--color-status-ok)' : 'var(--color-ink)',
                     border: 'none', borderRight: '1px solid var(--color-line-soft)',
                     cursor: 'pointer',
                   }}
                 >
-                  {copiedSnapshot ? <Check size={14} strokeWidth={2.5} /> : <Copy size={14} strokeWidth={2} />}
+                  {copiedSnapshot ? <Check size={13} strokeWidth={2.5} /> : <Copy size={13} strokeWidth={2} />}
                   {copiedSnapshot ? 'Copied' : 'Copy link'}
                 </button>
                 <button
                   onClick={generateSnapshot}
                   disabled={generatingSnapshot}
                   style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--s-2)',
-                    height: 44, fontSize: 'var(--t-body-sm)', fontWeight: 500,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: 'var(--s-2)', height: 44,
+                    fontSize: '13px', fontWeight: 500,
                     background: 'var(--color-paper)',
                     color: 'var(--color-status-err)',
                     border: 'none', cursor: 'pointer',
                     opacity: generatingSnapshot ? 0.5 : 1,
                   }}
                 >
-                  {generatingSnapshot ? 'Generating...' : 'Revoke and renew'}
+                  <RefreshCw size={13} strokeWidth={2} />
+                  {generatingSnapshot ? 'Generating...' : 'Revoke & renew'}
                 </button>
               </div>
             </div>
@@ -266,28 +308,20 @@ export function TripActionBar({
               {generatingSnapshot ? 'Generating...' : 'Share to captain'}
             </button>
           )}
+
           {/* Snapshot error */}
           {snapshotError && (
-            <div
-              style={{
-                marginTop: 'var(--s-3)',
-                padding: 'var(--s-3) var(--s-4)',
-                borderRadius: 'var(--r-1)',
-                background: 'rgba(180,60,60,0.06)',
-                border: '1px solid rgba(180,60,60,0.2)',
-                color: 'var(--color-status-err)',
-                fontSize: 13,
-                display: 'flex',
-                gap: 'var(--s-2)',
-                alignItems: 'flex-start',
-              }}
-            >
-              <span style={{ flex: 1 }}>{snapshotError}</span>
+            <div className="alert alert--err" style={{ display: 'flex', gap: 'var(--s-3)' }}>
+              <div style={{ flex: 1, fontSize: '13px' }}>{snapshotError}</div>
               <button
                 onClick={() => setSnapshotError(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-status-err)', fontWeight: 700, flexShrink: 0, padding: 0 }}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--color-status-err)', fontWeight: 700, flexShrink: 0, padding: 0,
+                }}
+                aria-label="Dismiss error"
               >
-                ✕
+                <Check size={14} strokeWidth={2.5} />
               </button>
             </div>
           )}
@@ -295,56 +329,145 @@ export function TripActionBar({
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          DOCUMENTS SECTION — active/completed only
+          DOCUMENTS SECTION — contextual
           ══════════════════════════════════════════════════════ */}
       {showDocs && (
         <section>
+          {/* Section kicker */}
           <div
-            className="font-mono"
             style={{
-              fontSize: '13px', fontWeight: 700,
-              letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: 'var(--color-ink)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--s-2)',
               paddingBottom: 'var(--s-3)',
               borderBottom: 'var(--border-w) solid var(--color-ink)',
               marginBottom: 'var(--s-4)',
             }}
           >
-            Documents
+            <Download size={14} strokeWidth={2} style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }} />
+            <span
+              className="font-mono"
+              style={{
+                fontSize: '13px', fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                color: 'var(--color-ink)',
+              }}
+            >
+              Documents
+            </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s-3)' }}>
+          {downloadError && (
+            <div className="alert alert--err" style={{ marginBottom: 'var(--s-3)' }}>
+              <div style={{ fontSize: '13px' }}>{downloadError}</div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+
+            {/* Manifest PDF — always when active/completed */}
             <button
               onClick={downloadPdf}
               disabled={downloadingPdf}
               className="tile"
               style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                gap: 'var(--s-2)', height: 80, cursor: 'pointer',
-                fontSize: 'var(--t-body-sm)', fontWeight: 600,
-                color: 'var(--color-ink)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--s-4)',
+                padding: 'var(--s-4) var(--s-5)',
+                cursor: 'pointer',
+                width: '100%',
+                borderLeft: '4px solid var(--color-ink)',
                 opacity: downloadingPdf ? 0.5 : 1,
+                transition: 'opacity 0.15s',
+                textAlign: 'left',
               }}
             >
-              <FileText size={20} strokeWidth={1.8} />
-              {downloadingPdf ? 'Generating...' : 'Manifest PDF'}
+              <Download
+                size={20}
+                strokeWidth={1.8}
+                style={{ color: 'var(--color-ink)', flexShrink: 0 }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-ink)', lineHeight: 1.2 }}>
+                  {downloadingPdf ? 'Generating...' : 'Passenger Manifest PDF'}
+                </p>
+                <p
+                  className="font-mono"
+                  style={{ fontSize: '11px', color: 'var(--color-ink-muted)', marginTop: 2 }}
+                >
+                  Guest list · waivers · safety status
+                </p>
+              </div>
             </button>
 
-            <button
-              onClick={downloadUscgCsv}
-              disabled={downloadingCsv}
-              className="tile"
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                gap: 'var(--s-2)', height: 80, cursor: 'pointer',
-                fontSize: 'var(--t-body-sm)', fontWeight: 600,
-                color: 'var(--color-ink)',
-                opacity: downloadingCsv ? 0.5 : 1,
-              }}
-            >
-              <Anchor size={20} strokeWidth={1.8} />
-              {downloadingCsv ? 'Generating...' : 'USCG CSV'}
-            </button>
+            {/* USCG CSV — only when all waivers signed */}
+            {showUscg ? (
+              <button
+                onClick={downloadUscgCsv}
+                disabled={downloadingCsv}
+                className="tile"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--s-4)',
+                  padding: 'var(--s-4) var(--s-5)',
+                  cursor: 'pointer',
+                  width: '100%',
+                  borderLeft: '4px solid var(--color-brass)',
+                  opacity: downloadingCsv ? 0.5 : 1,
+                  transition: 'opacity 0.15s',
+                  textAlign: 'left',
+                }}
+              >
+                <Anchor
+                  size={20}
+                  strokeWidth={1.8}
+                  style={{ color: 'var(--color-brass)', flexShrink: 0 }}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-ink)', lineHeight: 1.2 }}>
+                    {downloadingCsv ? 'Generating...' : 'USCG Passenger CSV'}
+                  </p>
+                  <p
+                    className="font-mono"
+                    style={{ fontSize: '11px', color: 'var(--color-ink-muted)', marginTop: 2 }}
+                  >
+                    46 CFR §182.530 · all waivers signed
+                  </p>
+                </div>
+              </button>
+            ) : showDocs ? (
+              /* USCG unavailable — explain why */
+              <div
+                className="tile"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--s-4)',
+                  padding: 'var(--s-4) var(--s-5)',
+                  opacity: 0.5,
+                  borderLeft: '4px solid var(--color-line-soft)',
+                }}
+              >
+                <Anchor
+                  size={20}
+                  strokeWidth={1.8}
+                  style={{ color: 'var(--color-ink-muted)', flexShrink: 0 }}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-ink)', lineHeight: 1.2 }}>
+                    USCG Passenger CSV
+                  </p>
+                  <p
+                    className="font-mono"
+                    style={{ fontSize: '11px', color: 'var(--color-status-warn)', marginTop: 2 }}
+                  >
+                    Available once all guests have signed waivers
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
       )}
