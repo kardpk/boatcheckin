@@ -13,6 +13,8 @@ import { validateUpload } from "@/lib/security/uploads";
 import type { BoatTemplate } from "@/lib/wizard/boat-template-types";
 import type { WizardData, WizardAddon, BoatTypeKey } from "../types";
 
+const MAX_PHOTOS = 10;
+
 // ─── MASTER_DESIGN R1: no emojis — map addon name → lucide icon ───
 function addonCategoryIcon(name: string): LucideIcon {
   const n = name.toLowerCase();

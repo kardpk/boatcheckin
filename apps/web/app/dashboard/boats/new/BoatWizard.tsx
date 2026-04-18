@@ -45,6 +45,8 @@ const variants = {
 
 const DRAFT_KEY = "boatcheckin_boat_wizard_draft";
 const DRAFT_STEP_KEY = "boatcheckin_boat_wizard_step";
+const DRAFT_VERSION_KEY = "boatcheckin_boat_wizard_version";
+const CURRENT_DRAFT_VERSION = 2; // Bump when wizard schema changes (v2 = captain detached)
 
 export function BoatWizard() {
   const [step, setStep] = useState(1);
@@ -58,20 +60,28 @@ export function BoatWizard() {
   const [templateLoadError, setTemplateLoadError] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Hydrate draft from LocalStorage (with migration from 10-step to 9-step schema)
+  // Hydrate draft from LocalStorage (with version check + migration)
   useEffect(() => {
     try {
+      // Check draft version — if outdated, clear everything and start fresh
+      const savedVersion = localStorage.getItem(DRAFT_VERSION_KEY);
+      if (savedVersion !== String(CURRENT_DRAFT_VERSION)) {
+        localStorage.removeItem(DRAFT_KEY);
+        localStorage.removeItem(DRAFT_STEP_KEY);
+        localStorage.setItem(DRAFT_VERSION_KEY, String(CURRENT_DRAFT_VERSION));
+        setIsHydrated(true);
+        return; // fresh start at step 1
+      }
+
       const savedData = localStorage.getItem(DRAFT_KEY);
       const savedStep = localStorage.getItem(DRAFT_STEP_KEY);
       if (savedData) {
         const parsed = JSON.parse(savedData);
 
         // ── Draft migration: 10-step → 9-step schema ──
-        // Remove deprecated video acknowledgement field
         if ("safetyVideoAcknowledged" in parsed) {
           delete parsed.safetyVideoAcknowledged;
         }
-        // Migrate old safetyImages[] → safetyCards[]
         if (parsed.safetyImages && !parsed.safetyCards) {
           parsed.safetyCards = parsed.safetyImages.map(
             (img: { id: string; preview: string; title: string; instructions: string }, i: number) => ({
@@ -87,7 +97,6 @@ export function BoatWizard() {
           );
           delete parsed.safetyImages;
         }
-        // Remove non-serializable waiverPdfFile if present
         if ("waiverPdfFile" in parsed) {
           delete parsed.waiverPdfFile;
         }
@@ -96,7 +105,6 @@ export function BoatWizard() {
       }
       if (savedStep) {
         let parsed = parseInt(savedStep, 10);
-        // Clamp to new max (was 10, now 9)
         if (!isNaN(parsed) && parsed >= 1) {
           parsed = Math.min(parsed, TOTAL_STEPS);
           setStep(parsed);
@@ -113,18 +121,18 @@ export function BoatWizard() {
   useEffect(() => {
     if (!isHydrated) return;
     try {
-      // Strip non-serializable File objects before saving
       const serializable = {
         ...data,
         captainPhotoFile: null,
         boatPhotos: [],
         safetyCards: data.safetyCards.map((card) => ({
           ...card,
-          file: null, // File objects cannot be stored in localStorage
+          file: null,
         })),
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(serializable));
       localStorage.setItem(DRAFT_STEP_KEY, step.toString());
+      localStorage.setItem(DRAFT_VERSION_KEY, String(CURRENT_DRAFT_VERSION));
     } catch (e) {
       console.warn("Failed to save boat draft:", e);
     }
