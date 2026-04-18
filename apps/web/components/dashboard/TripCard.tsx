@@ -120,13 +120,13 @@ export function TripCard({
           }}
         >
           <div className="font-mono" style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-4)' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink)', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink)', letterSpacing: '0.04em' }}>
               {guestCount}
               <span style={{ color: 'var(--color-ink-muted)', fontWeight: 500 }}>/{maxGuests}</span>
               {' '}
-              <span style={{ color: 'var(--color-ink-muted)', fontWeight: 500, fontSize: '11px' }}>checked in</span>
+              <span style={{ color: 'var(--color-ink-muted)', fontWeight: 500 }}>checked in</span>
             </span>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}>
               {waiversSigned} waiver{waiversSigned !== 1 ? 's' : ''}
             </span>
           </div>
@@ -141,13 +141,13 @@ export function TripCard({
         >
           <span
             className="font-mono"
-            style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}
+            style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-ink-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}
           >
             Code
           </span>
           <span
             className="font-mono"
-            style={{ fontSize: '14px', fontWeight: 800, color: 'var(--color-rust)', letterSpacing: '0.1em' }}
+            style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-rust)', letterSpacing: '0.1em' }}
           >
             {tripCode}
           </span>

@@ -85,7 +85,7 @@ export default async function TripsPage() {
           </h1>
           <p
             className="font-mono"
-            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 'var(--s-1)' }}
+            style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-ink-soft)', marginTop: 'var(--s-1)' }}
           >
             {upcomingTrips.length} upcoming
           </p>
@@ -139,7 +139,7 @@ export default async function TripsPage() {
               <div
                 className="font-mono"
                 style={{
-                  fontSize: '11px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',

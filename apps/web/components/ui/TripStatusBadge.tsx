@@ -10,7 +10,7 @@ import type { TripStatus } from '@/types'
 const STATUS_CONFIG: Record<TripStatus, { label: string; pillClass: string; hasDot: boolean }> = {
   upcoming: {
     label: 'Upcoming',
-    pillClass: 'pill pill--brass',
+    pillClass: 'pill pill--ink',
     hasDot: false,
   },
   active: {
