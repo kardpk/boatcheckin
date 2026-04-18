@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react'
+import { Check, X, AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react'
 import type { CustomRuleSection } from '@/lib/trip/getTripPageData'
 import type { TripT } from '@/lib/i18n/tripTranslations'
 
@@ -22,131 +22,197 @@ export function BoatRulesSection({
     : []
 
   return (
-    <div
-      className="tile"
-      style={{ margin: '0 var(--s-4)', marginTop: 'var(--s-3)', padding: 'var(--s-3) var(--s-4)' }}
-    >
-      {/* House rules — left accent border block */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)', margin: '0 var(--s-4)', marginTop: 'var(--s-3)' }}>
+      {/* ── HOUSE RULES tile ── */}
       {houseRuleLines.length > 0 && (
-        <div style={{ marginBottom: customDos.length > 0 || customDonts.length > 0 ? 'var(--s-3)' : 0 }}>
-          <SectionLabel label={tr.rules} />
-          <div
-            style={{
-              borderLeft: '3px solid var(--color-ink)',
-              paddingLeft: 'var(--s-3)',
-              display: 'flex', flexDirection: 'column', gap: 'var(--s-1)',
-            }}
-          >
-            {houseRuleLines.map((rule, idx) => (
-              <p
-                key={idx}
-                style={{
-                  fontSize: '13px',
-                  color: 'var(--color-ink)',
-                  lineHeight: 1.45,
-                  margin: 0,
-                }}
-              >
-                {rule}
-              </p>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* DOs — green accent */}
-      {customDos.length > 0 && (
-        <div style={{ marginBottom: customDonts.length > 0 ? 'var(--s-3)' : 0 }}>
-          <SectionLabel label={tr.dos} color="var(--color-status-ok)" />
-          <div
-            style={{
-              borderLeft: '3px solid var(--color-status-ok)',
-              paddingLeft: 'var(--s-3)',
-              display: 'flex', flexDirection: 'column', gap: 'var(--s-1)',
-            }}
-          >
-            {customDos.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                <Check size={12} strokeWidth={3} style={{ color: 'var(--color-status-ok)', flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: '13px', color: 'var(--color-ink)', lineHeight: 1.45, margin: 0 }}>
-                  {item}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* DON'Ts — red accent */}
-      {customDonts.length > 0 && (
-        <div>
-          <SectionLabel label={tr.donts} color="var(--color-status-err)" />
-          <div
-            style={{
-              borderLeft: '3px solid var(--color-status-err)',
-              paddingLeft: 'var(--s-3)',
-              display: 'flex', flexDirection: 'column', gap: 'var(--s-1)',
-            }}
-          >
-            {customDonts.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                <X size={12} strokeWidth={3} style={{ color: 'var(--color-status-err)', flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: '13px', color: 'var(--color-ink)', lineHeight: 1.45, margin: 0 }}>
-                  {item}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Custom rule sections */}
-      {customRuleSections.map((section) => (
-        <div
-          key={section.id}
-          style={{ marginTop: 'var(--s-3)' }}
+        <RulesCard
+          heading={tr.rules}
+          subheading="Non-negotiable vessel rules"
+          pillLabel="Required"
+          pillClass="pill pill--err"
+          PillIcon={AlertCircle}
+          stripeColor="var(--color-status-err)"
         >
-          <SectionLabel label={section.title} />
-          <div
-            style={{
-              borderLeft: '3px solid var(--color-line)',
-              paddingLeft: 'var(--s-3)',
-              display: 'flex', flexDirection: 'column', gap: 'var(--s-1)',
-            }}
-          >
-            {section.items.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                {section.type === 'numbered' && (
-                  <span className="font-mono" style={{ fontSize: '11px', color: 'var(--color-ink-muted)', flexShrink: 0, marginTop: 1, minWidth: 16 }}>
-                    {idx + 1}.
-                  </span>
-                )}
-                {section.type === 'check' && <Check size={12} strokeWidth={3} style={{ color: 'var(--color-ink)', flexShrink: 0, marginTop: 2 }} />}
-                <p style={{ fontSize: '13px', color: 'var(--color-ink)', lineHeight: 1.45, margin: 0 }}>
-                  {item}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+          {houseRuleLines.map((rule, idx) => (
+            <RuleItem key={idx} text={rule} stripeColor="var(--color-status-err)" />
+          ))}
+        </RulesCard>
+      )}
+
+      {/* ── DOs tile ── */}
+      {customDos.length > 0 && (
+        <RulesCard
+          heading={tr.dos}
+          subheading="Positive guidance for your trip"
+          pillLabel="Encouraged"
+          pillClass="pill pill--ok"
+          PillIcon={CheckCircle2}
+          stripeColor="var(--color-status-ok)"
+        >
+          {customDos.map((item, idx) => (
+            <RuleItem key={idx} text={item} stripeColor="var(--color-status-ok)" icon={<Check size={12} strokeWidth={3} style={{ color: 'var(--color-status-ok)' }} />} />
+          ))}
+        </RulesCard>
+      )}
+
+      {/* ── DON'Ts tile ── */}
+      {customDonts.length > 0 && (
+        <RulesCard
+          heading={tr.donts}
+          subheading="Prohibited on this vessel"
+          pillLabel="Prohibited"
+          pillClass="pill pill--warn"
+          PillIcon={AlertTriangle}
+          stripeColor="var(--color-status-warn)"
+        >
+          {customDonts.map((item, idx) => (
+            <RuleItem key={idx} text={item} stripeColor="var(--color-status-warn)" icon={<X size={12} strokeWidth={3} style={{ color: 'var(--color-status-warn)' }} />} />
+          ))}
+        </RulesCard>
+      )}
+
+      {/* ── Custom sections ── */}
+      {customRuleSections.map((section) => (
+        <RulesCard
+          key={section.id}
+          heading={section.title}
+          pillLabel="Custom"
+          pillClass="pill pill--ghost"
+          PillIcon={AlertCircle}
+          stripeColor="var(--color-line)"
+        >
+          {section.items.map((item, idx) => (
+            <RuleItem
+              key={idx}
+              text={item}
+              stripeColor="var(--color-line)"
+              icon={
+                section.type === 'numbered'
+                  ? <span className="font-mono" style={{ fontSize: '11px', color: 'var(--color-ink-muted)', minWidth: 16 }}>{idx + 1}.</span>
+                  : section.type === 'check'
+                    ? <Check size={12} strokeWidth={3} style={{ color: 'var(--color-ink)' }} />
+                    : undefined
+              }
+            />
+          ))}
+        </RulesCard>
       ))}
     </div>
   )
 }
 
-function SectionLabel({ label, color }: { label: string; color?: string }) {
+/* ── Card wrapper — mirrors Boat Wizard's DraggableList tile ── */
+
+function RulesCard({
+  heading,
+  subheading,
+  pillLabel,
+  pillClass,
+  PillIcon,
+  stripeColor,
+  children,
+}: {
+  heading: string
+  subheading?: string
+  pillLabel: string
+  pillClass: string
+  PillIcon: typeof AlertCircle
+  stripeColor: string
+  children: React.ReactNode
+}) {
   return (
-    <span
-      className="font-mono"
+    <div
+      className="tile"
+      style={{ padding: 0, overflow: 'hidden' }}
+    >
+      {/* Header — Fraunces heading + status pill */}
+      <div
+        style={{
+          padding: 'var(--s-3) var(--s-4)',
+          borderBottom: '1px solid var(--color-line-soft)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--s-3)',
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h3
+            className="font-display"
+            style={{
+              fontSize: 'var(--t-body-lg)',
+              fontWeight: 500,
+              color: 'var(--color-ink)',
+              letterSpacing: '-0.01em',
+              margin: 0,
+            }}
+          >
+            {heading}
+          </h3>
+          {subheading && (
+            <p
+              className="font-mono"
+              style={{ fontSize: '11px', color: 'var(--color-ink-muted)', marginTop: 2, margin: '2px 0 0' }}
+            >
+              {subheading}
+            </p>
+          )}
+        </div>
+        <span className={pillClass} style={{ fontSize: '10px', flexShrink: 0 }}>
+          <PillIcon size={10} strokeWidth={2} />
+          {pillLabel}
+        </span>
+      </div>
+
+      {/* Items */}
+      <div
+        style={{
+          padding: 'var(--s-2) var(--s-4) var(--s-3)',
+          display: 'flex', flexDirection: 'column',
+          gap: 'var(--s-1)',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/* ── Single rule item — left stripe card matching wizard ── */
+
+function RuleItem({
+  text,
+  stripeColor,
+  icon,
+}: {
+  text: string
+  stripeColor: string
+  icon?: React.ReactNode
+}) {
+  return (
+    <div
       style={{
-        fontSize: '10px', fontWeight: 700,
-        letterSpacing: '0.12em', textTransform: 'uppercase' as const,
-        color: color ?? 'var(--color-ink)',
-        display: 'block',
-        marginBottom: 'var(--s-2)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--s-2)',
+        background: 'var(--color-paper)',
+        border: '1px solid var(--color-line-soft)',
+        borderRadius: 'var(--r-1)',
+        borderLeft: `3px solid ${stripeColor}`,
+        minHeight: 40,
+        padding: '0 var(--s-3)',
       }}
     >
-      {label}
-    </span>
+      {icon && <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span>}
+      <span
+        style={{
+          fontSize: 'var(--t-body-sm)',
+          color: 'var(--color-ink)',
+          lineHeight: 1.45,
+          padding: 'var(--s-2) 0',
+        }}
+      >
+        {text}
+      </span>
+    </div>
   )
 }
