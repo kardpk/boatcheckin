@@ -68,6 +68,32 @@ export async function GET(request: Request) {
     results.push(`stale-completed ${staleCompleted?.length ?? 0} trips`)
   }
 
+  // ── STEP 4: License expiry SMS alerts (F-1) ─────────────
+  const { data: captains, error: captainsErr } = await supabase
+    .from('captains')
+    .select('id, full_name, phone, license_expiry, operator_id')
+    .eq('is_active', true)
+    .not('license_expiry', 'is', null)
+
+  const alertMilestones = [60, 30, 14, 7, 1]
+  const smsQueue: string[] = []
+
+  if (!captainsErr && captains) {
+    for (const captain of captains) {
+      if (!captain.license_expiry) continue
+      const daysLeft = Math.ceil((new Date(captain.license_expiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      
+      if (alertMilestones.includes(daysLeft)) {
+        smsQueue.push(`[SMS QUEUED] To Operator ${captain.operator_id}: Captain ${captain.full_name}'s license expires in ${daysLeft} days. (Phone: ${captain.phone || 'N/A'})`)
+      }
+    }
+  }
+
+  if (smsQueue.length > 0) {
+    console.log('[cron/daily] License expiries:', smsQueue.join(' | '))
+    results.push(`queued ${smsQueue.length} license SMS alerts`)
+  }
+
   console.log(`[cron/daily] done: ${results.join(', ')}`)
-  return NextResponse.json({ ok: true, results })
+  return NextResponse.json({ ok: true, results, smsQueue })
 }

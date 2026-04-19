@@ -82,11 +82,11 @@ export default async function CrewPage() {
     name: b.boat_name as string,
   }))
 
-  // Check for expiring licenses (within 30 days)
+  // Check for expiring/expired licenses (within 60 days)
   const expiringCaptains = profiles.filter(c => {
     if (!c.licenseExpiry) return false
     const daysLeft = Math.ceil((new Date(c.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    return daysLeft <= 30
+    return daysLeft <= 60
   })
 
   return (

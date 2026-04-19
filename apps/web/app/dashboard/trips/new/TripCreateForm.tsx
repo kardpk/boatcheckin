@@ -106,7 +106,13 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
   const [isHoveringSubmit, setIsHoveringSubmit] = useState(false)
 
   // Captain picker — pre-select default
-  const defaultCaptain = captains.find(c => c.isDefault)
+  const defaultCaptain = captains.find(c => {
+    if (!c.isDefault) return false
+    const daysUntilExpiry = c.licenseExpiry
+      ? Math.ceil((new Date(c.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      : null
+    return !(daysUntilExpiry !== null && daysUntilExpiry <= 0)
+  })
   const [selectedCaptainId, setSelectedCaptainId] = useState<string | null>(
     defaultCaptain?.id ?? null
   )
@@ -425,18 +431,27 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
               {captains.map(captain => {
                 const isActive = selectedCaptainId === captain.id
+                const daysUntilExpiry = captain.licenseExpiry
+                  ? Math.ceil((new Date(captain.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                  : null
+                const isExpired = daysUntilExpiry !== null && daysUntilExpiry <= 0
+
                 return (
                   <button
                     key={captain.id}
                     type="button"
-                    onClick={() => setSelectedCaptainId(isActive ? null : captain.id)}
+                    disabled={isExpired}
+                    onClick={() => {
+                      if (!isExpired) setSelectedCaptainId(isActive ? null : captain.id)
+                    }}
                     className="tile"
                     style={{
                       display: 'flex', alignItems: 'center', gap: 'var(--s-3)',
                       padding: 'var(--s-3) var(--s-4)',
-                      cursor: 'pointer',
-                      borderLeft: isActive ? '4px solid var(--color-rust)' : 'var(--border-w) solid var(--color-line)',
-                      background: isActive ? 'var(--color-bone)' : 'var(--color-paper)',
+                      cursor: isExpired ? 'not-allowed' : 'pointer',
+                      opacity: isExpired ? 0.6 : 1,
+                      borderLeft: isExpired ? '4px solid var(--color-status-err)' : isActive ? '4px solid var(--color-rust)' : 'var(--border-w) solid var(--color-line)',
+                      background: isExpired ? 'rgba(235, 87, 87, 0.03)' : isActive ? 'var(--color-bone)' : 'var(--color-paper)',
                       textAlign: 'left',
                       width: '100%',
                       transition: 'border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease)',
@@ -467,11 +482,15 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
                           <span className="pill pill--ghost" style={{ fontSize: '9px' }}>DEFAULT</span>
                         )}
                       </p>
-                      {captain.licenseType && (
+                      {isExpired ? (
+                        <p className="font-mono bg-red-100/50 inline-block px-1 rounded-sm mt-1" style={{ fontSize: '10px', color: 'var(--color-status-err)', letterSpacing: '0.04em', fontWeight: 700, background: 'rgba(235,87,87,0.1)', padding: '2px 4px', borderRadius: '4px', display: 'inline-block' }}>
+                          BLOCKED — LICENSE EXPIRED
+                        </p>
+                      ) : captain.licenseType ? (
                         <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}>
                           {captain.licenseType}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                     {isActive && <Check size={18} strokeWidth={2.5} style={{ color: 'var(--color-rust)', flexShrink: 0 }} />}
                   </button>

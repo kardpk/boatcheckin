@@ -40,8 +40,9 @@ export function CaptainCard({
   const daysUntilExpiry = captain.licenseExpiry
     ? Math.ceil((new Date(captain.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
-  const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 30 && daysUntilExpiry > 0
   const isExpired = daysUntilExpiry !== null && daysUntilExpiry <= 0
+  const isExpiringRed = daysUntilExpiry !== null && daysUntilExpiry > 0 && daysUntilExpiry <= 30
+  const isExpiringAmber = daysUntilExpiry !== null && daysUntilExpiry > 30 && daysUntilExpiry <= 60
 
   const availableBoats = operatorBoats.filter(
     b => !captain.linkedBoats.some(lb => lb.boatId === b.id)
@@ -90,14 +91,31 @@ export function CaptainCard({
       className="tile"
       style={{
         padding: 'var(--s-3) var(--s-4)',
+        paddingTop: isExpired ? 'calc(var(--s-3) + 16px)' : 'var(--s-3)',
         position: 'relative',
+        background: isExpired ? 'rgba(235, 87, 87, 0.03)' : 'var(--color-paper)',
         borderLeft: `4px solid ${
           isExpired ? 'var(--color-status-err)' :
-          isExpiringSoon ? 'var(--color-status-warn)' :
+          isExpiringRed ? 'var(--color-status-err)' :
+          isExpiringAmber ? 'var(--color-status-warn)' :
           'var(--color-ink)'
         }`,
       }}
     >
+      {/* ── EXPIRED BANNER ── */}
+      {isExpired && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0,
+          background: 'var(--color-status-err)',
+          padding: '3px 8px',
+          textAlign: 'center',
+          borderTopRightRadius: 'var(--r-2)',
+        }}>
+          <span className="mono" style={{ fontSize: '9px', color: '#FFF', letterSpacing: '0.12em', fontWeight: 700 }}>
+            LICENSE EXPIRED · BLOCKED FROM TRIPS
+          </span>
+        </div>
+      )}
       {/* ── Header: avatar (md) + info + menu ─────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)' }}>
         <Avatar
@@ -172,15 +190,16 @@ export function CaptainCard({
                 fontSize: '13px',
                 fontWeight: 600,
                 display: 'flex', alignItems: 'center', gap: 4,
-                color: isExpired
+                color: isExpired || isExpiringRed
                   ? 'var(--color-status-err)'
-                  : isExpiringSoon
+                  : isExpiringAmber
                     ? 'var(--color-status-warn)'
                     : 'var(--color-ink-muted)',
               }}
             >
               {isExpired ? <><Ban size={11} strokeWidth={2} /> Expired</> :
-               isExpiringSoon ? <><AlertTriangle size={11} strokeWidth={2} /> {daysUntilExpiry}d left</> :
+               isExpiringRed ? <><AlertTriangle size={11} strokeWidth={2} /> {daysUntilExpiry}d left</> :
+               isExpiringAmber ? <><AlertTriangle size={11} strokeWidth={2} /> {daysUntilExpiry}d left</> :
                `Exp ${new Date(captain.licenseExpiry).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}`}
             </span>
           )}

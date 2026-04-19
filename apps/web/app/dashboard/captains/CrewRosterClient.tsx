@@ -111,7 +111,7 @@ export function CrewRosterClient({
             <strong>License alert</strong>
             <div style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 2 }}>
               {expiringCaptains.length} crew member{expiringCaptains.length !== 1 ? 's have' : ' has a'} license{expiringCaptains.length !== 1 ? 's' : ''}{' '}
-              expiring within 30 days: {expiringCaptains.map(c => c.fullName).join(', ')}
+              expiring within 60 days (or already expired): {expiringCaptains.map(c => c.fullName).join(', ')}
             </div>
           </div>
         </div>
