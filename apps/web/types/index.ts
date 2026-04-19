@@ -43,15 +43,16 @@ export interface ComplianceProfile {
 }
 
 export const TRIP_PURPOSE_LABELS: Record<TripPurpose, {
-  label: string; icon: string; description: string
+  label: string; icon: string; description: string;
+  compliance: { label: string; color: 'sage' | 'muted' }
 }> = {
-  commercial:     { label: 'Commercial Charter',   icon: 'Banknote',       description: 'Paying customers aboard' },
-  private_party:  { label: 'Private Party',        icon: 'Users',          description: 'Friends and social gathering' },
-  family:         { label: 'Family Day',            icon: 'Heart',          description: 'Family outing, no guests' },
-  fishing_social: { label: 'Fishing Trip',          icon: 'Fish',           description: 'Buddies, fuel-share' },
-  corporate:      { label: 'Corporate Event',       icon: 'Building2',      description: 'Clients, team building' },
-  training:       { label: 'Training / Delivery',   icon: 'GraduationCap',  description: 'Crew training or repositioning' },
-  other:          { label: 'Other',                  icon: 'Anchor',         description: 'Custom purpose' },
+  commercial:     { label: 'Commercial Charter',   icon: 'Banknote',       description: 'Paying customers aboard',              compliance: { label: 'Captained · SB 606 standard flow',           color: 'sage'  } },
+  private_party:  { label: 'Private Party',        icon: 'Users',          description: 'Friends and social gathering',         compliance: { label: 'Captained · SB 606 standard flow',           color: 'sage'  } },
+  family:         { label: 'Family Day',            icon: 'Heart',          description: 'Family outing, no guests',             compliance: { label: 'No passengers for hire · simplified flow',   color: 'muted' } },
+  fishing_social: { label: 'Fishing Trip',          icon: 'Fish',           description: 'Buddies, fuel-share',                  compliance: { label: 'Captained · SB 606 standard flow',           color: 'sage'  } },
+  corporate:      { label: 'Corporate Event',       icon: 'Building2',      description: 'Clients, team building',               compliance: { label: 'Captained · SB 606 standard flow',           color: 'sage'  } },
+  training:       { label: 'Training / Delivery',   icon: 'GraduationCap',  description: 'Crew training or repositioning',       compliance: { label: 'Crew only · no guest waiver required',       color: 'muted' } },
+  other:          { label: 'Other',                  icon: 'Anchor',         description: 'Custom purpose',                       compliance: { label: 'Operator confirms type at setup',            color: 'muted' } },
 }
 
 export type ApprovalStatus =

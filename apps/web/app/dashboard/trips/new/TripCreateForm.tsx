@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, type ComponentType } from 'react'
+import { useState, useTransition, useRef, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Banknote, Users, Heart, Fish, Building2, GraduationCap, Anchor,
@@ -15,6 +15,17 @@ import { cn } from '@/lib/utils/cn'
 import type { TripFormData, TripCreatedResult, SplitBookingEntry, TripPurpose } from '@/types'
 import { DURATION_OPTIONS, TRIP_PURPOSE_LABELS } from '@/types'
 import { shouldShowConsiderationWarning } from '@/lib/compliance/tripCompliance'
+
+// ─── Duration split: primary always visible, more behind toggle ───────────────
+const PRIMARY_DURATION_VALUES = new Set([2, 4, 8, 12, 0])
+const MORE_DURATION_VALUES    = new Set([3, 5, 6, 10])
+
+// ─── Date helper ─────────────────────────────────────────────────────────────
+function getTomorrowStr(): string {
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  return d.toISOString().split('T')[0]!
+}
 
 // ─── Icon map (R2 — lucide only, no emojis) ──────────────────────────────────
 
@@ -83,6 +94,17 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
   const [showCustomDuration, setShowCustomDuration] = useState(false)
   const [splitBookings, setSplitBookings] = useState<SplitBookingEntry[]>([])
 
+  // D-2: duration "More" toggle
+  const [showMoreDurations, setShowMoreDurations] = useState(false)
+
+  // D-3: trip code undo toast
+  const [previousCode, setPreviousCode] = useState<string | null>(null)
+  const [showUndoToast, setShowUndoToast] = useState(false)
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // D-4: submit button hover lift
+  const [isHoveringSubmit, setIsHoveringSubmit] = useState(false)
+
   // Captain picker — pre-select default
   const defaultCaptain = captains.find(c => c.isDefault)
   const [selectedCaptainId, setSelectedCaptainId] = useState<string | null>(
@@ -94,7 +116,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
     boatId: boats.length === 1 ? boats[0]!.id : '',
     boatName: boats.length === 1 ? boats[0]!.boat_name : '',
     boatCapacity: boats.length === 1 ? boats[0]!.max_capacity : 0,
-    tripDate: '',
+    tripDate: getTomorrowStr(),    // D-2: default to tomorrow, not blank
     departureTime: '09:00',
     durationHours: 4,
     maxGuests: boats.length === 1 ? boats[0]!.max_capacity : 0,
@@ -238,6 +260,24 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
                     >
                       {meta.description}
                     </div>
+                    {/* D-1: SB 606 compliance micro-label */}
+                    <span
+                      className="mono"
+                      style={{
+                        display: 'block',
+                        fontSize: 9,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        marginTop: 4,
+                        lineHeight: 1.4,
+                        color: meta.compliance.color === 'sage'
+                          ? 'var(--color-status-ok)'
+                          : 'var(--color-ink-muted)',
+                        opacity: isActive ? 1 : 0.85,
+                      }}
+                    >
+                      {meta.compliance.label}
+                    </span>
                   </div>
                 </button>
               )
@@ -461,6 +501,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
               type="date"
               min={todayStr}
               value={form.tripDate}
+              placeholder="Select departure date"
               onChange={(e) => setForm((p) => ({ ...p, tripDate: e.target.value }))}
               className={cn('field-input', fieldErrors.tripDate && 'field-input--error')}
               required
@@ -484,11 +525,13 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
           </div>
         </div>
 
-        {/* Duration */}
+        {/* Duration — D-2: 5 primary + expandable More */}
         <div style={{ marginTop: 'var(--s-5)' }}>
           <label className="field-label" style={{ marginBottom: 'var(--s-3)', display: 'block' }}>Duration</label>
+
+          {/* Primary duration buttons: 2hr / 4hr / 8hr / Full day / Custom */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s-2)' }}>
-            {DURATION_OPTIONS.map((opt) => {
+            {DURATION_OPTIONS.filter(opt => PRIMARY_DURATION_VALUES.has(opt.value)).map((opt) => {
               const isActive = opt.value === 0 ? showCustomDuration : form.durationHours === opt.value
               return (
                 <button
@@ -497,13 +540,14 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
                   onClick={() => {
                     if (opt.value === 0) {
                       setShowCustomDuration(true)
+                      setShowMoreDurations(false)
                       setForm((p) => ({ ...p, durationHours: 0 }))
                     } else {
                       setShowCustomDuration(false)
                       setForm((p) => ({ ...p, durationHours: opt.value }))
                     }
                   }}
-                  className="font-mono"
+                  className="mono"
                   style={{
                     padding: 'var(--s-2) var(--s-4)',
                     fontSize: '12px',
@@ -525,6 +569,57 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
             })}
           </div>
 
+          {/* "More durations" expandable — 3hr / 5hr / 6hr / 10hr */}
+          <div style={{ marginTop: 'var(--s-2)' }}>
+            <button
+              type="button"
+              onClick={() => setShowMoreDurations(p => !p)}
+              className="mono"
+              style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                fontSize: 11, color: 'var(--color-rust)', letterSpacing: '0.06em',
+                textDecoration: 'underline', textDecorationStyle: 'dotted',
+              }}
+            >
+              {showMoreDurations ? 'Fewer options ↑' : 'More durations →'}
+            </button>
+
+            {showMoreDurations && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s-2)', marginTop: 'var(--s-2)' }}>
+                {DURATION_OPTIONS.filter(opt => MORE_DURATION_VALUES.has(opt.value)).map((opt) => {
+                  const isActive = form.durationHours === opt.value && !showCustomDuration
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        setShowCustomDuration(false)
+                        setForm((p) => ({ ...p, durationHours: opt.value }))
+                      }}
+                      className="mono"
+                      style={{
+                        padding: 'var(--s-2) var(--s-4)',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        borderRadius: 'var(--r-1)',
+                        border: isActive ? '2px solid var(--color-ink)' : 'var(--border-w) solid var(--color-line-soft)',
+                        background: isActive ? 'var(--color-ink)' : 'var(--color-paper)',
+                        color: isActive ? 'var(--color-bone)' : 'var(--color-ink)',
+                        cursor: 'pointer',
+                        minHeight: 40,
+                        transition: 'all var(--dur-fast) var(--ease)',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
           {showCustomDuration && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)', marginTop: 'var(--s-3)' }}>
               <input
@@ -535,7 +630,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
                 placeholder="7"
                 value={form.durationHours || ''}
                 onChange={(e) => setForm((p) => ({ ...p, durationHours: Number(e.target.value) }))}
-                className="field-input font-mono"
+                className="field-input mono"
                 style={{ width: 100, textAlign: 'center' }}
                 autoFocus
               />
@@ -670,26 +765,38 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
       <section>
         <SectionKicker>Options</SectionKicker>
 
-        {/* Manual approval toggle */}
+        {/* Manual approval toggle — D-3: contextual explainer when OFF */}
         <div
           className="tile"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: 'var(--s-4)',
-          }}
+          style={{ padding: 'var(--s-4)' }}
         >
-          <div>
-            <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 600, color: 'var(--color-ink)' }}>
-              Manual approval
-            </p>
-            <p style={{ fontSize: '11px', color: 'var(--color-ink-muted)', marginTop: 2 }}>
-              Review each guest before they are confirmed
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ fontSize: 'var(--t-body-sm)', fontWeight: 600, color: 'var(--color-ink)' }}>
+                Manual approval
+              </p>
+              <p style={{ fontSize: '11px', color: 'var(--color-ink-muted)', marginTop: 2 }}>
+                Review each guest before they are confirmed
+              </p>
+            </div>
+            <Switch
+              checked={form.requiresApproval}
+              onChange={(v) => setForm((p) => ({ ...p, requiresApproval: v }))}
+            />
           </div>
-          <Switch
-            checked={form.requiresApproval}
-            onChange={(v) => setForm((p) => ({ ...p, requiresApproval: v }))}
-          />
+          {/* Shown only when OFF — explains when to use it */}
+          {!form.requiresApproval && (
+            <p style={{
+              fontSize: 11,
+              color: 'var(--color-ink-muted)',
+              marginTop: 'var(--s-3)',
+              lineHeight: 1.55,
+              paddingTop: 'var(--s-3)',
+              borderTop: '1px dashed var(--color-line-soft)',
+            }}>
+              Use for VIP charters, corporate events, or when you want to verify each guest before issuing their boarding pass.
+            </p>
+          )}
         </div>
 
         {/* Trip code */}
@@ -717,7 +824,18 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
             />
             <button
               type="button"
-              onClick={() => setForm((p) => ({ ...p, tripCode: generateTripCodeClient() }))}
+              onClick={() => {
+                // D-3: undo toast — save old code, generate new, show 5s toast
+                const newCode = generateTripCodeClient()
+                setPreviousCode(form.tripCode)
+                setForm((p) => ({ ...p, tripCode: newCode }))
+                setShowUndoToast(true)
+                if (undoTimerRef.current) clearTimeout(undoTimerRef.current)
+                undoTimerRef.current = setTimeout(() => {
+                  setShowUndoToast(false)
+                  setPreviousCode(null)
+                }, 5000)
+              }}
               className="btn btn--sm"
               style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-2)' }}
             >
@@ -725,6 +843,50 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
               Regenerate
             </button>
           </div>
+
+          {/* D-3: Undo toast — appears for 5s after regenerate */}
+          {showUndoToast && (
+            <div
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '8px 12px',
+                marginTop: 'var(--s-2)',
+                background: 'var(--color-ink)',
+                color: 'var(--color-paper)',
+                borderRadius: 'var(--r-1)',
+                fontSize: 13,
+              }}
+            >
+              <span>
+                Code changed to{' '}
+                <strong className="mono" style={{ letterSpacing: '0.1em' }}>{form.tripCode}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!previousCode) return
+                  setForm((p) => ({ ...p, tripCode: previousCode }))
+                  setShowUndoToast(false)
+                  setPreviousCode(null)
+                  if (undoTimerRef.current) clearTimeout(undoTimerRef.current)
+                }}
+                style={{
+                  background: 'none',
+                  border: '1px solid rgba(255,255,255,0.35)',
+                  color: 'var(--color-paper)',
+                  padding: '2px 10px',
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  marginLeft: 'var(--s-3)',
+                }}
+              >
+                Undo
+              </button>
+            </div>
+          )}
+
           {fieldErrors.tripCode && (
             <span className="field-error">{fieldErrors.tripCode[0]}</span>
           )}
@@ -773,27 +935,60 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending || !form.boatId || !form.tripDate}
-        className="btn btn--rust btn--lg"
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          height: 52,
-          opacity: (isPending || !form.boatId || !form.tripDate) ? 0.4 : 1,
-          cursor: (isPending || !form.boatId || !form.tripDate) ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {isPending ? (
-          <AnchorLoader size="sm" color="white" />
-        ) : (
-          <>
-            Generate trip link
-            <ArrowRight size={14} strokeWidth={2.5} />
-          </>
-        )}
-      </button>
+      {/* D-4: Three-state submit button */}
+      {(() => {
+        const isFormComplete = !!form.boatId && !!form.tripDate
+        const btnBg = isPending
+          ? 'var(--color-rust)'
+          : isFormComplete
+            ? '#B84A1F'
+            : 'var(--color-ink-muted)'
+        const btnShadow =
+          isFormComplete && isHoveringSubmit && !isPending
+            ? '0 4px 14px rgba(184,74,31,0.32)'
+            : 'none'
+        const btnTransform =
+          isFormComplete && isHoveringSubmit && !isPending
+            ? 'translateY(-2px)'
+            : 'none'
+        return (
+          <button
+            type="submit"
+            disabled={isPending || !isFormComplete}
+            onMouseEnter={() => setIsHoveringSubmit(true)}
+            onMouseLeave={() => setIsHoveringSubmit(false)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'var(--s-2)',
+              height: 52,
+              borderRadius: 'var(--r-1)',
+              border: 'none',
+              background: btnBg,
+              color: 'var(--color-paper)',
+              fontSize: 'var(--t-body-sm)',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
+              cursor: isPending || !isFormComplete ? 'not-allowed' : 'pointer',
+              boxShadow: btnShadow,
+              transform: btnTransform,
+              transition: 'background var(--dur-fast) var(--ease), box-shadow 180ms ease, transform 180ms ease',
+              opacity: isPending ? 0.75 : 1,
+            }}
+          >
+            {isPending ? (
+              <AnchorLoader size="sm" color="white" />
+            ) : (
+              <>
+                {isFormComplete ? 'Generate trip link' : 'Select boat and date to continue'}
+                {isFormComplete && <ArrowRight size={14} strokeWidth={2.5} />}
+              </>
+            )}
+          </button>
+        )
+      })()}
     </form>
   )
 }
