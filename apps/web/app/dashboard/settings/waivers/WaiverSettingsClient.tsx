@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { markDirty } from '@/lib/utils/markDirty'
 import { provisionOperatorFirmaWorkspace } from '@/app/actions/operatorFirma'
 import { AnchorLoader } from '@/components/ui/AnchorLoader'
 import { cn } from '@/lib/utils/cn'
@@ -18,6 +20,7 @@ export function WaiverSettingsClient({
   workspaceId,
   jwtToken
 }: WaiverSettingsClientProps) {
+  const router = useRouter()
   const [isProvisioning, setIsProvisioning] = useState(false)
   const [error, setError] = useState('')
 
@@ -27,10 +30,9 @@ export function WaiverSettingsClient({
     try {
       const res = await provisionOperatorFirmaWorkspace(operatorId, companyName)
       if (res.success) {
-        // Soft refresh the page to get the JWT from the server, 
-        // or just set state if our action returned a JWT. 
-        // Our action only returns workspaceId right now, let's just trigger a reload to let the server pass down the JWT.
-        window.location.reload()
+        // Signal all dashboard pages (boat detail, fleet list) to refresh on navigate-back
+        markDirty()
+        router.refresh()
       } else {
         setError(res.error || 'Setup failed')
         setIsProvisioning(false)

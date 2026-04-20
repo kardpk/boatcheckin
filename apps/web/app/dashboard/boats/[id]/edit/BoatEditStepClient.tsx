@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { updateBoatStep } from "../../new/actions";
+import { markDirty } from "@/lib/utils/markDirty";
 import { Step1Vessel } from "../../new/steps/Step1Vessel";
 import { Step2Marina } from "../../new/steps/Step2Marina";
 import { Step4Equipment } from "../../new/steps/Step4Equipment";
@@ -111,8 +112,9 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
         safetyCards: merged.safetyCards,
       });
 
-      if (result.success) {
+        if (result.success) {
         setSaved(true);
+        markDirty(); // signal boat detail + fleet list to refresh on navigate-back
         setTimeout(() => {
           router.push(`/dashboard/boats/${boatId}`);
           router.refresh();

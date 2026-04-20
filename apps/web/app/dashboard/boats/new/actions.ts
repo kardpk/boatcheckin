@@ -4,6 +4,7 @@ import { requireOperator } from "@/lib/security/auth";
 import { auditLog } from "@/lib/security/audit";
 import { generateShortBoardToken } from "@/lib/utils/shortBoardToken";
 import { calculateComplianceScore } from "@/lib/wizard/compliance";
+import { revalidatePath } from "next/cache";
 import type { WizardAddon } from "./types";
 
 /**
@@ -257,6 +258,7 @@ export async function saveBoatProfile(data: {
       },
     });
 
+    revalidatePath('/dashboard/boats', 'layout'); // bust fleet list + boat detail caches
     return { success: true, boatId: boat.id };
   } catch (err: unknown) {
     console.error("[saveBoatProfile] unexpected error:", err);
@@ -411,6 +413,7 @@ export async function updateBoatStep(
       changes: { step },
     });
 
+    revalidatePath('/dashboard/boats', 'layout'); // bust fleet list + boat detail caches
     return { success: true };
   } catch (err) {
     console.error("[updateBoatStep] unexpected error:", err);

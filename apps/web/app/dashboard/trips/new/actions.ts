@@ -8,6 +8,7 @@ import { auditLog } from '@/lib/security/audit'
 import { generateTripSlug, generateTripCode } from '@/lib/security/tokens'
 import { createTripSchema, sanitiseText } from '@/lib/security/sanitise'
 import { invalidateTripCache } from '@/lib/redis/cache'
+import { revalidatePath } from 'next/cache'
 import { getRedis } from '@/lib/redis/upstash'
 import type {
   TripCreatedResult,
@@ -174,6 +175,7 @@ export async function createTrip(
       tripCode,
     })
 
+    revalidatePath('/dashboard', 'layout') // bust trip list + boat trip count chip
     return {
       success: true,
       data: {
@@ -231,6 +233,7 @@ export async function createTrip(
     }
   }
 
+  revalidatePath('/dashboard', 'layout') // bust trip list + boat trip count chip
   return {
     success: true,
     data: {
@@ -293,6 +296,7 @@ export async function cancelTrip(tripId: string): Promise<ActionResult> {
     entityId: tripId,
   })
 
+  revalidatePath('/dashboard', 'layout') // bust trip list + boat trip count chip
   return { success: true, data: null as unknown as TripCreatedResult }
 }
 
