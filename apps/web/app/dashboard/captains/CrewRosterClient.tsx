@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight } from 'lucide-react'
 import { CaptainCard } from '@/components/dashboard/CaptainCard'
 import { CaptainFormSheet } from '@/components/dashboard/CaptainFormSheet'
+import { markDirty } from '@/lib/utils/markDirty'
 import type { CaptainProfile, CrewRole } from '@/types'
 
 interface BoatOption { id: string; name: string }
@@ -42,7 +43,10 @@ export function CrewRosterClient({
     if (!window.confirm(`Remove ${captain.fullName} from your crew roster?`)) return
     try {
       const res = await fetch(`/api/dashboard/captains/${captain.id}`, { method: 'DELETE' })
-      if (res.ok) setCaptains(prev => prev.filter(c => c.id !== captain.id))
+      if (res.ok) {
+        setCaptains(prev => prev.filter(c => c.id !== captain.id))
+        markDirty()  // boat detail pages need to refresh
+      }
     } catch { /* silent fail */ }
   }, [])
 
@@ -57,6 +61,7 @@ export function CrewRosterClient({
     })
     setShowForm(false)
     setEditingCaptain(null)
+    markDirty()  // boat detail / dashboard pages need to refresh
     router.refresh()
   }, [router])
 
@@ -64,12 +69,14 @@ export function CrewRosterClient({
     setCaptains(prev => prev.map(c =>
       c.id !== captainId ? c : { ...c, linkedBoats: [...c.linkedBoats, { boatId, boatName }] }
     ))
+    markDirty()  // boat detail page should refresh when navigated back to
   }, [])
 
   const handleBoatUnlinked = useCallback((captainId: string, boatId: string) => {
     setCaptains(prev => prev.map(c =>
       c.id !== captainId ? c : { ...c, linkedBoats: c.linkedBoats.filter(lb => lb.boatId !== boatId) }
     ))
+    markDirty()  // boat detail page should refresh when navigated back to
   }, [])
 
   const grouped = ROLE_ORDER

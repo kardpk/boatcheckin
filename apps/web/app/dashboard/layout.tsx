@@ -3,6 +3,7 @@ import { BottomNav } from "@/components/dashboard/BottomNav";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { DashboardNotifications } from "@/components/dashboard/DashboardNotifications";
 import { StorageBootstrap } from "@/components/StorageBootstrap";
+import { RefreshOnFocus } from "@/components/dashboard/RefreshOnFocus";
 import { AlertTriangle } from "lucide-react";
 
 function getTrialDaysRemaining(trialEndsAt: string | null): number | null {
@@ -36,6 +37,8 @@ export default async function DashboardLayout({
 
       {/* Main content — centered, max-width for iPhone/iPad */}
       <main className="max-w-[768px] mx-auto pb-[72px]">
+        {/* Smart refresh — re-runs Server Components when navigating back after a mutation */}
+        <RefreshOnFocus />
         {/* One-shot legacy localStorage migration */}
         <StorageBootstrap />
         {/* Realtime notification toasts */}
