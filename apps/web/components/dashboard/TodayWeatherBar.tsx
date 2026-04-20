@@ -72,7 +72,7 @@ export function TodayWeatherBar({
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
         }}>
-          {alert.headline} — {boatName}
+          {alert.headline} {boatName}
         </p>
 
         {/* Detail line — readable, not tiny */}

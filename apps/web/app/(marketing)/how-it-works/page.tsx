@@ -28,7 +28,7 @@ export default function HowItWorksPage() {
               <span className="eyebrow">How it works</span>
               <h1>Between booking<br />and boarding,<br /><em>one link does the work.</em></h1>
               <p className="lede">
-                Boatcheckin fills the hours nobody owns — the gap between a booking confirmation and the moment a captain is ready to slip lines. This page walks you through the whole flow. <strong>Setup takes about fifteen minutes. Per-trip operator time is under a minute.</strong>
+                Boatcheckin fills the hours nobody owns the gap between a booking confirmation and the moment a captain is ready to slip lines. This page walks you through the whole flow. <strong>Setup takes about fifteen minutes. Per-trip operator time is under a minute.</strong>
               </p>
             </div>
             <div className="hero-meta">
@@ -48,7 +48,7 @@ export default function HowItWorksPage() {
           <div className="section-header">
             <span className="eyebrow">The space we sit in</span>
             <h2 className="section-title">The booking platform hands off.<br />The captain picks up at the dock.<br /><em>Everything in between was chaos.</em></h2>
-            <p className="section-sub">Before Boatcheckin, those hours lived in text messages, scribbled lists, paper waivers in a clipboard, and the captain asking &quot;which one of you is Karen?&quot; at the slip. We built Boatcheckin for that exact gap — and nothing else.</p>
+           <p className="section-sub">Before Boatcheckin, those hours lived in text messages, scribbled lists, paper waivers in a clipboard, and the captain asking &quot;which one of you is Karen?&quot; at the slip. We built Boatcheckin for that exact gap and nothing else.</p>
           </div>
 
           <div className="gap-viz">
@@ -86,7 +86,7 @@ export default function HowItWorksPage() {
               <div className="ts-num">Step 01</div>
               <div className="ts-meta">One-time · ~15 min</div>
               <div className="ts-lbl">Set up your <em>boat</em></div>
-              <div className="ts-desc">Boat Wizard, your waiver, your safety briefing — configured once.</div>
+             <div className="ts-desc">Boat Wizard, your waiver, your safety briefing configured once.</div>
             </div>
             <div className="ts-step">
               <div className="ts-num">Step 02</div>
@@ -123,7 +123,7 @@ export default function HowItWorksPage() {
             <div className="phase-tag">Part 01 <span>Setup</span></div>
             <div>
               <h2 className="phase-title">Fifteen minutes, <em>and you never do it again.</em></h2>
-              <p className="phase-sub">Setup is front-loaded on purpose. You configure Boatcheckin once — your vessel details, the waiver language your operation uses, the safety briefing you already give — and every future trip just pulls from those defaults. No reconfiguration per booking. No rebuilding the checklist every season.</p>
+             <p className="phase-sub">Setup is front-loaded on purpose. You configure Boatcheckin once your vessel details, the waiver language your operation uses, the safety briefing you already give and every future trip just pulls from those defaults. No reconfiguration per booking. No rebuilding the checklist every season.</p>
             </div>
           </div>
 
@@ -131,7 +131,7 @@ export default function HowItWorksPage() {
             <div className="v-step active">
               <div className="v-step-num">01</div>
               <div className="v-step-meta">Takes ~4 minutes</div>
-              <div className="v-step-title">Boat Wizard — <em>add your vessel.</em></div>
+             <div className="v-step-title">Boat Wizard <em>add your vessel.</em></div>
               <div className="v-step-body">A short guided flow captures what regulators and insurers will eventually want to see: vessel name and registration, hailing port, documented length, passenger capacity, propulsion, and operating area. For multi-vessel fleets, you add each boat once; trips reference them by name.</div>
               <div className="v-step-body">If you already have your vessel documents handy, you can upload them for your own records. They live in your account, not on anyone else&apos;s server.</div>
             </div>
@@ -139,23 +139,23 @@ export default function HowItWorksPage() {
             <div className="v-step active">
               <div className="v-step-num">02</div>
               <div className="v-step-meta">Takes ~4 minutes</div>
-              <div className="v-step-title">Waiver — <em>yours, word for word.</em></div>
-              <div className="v-step-body">Paste in the waiver text your operation already uses — the one your insurer reviewed, the one your attorney blessed. That&apos;s the waiver every guest will sign. <strong>We don&apos;t rewrite it. We don&apos;t interpret it. We capture it precisely.</strong></div>
-              <div className="v-step-body">Don&apos;t have one yet? A starter template is available as scaffolding, clearly marked as a starting point — not legal advice and not a substitute for your own review.</div>
+             <div className="v-step-title">Waiver <em>yours, word for word.</em></div>
+             <div className="v-step-body">Paste in the waiver text your operation already uses the one your insurer reviewed, the one your attorney blessed. That&apos;s the waiver every guest will sign. <strong>We don&apos;t rewrite it. We don&apos;t interpret it. We capture it precisely.</strong></div>
+             <div className="v-step-body">Don&apos;t have one yet? A starter template is available as scaffolding, clearly marked as a starting point not legal advice and not a substitute for your own review.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">03</div>
               <div className="v-step-meta">Takes ~4 minutes</div>
-              <div className="v-step-title">Safety briefing — <em>one card per item.</em></div>
-              <div className="v-step-body">Your pre-departure safety briefing — PFD location, fire extinguisher, man-overboard procedure, emergency contacts, whatever you cover — goes in as a series of short cards. Guests see each card individually and acknowledge it with a tap.</div>
+             <div className="v-step-title">Safety briefing <em>one card per item.</em></div>
+             <div className="v-step-body">Your pre-departure safety briefing PFD location, fire extinguisher, man-overboard procedure, emergency contacts, whatever you cover goes in as a series of short cards. Guests see each card individually and acknowledge it with a tap.</div>
               <div className="v-step-body">This isn&apos;t theater. It&apos;s the structural alignment with <strong>46 CFR §185.506</strong> and equivalent state rules: each guest sees each item, and each acknowledgment is recorded with timestamp and attribution.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">04</div>
               <div className="v-step-meta">Takes ~3 minutes</div>
-              <div className="v-step-title">Compliance &amp; retention — <em>set once, forget it.</em></div>
+             <div className="v-step-title">Compliance &amp; retention <em>set once, forget it.</em></div>
               <div className="v-step-body">Set your operating jurisdiction, your retention window (compliance records default to a five-year minimum), electronic-signature consent language, and whether to route after-trip exports somewhere automatically.</div>
               <div className="v-step-body">The defaults are conservative. Most operators never touch these settings again.</div>
             </div>
@@ -176,7 +176,7 @@ export default function HowItWorksPage() {
             <div className="phase-tag">Part 02 <span>Every trip</span></div>
             <div>
               <h2 className="phase-title">Create the trip. <em>Send the link. That&apos;s it.</em></h2>
-              <p className="phase-sub">Every trip starts the same way — a few fields, one generated link, one message sent to the booker. The rest happens on its own while you do something else.</p>
+             <p className="phase-sub">Every trip starts the same way a few fields, one generated link, one message sent to the booker. The rest happens on its own while you do something else.</p>
             </div>
           </div>
 
@@ -184,23 +184,23 @@ export default function HowItWorksPage() {
             <div className="v-step active">
               <div className="v-step-num">01</div>
               <div className="v-step-meta">~20 seconds</div>
-              <div className="v-step-title">Create — <em>or auto-create.</em></div>
+             <div className="v-step-title">Create <em>or auto-create.</em></div>
               <div className="v-step-body">Enter the trip date, select the vessel, set the expected guest count, and pick the captain. Optional fields for the booker&apos;s contact, departure point, and any trip-specific notes.</div>
-              <div className="v-step-body">If your booking platform sends a confirmation email to a shared inbox, Boatcheckin can watch that inbox and create the trip for you — so the link is waiting before you even read the confirmation.</div>
+             <div className="v-step-body">If your booking platform sends a confirmation email to a shared inbox, Boatcheckin can watch that inbox and create the trip for you so the link is waiting before you even read the confirmation.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">02</div>
               <div className="v-step-meta">Instant</div>
               <div className="v-step-title">The trip link is <em>generated.</em></div>
-              <div className="v-step-body">One cryptographically signed URL — unique to this trip, scoped to this trip, and configured for the number of guests expected. The link carries the waiver, the safety cards, and the questions your compliance settings require.</div>
+             <div className="v-step-body">One cryptographically signed URL unique to this trip, scoped to this trip, and configured for the number of guests expected. The link carries the waiver, the safety cards, and the questions your compliance settings require.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">03</div>
               <div className="v-step-meta">~10 seconds</div>
               <div className="v-step-title">Send to the booker.</div>
-              <div className="v-step-body">One message, one link. The booker shares it with the rest of the party themselves — the way they&apos;d share a restaurant reservation link. <strong>You do not collect guest phone numbers. You do not chase.</strong></div>
+             <div className="v-step-body">One message, one link. The booker shares it with the rest of the party themselves the way they&apos;d share a restaurant reservation link. <strong>You do not collect guest phone numbers. You do not chase.</strong></div>
             </div>
 
             <div className="v-step active">
@@ -226,7 +226,7 @@ export default function HowItWorksPage() {
             <div className="phase-tag" style={{ color: 'var(--brass)' }}><span style={{ color: 'var(--bone)' }}>The guest</span>Part 03</div>
             <div>
               <h2 className="phase-title" style={{ color: 'var(--bone)' }}>No app. No account. <em>No captain chasing signatures.</em></h2>
-              <p className="phase-sub" style={{ color: 'rgba(244,239,230,0.78)', maxWidth: 680 }}>The guest experience was the feature we fought hardest to keep simple. Every instinct in SaaS is to ask the user to sign up, download something, or remember a password. We did none of that — because a paying guest on a Saturday morning should not be installing an app to sign a waiver.</p>
+             <p className="phase-sub" style={{ color: 'rgba(244,239,230,0.78)', maxWidth: 680 }}>The guest experience was the feature we fought hardest to keep simple. Every instinct in SaaS is to ask the user to sign up, download something, or remember a password. We did none of that because a paying guest on a Saturday morning should not be installing an app to sign a waiver.</p>
             </div>
           </div>
 
@@ -235,41 +235,41 @@ export default function HowItWorksPage() {
               <div className="v-step-num">01</div>
               <div className="v-step-meta">Any phone · any language</div>
               <div className="v-step-title">Tap the link.</div>
-              <div className="v-step-body">The trip link opens in any browser on any phone. No download. No sign-up. No password. The page is localized automatically — the guest sees it in the language their phone is set to, not the language the operator speaks.</div>
+             <div className="v-step-body">The trip link opens in any browser on any phone. No download. No sign-up. No password. The page is localized automatically the guest sees it in the language their phone is set to, not the language the operator speaks.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">02</div>
               <div className="v-step-meta">~60 seconds</div>
               <div className="v-step-title">Identify &amp; verify.</div>
-              <div className="v-step-body">Name, email, phone, date of birth where the law requires it. A one-time code is sent to the phone or email to confirm identity — so the signature on the waiver actually belongs to the guest. <strong>The data goes to the operator, not to advertisers.</strong></div>
+             <div className="v-step-body">Name, email, phone, date of birth where the law requires it. A one-time code is sent to the phone or email to confirm identity so the signature on the waiver actually belongs to the guest. <strong>The data goes to the operator, not to advertisers.</strong></div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">03</div>
               <div className="v-step-meta">~60 seconds</div>
               <div className="v-step-title">Read &amp; sign the waiver.</div>
-              <div className="v-step-body">The guest sees the waiver you wrote, in full, without dark patterns. They draw or type their signature. The exact text they saw, their signature, the timestamp, their IP, and a cryptographic hash are captured together — the combination that makes an electronic signature hold up under ESIGN and UETA.</div>
+             <div className="v-step-body">The guest sees the waiver you wrote, in full, without dark patterns. They draw or type their signature. The exact text they saw, their signature, the timestamp, their IP, and a cryptographic hash are captured together the combination that makes an electronic signature hold up under ESIGN and UETA.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">04</div>
               <div className="v-step-meta">~30 seconds</div>
               <div className="v-step-title">Acknowledge each safety card.</div>
-              <div className="v-step-body">One card at a time. The guest sees your PFD location card, your fire-extinguisher card, your man-overboard procedure card, and whatever else you configured — each with its own tap-to-acknowledge. Each tap is attributed. No &quot;I&apos;ve read the terms&quot; blanket box pretending to be a briefing.</div>
+             <div className="v-step-body">One card at a time. The guest sees your PFD location card, your fire-extinguisher card, your man-overboard procedure card, and whatever else you configured each with its own tap-to-acknowledge. Each tap is attributed. No &quot;I&apos;ve read the terms&quot; blanket box pretending to be a briefing.</div>
             </div>
 
             <div className="v-step active">
               <div className="v-step-num">05</div>
               <div className="v-step-meta">Instant</div>
-              <div className="v-step-title">Done — <em>confirmation sent.</em></div>
+             <div className="v-step-title">Done <em>confirmation sent.</em></div>
               <div className="v-step-body">The guest gets a clean confirmation with their trip details and a copy of what they signed. The operator&apos;s manifest updates. The captain&apos;s snapshot updates. Nobody had to type anything twice.</div>
             </div>
           </div>
 
           <div className="outcome-bar">
             <div className="outcome-tag">Outcome</div>
-            <div className="outcome-text">Every guest is <em>verified, signed, and briefed</em> — before they arrive.</div>
+           <div className="outcome-text">Every guest is <em>verified, signed, and briefed</em> before they arrive.</div>
             <div className="outcome-meta">GUEST TIME · ~3 MIN TOTAL</div>
           </div>
         </div>
@@ -282,22 +282,22 @@ export default function HowItWorksPage() {
             <div className="phase-tag" style={{ color: 'var(--brass)' }}><span style={{ color: 'var(--bone)' }}>The captain</span>Part 04</div>
             <div>
               <h2 className="phase-title" style={{ color: 'var(--bone)' }}>The cleanest pre-departure view <em>of your life.</em></h2>
-              <p className="phase-sub" style={{ color: 'rgba(244,239,230,0.78)', maxWidth: 680 }}>This is the moment everything else was for. The captain arrives at the slip. Opens one link on a phone — no login, because captains shouldn&apos;t be typing passwords on a pier with salt spray on the screen. What they see is the cleanest go/no-go sheet they&apos;ve ever had.</p>
+             <p className="phase-sub" style={{ color: 'rgba(244,239,230,0.78)', maxWidth: 680 }}>This is the moment everything else was for. The captain arrives at the slip. Opens one link on a phone no login, because captains shouldn&apos;t be typing passwords on a pier with salt spray on the screen. What they see is the cleanest go/no-go sheet they&apos;ve ever had.</p>
             </div>
           </div>
 
           <div className="captain-grid">
             <div className="captain-copy">
               <p><strong>One URL, one glance, one decision.</strong> The captain snapshot is not a login, not an app, not a dashboard. It&apos;s a purpose-built view designed for a captain holding a phone at the dock with marginal signal and twelve other things to think about.</p>
-              <p>The snapshot shows the manifest as it stands right now — who&apos;s signed, who hasn&apos;t, who registered at 2am, whose signature came in during the drive over. Every acknowledgment is a tap away from its full record. Every guest&apos;s emergency contact is one tap from being called.</p>
-              <p><strong>When the record is clean, the captain slides to start.</strong> That single action is the attested departure — timestamped, cryptographically recorded, and sealed as the trip&apos;s starting state. The software doesn&apos;t auto-start. The software doesn&apos;t clear a missing waiver. <strong>The captain directs. Boatcheckin records.</strong></p>
+             <p>The snapshot shows the manifest as it stands right now who&apos;s signed, who hasn&apos;t, who registered at 2am, whose signature came in during the drive over. Every acknowledgment is a tap away from its full record. Every guest&apos;s emergency contact is one tap from being called.</p>
+             <p><strong>When the record is clean, the captain slides to start.</strong> That single action is the attested departure timestamped, cryptographically recorded, and sealed as the trip&apos;s starting state. The software doesn&apos;t auto-start. The software doesn&apos;t clear a missing waiver. <strong>The captain directs. Boatcheckin records.</strong></p>
 
               <ul className="captain-features">
                 <li><strong>Manifest</strong><span>Every guest registered for this trip, with status flags at a glance.</span></li>
                 <li><strong>Waivers</strong><span>Green if signed and verified. Red if missing. One tap opens the signed document.</span></li>
                 <li><strong>Safety cards</strong><span>Per-guest acknowledgment status. A missing card is visible immediately.</span></li>
                 <li><strong>Emergency</strong><span>Every guest&apos;s emergency contact, one tap to dial. Plus USCG Ch. 16 and FWC hotline, always present.</span></li>
-                <li><strong>Start control</strong><span>A slide-to-start gate — intentional, attestable, hard to trigger by accident.</span></li>
+               <li><strong>Start control</strong><span>A slide-to-start gate intentional, attestable, hard to trigger by accident.</span></li>
               </ul>
             </div>
 
@@ -342,8 +342,8 @@ export default function HowItWorksPage() {
         <div className="container">
           <div className="section-header">
             <span className="eyebrow">What you walk away with</span>
-            <h2 className="section-title">A sealed record —<br /><em>intact, attributable, available.</em></h2>
-            <p className="section-sub">The point of the whole flow isn&apos;t the flow. It&apos;s the record the flow produces. Two years from now, when an insurer asks, when a regulator audits, when a passenger&apos;s lawyer writes a letter — this is what&apos;s there to answer.</p>
+           <h2 className="section-title">A sealed record<br /><em>intact, attributable, available.</em></h2>
+           <p className="section-sub">The point of the whole flow isn&apos;t the flow. It&apos;s the record the flow produces. Two years from now, when an insurer asks, when a regulator audits, when a passenger&apos;s lawyer writes a letter this is what&apos;s there to answer.</p>
           </div>
 
           <div className="seal-grid">
@@ -355,7 +355,7 @@ export default function HowItWorksPage() {
             <div className="seal-cell">
               <span className="seal-num">02 · Attributable</span>
               <div className="seal-title">Every action has an actor.</div>
-              <div className="seal-body">Creation, signing, acknowledgment, captain start, trip completion — each produces an audit entry with who, when, and how. Not a log file. A record.</div>
+             <div className="seal-body">Creation, signing, acknowledgment, captain start, trip completion each produces an audit entry with who, when, and how. Not a log file. A record.</div>
             </div>
             <div className="seal-cell">
               <span className="seal-num">03 · Sealed at completion</span>
@@ -365,17 +365,17 @@ export default function HowItWorksPage() {
             <div className="seal-cell">
               <span className="seal-num">04 · Retained</span>
               <div className="seal-title">5 years minimum.</div>
-              <div className="seal-body">Default retention is five years — longer where your jurisdiction or your settings require. You control extension; we never shorten below your minimum.</div>
+             <div className="seal-body">Default retention is five years longer where your jurisdiction or your settings require. You control extension; we never shorten below your minimum.</div>
             </div>
             <div className="seal-cell">
               <span className="seal-num">05 · Exportable</span>
               <div className="seal-title">Yours, any time.</div>
-              <div className="seal-body">Every trip record can be exported as a complete PDF package — waivers, acknowledgments, manifest, audit trail. Send it to your insurer, your lawyer, or a regulator in one attachment.</div>
+             <div className="seal-body">Every trip record can be exported as a complete PDF package waivers, acknowledgments, manifest, audit trail. Send it to your insurer, your lawyer, or a regulator in one attachment.</div>
             </div>
             <div className="seal-cell">
               <span className="seal-num">06 · Searchable</span>
               <div className="seal-title">Find a trip in seconds.</div>
-              <div className="seal-body">By date, vessel, captain, guest name, or booking reference. The record you need is never &quot;somewhere in the filing cabinet&quot; — it&apos;s one field away.</div>
+             <div className="seal-body">By date, vessel, captain, guest name, or booking reference. The record you need is never &quot;somewhere in the filing cabinet&quot; it&apos;s one field away.</div>
             </div>
             <div className="seal-cell">
               <span className="seal-num">07 · Encrypted</span>
@@ -396,7 +396,7 @@ export default function HowItWorksPage() {
         <div className="container">
           <div className="section-header">
             <span className="eyebrow brass">Three perspectives, one record</span>
-            <h2 className="section-title">Who sees what —<br /><em>at a glance.</em></h2>
+           <h2 className="section-title">Who sees what<br /><em>at a glance.</em></h2>
             <p className="section-sub">The operator, the captain, and the guest each see the slice of Boatcheckin that matches their role. Nothing more. Access is enforced at the database tier, not just the UI.</p>
           </div>
 
@@ -411,21 +411,21 @@ export default function HowItWorksPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr><td>Full dashboard</td><td><span className="tick">✓</span>Fleet, trips, exports, settings</td><td><span className="tick no">—</span><em>Not applicable</em></td><td><span className="tick no">—</span><em>Not applicable</em></td></tr>
-                <tr><td>Trip creation</td><td><span className="tick">✓</span>Creates trip, generates link</td><td><span className="tick no">—</span><em>Captain is assigned</em></td><td><span className="tick no">—</span><em>Guest joins by link</em></td></tr>
+               <tr><td>Full dashboard</td><td><span className="tick">✓</span>Fleet, trips, exports, settings</td><td><span className="tick no"> </span><em>Not applicable</em></td><td><span className="tick no"> </span><em>Not applicable</em></td></tr>
+               <tr><td>Trip creation</td><td><span className="tick">✓</span>Creates trip, generates link</td><td><span className="tick no"> </span><em>Captain is assigned</em></td><td><span className="tick no"> </span><em>Guest joins by link</em></td></tr>
                 <tr><td>Trip snapshot</td><td><span className="tick">✓</span>Full read/write</td><td><span className="tick">✓</span>Read + start/complete</td><td><span className="tick dim">~</span>Own registration only</td></tr>
                 <tr><td>Waivers</td><td><span className="tick">✓</span>All signed waivers archived</td><td><span className="tick">✓</span>Current trip only</td><td><span className="tick dim">~</span>Only their own</td></tr>
                 <tr><td>Safety briefing</td><td><span className="tick">✓</span>Configures cards</td><td><span className="tick">✓</span>Sees acknowledgment status</td><td><span className="tick dim">~</span>Sees &amp; acknowledges</td></tr>
                 <tr><td>Guest PII</td><td><span className="tick">✓</span>For their own trips</td><td><span className="tick dim">~</span>Current trip · limited</td><td><span className="tick dim">~</span>Only their own</td></tr>
                 <tr><td>Emergency contacts</td><td><span className="tick">✓</span>All, for their trips</td><td><span className="tick">✓</span>Current trip, one-tap dial</td><td><span className="tick dim">~</span>Adds their own</td></tr>
-                <tr><td>Record export</td><td><span className="tick">✓</span>Any trip, any format</td><td><span className="tick no">—</span><em>Read-only at sea</em></td><td><span className="tick dim">~</span>Own record on request</td></tr>
-                <tr><td>Audit trail</td><td><span className="tick">✓</span>Full visibility</td><td><span className="tick dim">~</span>Current trip</td><td><span className="tick no">—</span><em>Internal only</em></td></tr>
-                <tr><td>Needs to install app</td><td><span className="tick no">—</span><em>Web only</em></td><td><span className="tick no">—</span><em>Web only</em></td><td><span className="tick no">—</span><em>Web only</em></td></tr>
+               <tr><td>Record export</td><td><span className="tick">✓</span>Any trip, any format</td><td><span className="tick no"> </span><em>Read-only at sea</em></td><td><span className="tick dim">~</span>Own record on request</td></tr>
+               <tr><td>Audit trail</td><td><span className="tick">✓</span>Full visibility</td><td><span className="tick dim">~</span>Current trip</td><td><span className="tick no"> </span><em>Internal only</em></td></tr>
+               <tr><td>Needs to install app</td><td><span className="tick no"> </span><em>Web only</em></td><td><span className="tick no"> </span><em>Web only</em></td><td><span className="tick no"> </span><em>Web only</em></td></tr>
               </tbody>
             </table>
           </div>
           <p style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginTop: 16, textAlign: 'right' }}>
-            ✓ full · ~ scoped · — not applicable
+            ✓ full · ~ scoped · not applicable
           </p>
         </div>
       </section>
@@ -436,7 +436,7 @@ export default function HowItWorksPage() {
           <div className="section-header">
             <span className="eyebrow light">The time you get back</span>
             <h2 className="section-title">Same trip. <em>A lot less of your Saturday.</em></h2>
-            <p className="section-sub">We ran the math with working charter captains — not on a spreadsheet, at actual docks. Here&apos;s what a typical six-guest half-day trip looks like, before and after Boatcheckin.</p>
+           <p className="section-sub">We ran the math with working charter captains not on a spreadsheet, at actual docks. Here&apos;s what a typical six-guest half-day trip looks like, before and after Boatcheckin.</p>
           </div>
 
           <div className="time-wrap">
@@ -491,7 +491,7 @@ export default function HowItWorksPage() {
             <div>
               <span className="eyebrow">Ready when you are</span>
               <h2 className="fca-h">Set up takes <em>fifteen minutes.</em> Your next trip is <em>live tomorrow.</em></h2>
-              <p className="fca-sub">Free tier available for solo captains. Get started, configure your boat, run a test trip on yourself. If it doesn&apos;t earn its place by the end of the week, close the account — nothing is billed on the free tier.</p>
+             <p className="fca-sub">Free tier available for solo captains. Get started, configure your boat, run a test trip on yourself. If it doesn&apos;t earn its place by the end of the week, close the account nothing is billed on the free tier.</p>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 16 }}>
                 <Link href="/signup" className="btn btn-primary">
                   Start free
