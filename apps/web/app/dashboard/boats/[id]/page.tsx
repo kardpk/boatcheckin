@@ -530,7 +530,7 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
       <div
         style={{
           position: "fixed",
-          bottom: 56,          /* sit above the 56px bottom nav bar */
+          bottom: 56,
           left: 0,
           right: 0,
           zIndex: 40,
@@ -551,7 +551,6 @@ export default async function BoatDetailPage({ params }: BoatDetailPageProps) {
         >
           Edit boat setup
         </Link>
-      </div>
       </div>
     </>
   );
