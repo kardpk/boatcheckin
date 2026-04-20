@@ -55,7 +55,7 @@ export function MarketingNav() {
         </Link>
 
         <div className={`nav-links${navOpen ? ' open' : ''}`}>
-          <Link href="/#how">How it Works</Link>
+          <Link href="/how-it-works">How it Works</Link>
 
           {/* Compliance dropdown */}
           <div

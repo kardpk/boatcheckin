@@ -25,7 +25,7 @@ export function MarketingFooter() {
             <h4>Product</h4>
             <ul>
               {([
-                ['/#how', 'How it Works'],
+                ['/how-it-works', 'How it Works'],
                 ['/#compliance', 'Compliance'],
                 ['/#pricing', 'Pricing'],
                 ['/#operators', 'For Marinas'],

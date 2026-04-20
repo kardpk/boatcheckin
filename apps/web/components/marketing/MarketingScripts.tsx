@@ -24,7 +24,10 @@ export function MarketingScripts() {
       })
     }, { threshold: 0.1 })
 
-    const animElements = document.querySelectorAll('.flow-cell, .aud-card, .principle-item, .not-row, .ad-card')
+    const animElements = document.querySelectorAll(
+      '.flow-cell, .aud-card, .principle-item, .not-row, .ad-card, ' +
+      '.ts-step, .v-step, .seal-cell, .fca-item, .gap-row'
+    )
     animElements.forEach(item => {
       const hEl = item as HTMLElement
       hEl.style.opacity = '0'
