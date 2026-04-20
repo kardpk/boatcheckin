@@ -92,7 +92,7 @@ These rules are absolute. If an agent or engineer breaks one, the PR is rejected
 
 **R14. Loading states are explicit.** Use skeleton placeholders that match the final layout. Never spinners on full page sections.
 
-**R15. Match the editorial tone in copy.** Body text uses em dashes for asides (—), not parens or semicolons. Title case for headlines. Sentence case for body. Compliance citations always italicized on first reference: *46 CFR §185.506*.
+**R15. Match the editorial tone in copy.** Title case for headlines. Sentence case for body. Do NOT use em dashes (—) in body copy — the codebase has been cleaned of these. Compliance citations always italicized on first reference: *46 CFR §185.506*.
 
 ---
 
@@ -419,6 +419,42 @@ When dividing a row into cells, use single borders, not double:
 .grid-cell { border-right: 1px solid var(--line-soft); }
 .grid-cell:last-child { border-right: none; }
 ```
+
+### 6.6 Section Kicker (Section Title Divider)
+
+Within dense forms and single-column flows (dashboard pages), sections are separated by a **SectionKicker** — a mono label followed by a soft `1px solid var(--line-soft)` bottom border. **This is intentionally faded/soft, not hard black.**
+
+```tsx
+function SectionKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        fontFamily: 'var(--mono)',
+        fontSize: 'var(--t-mono-xs)',    // 10px
+        fontWeight: 600,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        color: 'var(--ink-muted)',
+        paddingBottom: 'var(--s-3)',     // 12px
+        borderBottom: '1px solid var(--color-line-soft)',  // SOFT — not ink
+        marginBottom: 'var(--s-4)',      // 16px
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+**Rules:**
+- SectionKicker uses `--line-soft` (rgba 12% opacity) NOT `--ink`. Hard black dividers are for major page sections only.
+- Font: mono, uppercase, 10px, weight 600, `--ink-muted`
+- Always `marginBottom: var(--s-4)` (16px) to separate from first child
+- Used in: dashboard forms, boat wizard steps, trip create form, captain profile
+- NOT used in: marketing pages (use `<hr class="divider">` there), data tables
+
+**Spacing between form sections:**
+Forms using SectionKicker should have `gap: var(--s-8)` (32px) between `<section>` elements. This creates the breathing room that makes each section feel scannable.
 
 ---
 
@@ -831,6 +867,149 @@ Fixed row of actions at the bottom of a form.
 - Padding `20px 32px`
 - Background `--bone`
 - Spacer pushes secondary actions to the right
+
+### 8.8 Selectable Card (Choice Button)
+
+The canonical pattern for when the user must pick one option from a small set (2–6 options). Used in trip type, booking type, boat picker, captain picker, duration selector.
+
+**Two sub-variants:**
+
+**A — Icon + Label card** (trip type, booking type — typically 2–3 cols):
+```tsx
+<button
+  type="button"
+  onClick={() => setForm(p => ({ ...p, tripPurpose: value }))}
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 'var(--s-2)',
+    padding: 'var(--s-3)',          // 12px
+    background: isActive ? 'var(--bone)' : 'var(--paper)',
+    border: isActive
+      ? '2px solid var(--rust)'        // active: 2px rust
+      : '1.5px solid var(--line-soft)',// inactive: soft border
+    borderRadius: 'var(--r-1)',       // 2px
+    cursor: 'pointer',
+    textAlign: 'left',
+    minHeight: 72,
+    transition: 'border-color 150ms ease, background 150ms ease',
+  }}
+>
+  <IconComponent size={18} strokeWidth={isActive ? 2.5 : 2} />
+  <div style={{ fontSize: 'var(--t-body-sm)', fontWeight: 600 }}>{label}</div>
+  <div style={{ fontSize: 11, color: 'var(--ink-muted)', marginTop: 2 }}>{description}</div>
+</button>
+```
+
+**B — Row card** (boat picker, captain picker — single column list):
+```tsx
+<button
+  type="button"
+  onClick={() => handleSelect(id)}
+  className="tile"
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--s-3)',
+    padding: 'var(--s-4)',           // 16px
+    cursor: 'pointer',
+    borderLeft: isActive
+      ? '4px solid var(--rust)'       // selected accent stripe
+      : '1.5px solid var(--line)',    // default tile border
+    background: isActive ? 'var(--bone)' : 'var(--paper)',
+    textAlign: 'left',
+    width: '100%',
+    transition: 'border-color 150ms ease, background 150ms ease',
+  }}
+>
+  <Icon size={20} strokeWidth={1.8} style={{ color: isActive ? 'var(--rust)' : 'var(--ink-muted)' }} />
+  <div style={{ flex: 1, minWidth: 0 }}>
+    <p style={{ fontSize: 'var(--t-body-md)', fontWeight: 600, color: 'var(--ink)' }}>{name}</p>
+    <p style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--ink-muted)', fontFamily: 'var(--mono)' }}>{meta}</p>
+  </div>
+  {isActive && <Check size={18} strokeWidth={2.5} style={{ color: 'var(--rust)' }} />}
+</button>
+```
+
+**Rules:**
+- Active state always: `--bone` background + `2px --rust` border (icon cards) OR `4px --rust` left stripe (row cards)
+- Inactive state always: `--paper` background + `1.5px --line-soft` border
+- Active icon: strokeWidth 2.5, rust color. Inactive icon: strokeWidth 2, ink-muted
+- Row card active gets a trailing `<Check>` icon in rust
+- Transition BOTH border-color and background at 150ms (not just one)
+- Never use `background: transparent` — always explicit paper or bone
+- Gap between cards in a column list: `var(--s-2)` (8px)
+- Grid cards: 2–3 columns on desktop, 1 column mobile
+
+### 8.9 Pill Toggle Buttons (Compact Selector)
+
+For selecting values from a compact set where full cards would be too large. Used for duration, quantity increments, filter chips.
+
+```tsx
+<button
+  type="button"
+  className="mono"
+  style={{
+    padding: 'var(--s-2) var(--s-4)',     // 8px 16px
+    fontSize: '12px',
+    fontWeight: 600,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    borderRadius: 'var(--r-1)',
+    border: isActive
+      ? '2px solid var(--ink)'
+      : '1.5px solid var(--line-soft)',
+    background: isActive ? 'var(--ink)' : 'var(--paper)',
+    color: isActive ? 'var(--bone)' : 'var(--ink)',
+    cursor: 'pointer',
+    minHeight: 40,                         // touch target
+    transition: 'all 150ms ease',
+  }}
+>
+  {label}
+</button>
+```
+
+**Rules:**
+- Active: `--ink` fill + `--bone` text (inverted). NOT rust — this is a **data selector**, not an action CTA
+- Inactive: paper + ink text + soft border
+- Font: mono, uppercase, 12px, weight 600
+- Min height 40px (touch target)
+- Use `display: flex; flex-wrap: wrap; gap: var(--s-2)` on the container
+
+### 8.10 Numeric Stepper
+
+For bounded integer inputs (guest count, quantity). Never use a raw `<input type="number">` alone.
+
+```tsx
+<div style={{
+  display: 'flex',
+  alignItems: 'center',
+  border: '1.5px solid var(--ink)',
+  borderRadius: 'var(--r-2)',
+  overflow: 'hidden',
+}}>
+  <button style={{ width: 48, height: 48, background: 'var(--paper)', border: 'none', cursor: 'pointer', color: 'var(--ink)' }}>
+    <Minus size={16} strokeWidth={2.5} />
+  </button>
+  <input type="number" className="font-mono" style={{
+    width: 56, height: 48, textAlign: 'center',
+    fontSize: '18px', fontWeight: 700, color: 'var(--ink)',
+    border: 'none', borderLeft: '1px solid var(--line-soft)', borderRight: '1px solid var(--line-soft)',
+    background: 'transparent',
+  }} />
+  <button style={{ width: 48, height: 48, background: 'var(--paper)', border: 'none', cursor: 'pointer', color: 'var(--ink)' }}>
+    <Plus size={16} strokeWidth={2.5} />
+  </button>
+</div>
+```
+
+**Rules:**
+- Outer border: 1.5px ink, `--r-2` radius, clip with `overflow: hidden`
+- Inner dividers between +/−/value: `1px solid var(--line-soft)` (NOT ink — those would double-border)
+- Center value: mono, 18px bold, centered
+- Buttons: 48×48px (touch target), no border of their own, paper background
+- Always pair with a meta label showing constraint: `"Max 6 for this vessel"`
 
 ---
 
@@ -1536,6 +1715,59 @@ For internal use, higher density OK.
 - Per-row inline actions (edit, deactivate, view audit)
 - Heavy use of pills for status
 - Audit log surface: mono-heavy, timestamps prominent, filterable
+
+### 14.8 Trip Create Form (Canonical Dense-Form Reference)
+
+The `/dashboard/trips/new` form is the **canonical pattern for all dense dashboard forms**. When building any new multi-section dashboard form, match its structure exactly.
+
+**Key characteristics that make this page feel authentic and clickable:**
+
+1. **SectionKicker separation** (see §6.6): soft gray hairline under mono uppercase label. Not a hard rule — a soft breath between sections.
+
+2. **Selectable Cards for all choice inputs** (see §8.8): no dropdowns for small option sets. Every choice is a clickable card — boat picker, captain picker, trip type, booking type.
+
+3. **Compact Pill Toggles for value selection** (see §8.9): duration options are pill toggles (mono, 12px, 40px tall), not a select. "More options" is a dotted-underline rust link, not another button.
+
+4. **Active state contrast is strong but not harsh**: active card = `--bone` background + `2px --rust` border. The rust signals action without screaming.
+
+5. **Form sections stack vertically with `gap: var(--s-8)` (32px)**: wide enough to visually group each section, tight enough to keep vertical scrolling manageable.
+
+6. **Hint text is 11px `--ink-muted`**: present but non-competitive with the field labels.
+
+7. **Left accent stripe (4px rust) on single-selected row cards**: when there's only one boat, the vessel tile gets a left border `4px solid var(--rust)` to visually confirm selection without a radio button.
+
+8. **Compliance micro-labels inside selectable cards**: a 9px mono uppercase status line (e.g., "FULL COMPLIANCE") inside the trip-type cards. Color: `--status-ok` for safe states, `--ink-muted` for neutral.
+
+**Form max-width:** `640px`, centered with `margin: 0 auto` and `padding-bottom: 144px` (leaves space for sticky action bar).
+
+**Submit button treatment:**
+```tsx
+<button
+  type="submit"
+  disabled={isPending}
+  style={{
+    width: '100%',
+    padding: 'var(--s-4) var(--s-6)',
+    background: isPending ? 'var(--ink-muted)' : 'var(--ink)',
+    color: 'var(--bone)',
+    fontSize: 'var(--t-body-md)',
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    border: '2px solid var(--ink)',
+    borderRadius: 'var(--r-1)',
+    cursor: isPending ? 'not-allowed' : 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 'var(--s-2)',
+    transition: 'transform 120ms ease, box-shadow 120ms ease',
+    // On hover: translateY(-2px) + shadow-lift
+  }}
+>
+  {isPending ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} strokeWidth={2.5} />}
+  {isPending ? 'Creating trip…' : 'Create Trip'}
+</button>
+```
 
 ### 14.6 Emails (Transactional)
 
