@@ -156,7 +156,7 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
         </p>
         {isRelaxedTrip && (
           <p className="text-[12px] text-navy mt-1 bg-gold-dim px-3 py-1.5 rounded-lg inline-block">
-            This is a private trip — only your name is required
+            This is a private trip only your name is required
           </p>
         )}
       </div>
@@ -268,7 +268,7 @@ export function StepDetails({ state, onUpdate, onNext, onBack, charterType, trip
                         for this vessel type. You cannot proceed with this booking.
                       </p>
                       <p className="text-[12px] text-[#991B1B] mt-2 font-medium">
-                        CA Harbors &amp; Navigation Code — Motorized vessel age restriction
+                        CA Harbors &amp; Navigation Code Motorized vessel age restriction
                       </p>
                     </div>
                   </div>
@@ -519,7 +519,7 @@ function FormField({
       <label className="block text-[13px] font-medium text-text-mid mb-1.5">
         {label}
         {required && <span className="text-error ml-0.5">*</span>}
-        {helper && <span className="font-normal ml-1 text-text-mid">— {helper}</span>}
+        {helper && <span className="font-normal ml-1 text-text-mid"> {helper}</span>}
       </label>
       {children}
       {error && <p className="text-[12px] text-error mt-1">{error}</p>}

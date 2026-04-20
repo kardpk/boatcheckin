@@ -62,7 +62,7 @@ export function TripPickerState({ boat, trips }: Props) {
           fontSize: "var(--t-body-sm)",
           color: "var(--color-ink-muted)",
         }}>
-          {trips.length} departures scheduled today — {boat.marinaName}
+          {trips.length} departures scheduled today {boat.marinaName}
         </p>
       </div>
 

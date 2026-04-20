@@ -30,7 +30,7 @@ export default function SecurityPage() {
       <em>still intact.</em>
     </h1>
     <p className="lede">
-      Boatcheckin holds the kind of documentation operators need to produce two years after a trip — sometimes longer. That's only useful if the record is still what it was the day it was signed. Here is how we protect it, how we restrict access to it, how we handle the parts we get wrong, and how to tell us when you find something we missed.
+      Boatcheckin holds the kind of documentation operators need to produce two years after a trip sometimes longer. That's only useful if the record is still what it was the day it was signed. Here is how we protect it, how we restrict access to it, how we handle the parts we get wrong, and how to tell us when you find something we missed.
     </p>
   </div>
 </section>
@@ -43,8 +43,8 @@ export default function SecurityPage() {
       <div className="pp-grid">
         <div className="pp-title">Designed to recognized security principles. <em>Not yet independently certified.</em></div>
         <div className="pp-body">
-          <p>Boatcheckin is a young product. The practices on this page reflect how the system was built from the beginning — least privilege, defense in depth, cryptographic record integrity, and minimal data retention — and they map cleanly to the principles behind common independent frameworks such as SOC 2 Type II and ISO 27001.</p>
-          <p><strong>We do not currently hold an independent audit certification.</strong> Operators with a formal vendor-review process should treat this page as a statement of practice, not an attestation — and should contact <a href="mailto:security@boatcheckin.com" style={{ color: 'var(--rust)', fontWeight: '600' }}>security@boatcheckin.com</a> to request the most current security questionnaire responses. We'd rather tell you that plainly than imply a certification we haven't earned.</p>
+         <p>Boatcheckin is a young product. The practices on this page reflect how the system was built from the beginning least privilege, defense in depth, cryptographic record integrity, and minimal data retention and they map cleanly to the principles behind common independent frameworks such as SOC 2 Type II and ISO 27001.</p>
+         <p><strong>We do not currently hold an independent audit certification.</strong> Operators with a formal vendor-review process should treat this page as a statement of practice, not an attestation and should contact <a href="mailto:security@boatcheckin.com" style={{ color: 'var(--rust)', fontWeight: '600' }}>security@boatcheckin.com</a> to request the most current security questionnaire responses. We'd rather tell you that plainly than imply a certification we haven't earned.</p>
         </div>
       </div>
     </div>
@@ -57,20 +57,20 @@ export default function SecurityPage() {
     <div className="section-header">
       <span className="eyebrow">Principles we build to</span>
       <h2 className="section-title">Six decisions made <em>on day one.</em></h2>
-      <p className="section-sub">These are the structural commitments that shape every feature we ship. They are not aspirational — they are how the code gets reviewed.</p>
+     <p className="section-sub">These are the structural commitments that shape every feature we ship. They are not aspirational they are how the code gets reviewed.</p>
     </div>
 
     <div className="principle-grid">
       <div className="pr-cell">
         <span className="pr-num">Principle I</span>
         <div className="pr-title">Least privilege, <em>by default.</em></div>
-        <div className="pr-body">Every operator account sees only their own trips, vessels, and guests. Every guest session sees only their own record for their own trip. Database-level access rules enforce these boundaries, not just application code — so a bug in one layer can't expose data across another.</div>
+       <div className="pr-body">Every operator account sees only their own trips, vessels, and guests. Every guest session sees only their own record for their own trip. Database-level access rules enforce these boundaries, not just application code so a bug in one layer can't expose data across another.</div>
       </div>
 
       <div className="pr-cell">
         <span className="pr-num">Principle II</span>
         <div className="pr-title">Record integrity is <em>non-optional.</em></div>
-        <div className="pr-body">Waivers and safety attestations are cryptographically hashed (SHA-256) at the moment of signing. Any modification to a stored record is detectable on re-verification. The trip's audit log is sealed at trip completion — no row can be silently altered after the fact.</div>
+       <div className="pr-body">Waivers and safety attestations are cryptographically hashed (SHA-256) at the moment of signing. Any modification to a stored record is detectable on re-verification. The trip's audit log is sealed at trip completion no row can be silently altered after the fact.</div>
       </div>
 
       <div className="pr-cell">
@@ -88,13 +88,13 @@ export default function SecurityPage() {
       <div className="pr-cell">
         <span className="pr-num">Principle V</span>
         <div className="pr-title">Every action is <em>attributable.</em></div>
-        <div className="pr-body">State changes on a trip record — creation, signature, start, completion, export — produce an audit trail with actor, timestamp, method, and client metadata. When a question comes two years later, the answer to "who did this, and when" is already in the record.</div>
+       <div className="pr-body">State changes on a trip record creation, signature, start, completion, export produce an audit trail with actor, timestamp, method, and client metadata. When a question comes two years later, the answer to "who did this, and when" is already in the record.</div>
       </div>
 
       <div className="pr-cell">
         <span className="pr-num">Principle VI</span>
         <div className="pr-title">No security through <em>obscurity.</em></div>
-        <div className="pr-body">We don't rely on secret URLs as an access control, unguessable IDs as a privacy boundary, or undocumented endpoints as a security layer. Public surfaces are rate-limited, authenticated, validated, and logged — as if every request were adversarial, because some of them are.</div>
+       <div className="pr-body">We don't rely on secret URLs as an access control, unguessable IDs as a privacy boundary, or undocumented endpoints as a security layer. Public surfaces are rate-limited, authenticated, validated, and logged as if every request were adversarial, because some of them are.</div>
       </div>
     </div>
   </div>
@@ -133,8 +133,8 @@ export default function SecurityPage() {
         <div className="pr-meta">Data · Integrity</div>
         <div>
           <div className="pr-h">Signatures and attestations are cryptographically hashed.</div>
-          <div className="pr-p">At the moment a guest signs a waiver or acknowledges a safety card, the exact text the guest saw — plus the guest's signature, timestamp, IP, and user agent — is combined into a canonical document and hashed with <strong>SHA-256</strong>. The hash is stored alongside the record.</div>
-          <div className="pr-p">If a record is later exported and its contents are altered — even by a single character — re-hashing the modified document produces a different digest. <strong>Tampering becomes visible.</strong> This is the technical backbone of ESIGN and UETA-aligned record integrity.</div>
+         <div className="pr-p">At the moment a guest signs a waiver or acknowledges a safety card, the exact text the guest saw plus the guest's signature, timestamp, IP, and user agent is combined into a canonical document and hashed with <strong>SHA-256</strong>. The hash is stored alongside the record.</div>
+         <div className="pr-p">If a record is later exported and its contents are altered even by a single character re-hashing the modified document produces a different digest. <strong>Tampering becomes visible.</strong> This is the technical backbone of ESIGN and UETA-aligned record integrity.</div>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export default function SecurityPage() {
         <div>
           <div className="pr-h">State changes are logged with actor, time, and method.</div>
           <div className="pr-p">Trip creation, waiver signing, captain start, per-card acknowledgment, trip completion, and every export produce structured audit entries. Each entry carries the acting identity (operator, captain, or guest), the timestamp, the method of the action, and the client context.</div>
-          <div className="pr-p">Audit entries are append-only — there is no API or UI that edits or deletes them. After trip completion, the trip's audit log is sealed: further entries reference the sealed state rather than mutating it.</div>
+         <div className="pr-p">Audit entries are append-only there is no API or UI that edits or deletes them. After trip completion, the trip's audit log is sealed: further entries reference the sealed state rather than mutating it.</div>
         </div>
       </div>
 
@@ -152,7 +152,7 @@ export default function SecurityPage() {
         <div>
           <div className="pr-h">Backups with integrity verification and tested restores.</div>
           <div className="pr-p">Production data is backed up on a continuous basis with point-in-time recovery across a rolling retention window. Backups inherit the same encryption-at-rest posture as primary storage.</div>
-          <div className="pr-p">We run restore drills on a scheduled cadence — a backup that hasn't been tested is an assumption, not a backup.</div>
+         <div className="pr-p">We run restore drills on a scheduled cadence a backup that hasn't been tested is an assumption, not a backup.</div>
         </div>
       </div>
 
@@ -165,7 +165,7 @@ export default function SecurityPage() {
   <div className="container">
     <div className="section-header">
       <span className="eyebrow sea">Restricting access</span>
-      <h2 className="section-title">Who can touch the record —<br/>and <em>how that's enforced.</em></h2>
+     <h2 className="section-title">Who can touch the record<br/>and <em>how that's enforced.</em></h2>
       <p className="section-sub">The strongest encryption doesn't help if the wrong identity can walk through the front door. Access control sits at multiple layers, so no single mistake exposes an account.</p>
     </div>
 
@@ -184,7 +184,7 @@ export default function SecurityPage() {
         <div className="pr-meta">Access · Guests</div>
         <div>
           <div className="pr-h">Guest trip links are signed, scoped, and time-limited.</div>
-          <div className="pr-p">When an operator sends a trip link, the URL carries a cryptographically signed token that binds the link to exactly one trip. The guest flow can join that trip and only that trip — it cannot pivot to another trip, another operator, or the operator dashboard.</div>
+         <div className="pr-p">When an operator sends a trip link, the URL carries a cryptographically signed token that binds the link to exactly one trip. The guest flow can join that trip and only that trip it cannot pivot to another trip, another operator, or the operator dashboard.</div>
           <div className="pr-p">Guest sessions are disposable. Once a guest has completed boarding, their session is no longer usable for administrative actions on the trip or the operator.</div>
         </div>
       </div>
@@ -193,7 +193,7 @@ export default function SecurityPage() {
         <div className="pr-meta">Access · Captains</div>
         <div>
           <div className="pr-h">Captain snapshot tokens: versioned, revocable, expiring.</div>
-          <div className="pr-p">Captains can open a trip snapshot directly from a link — without logging in — so the workflow holds up on a phone with marginal signal at the dock. The link carries an HMAC-signed token with an explicit expiry and a version counter.</div>
+         <div className="pr-p">Captains can open a trip snapshot directly from a link without logging in so the workflow holds up on a phone with marginal signal at the dock. The link carries an HMAC-signed token with an explicit expiry and a version counter.</div>
           <div className="pr-p">If a captain changes or a snapshot is re-issued, the version counter increments and the prior link stops working. Operators can revoke all active snapshots for a trip from the dashboard.</div>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function SecurityPage() {
         <div className="pr-meta">Access · Internal</div>
         <div>
           <div className="pr-h">Our team reaches production data only when necessary, only when logged.</div>
-          <div className="pr-p">Our team does not routinely access production operator or guest data. When access is required to investigate a reported issue — and only with an identifiable legitimate purpose — it is performed via scoped, auditable tooling, and the access itself is logged. Bulk extracts, casual browsing, and "just looking" are not supported workflows.</div>
+         <div className="pr-p">Our team does not routinely access production operator or guest data. When access is required to investigate a reported issue and only with an identifiable legitimate purpose it is performed via scoped, auditable tooling, and the access itself is logged. Bulk extracts, casual browsing, and "just looking" are not supported workflows.</div>
           <div className="pr-p">Production secrets and service credentials are stored in a dedicated secret store, rotated on a defined schedule, and never committed to source code. Principle of least privilege applies to our team as much as it applies to operators.</div>
         </div>
       </div>
@@ -211,8 +211,8 @@ export default function SecurityPage() {
         <div className="pr-meta">Access · Public surface</div>
         <div>
           <div className="pr-h">Every public endpoint is rate-limited and validated.</div>
-          <div className="pr-p">Public-facing API endpoints — guest join, waiver submission, contact forms — are rate-limited at the edge to slow automated abuse, guarded by a bot challenge where appropriate, and strictly schema-validated on the server side. No endpoint trusts client-supplied data as authoritative.</div>
-          <div className="pr-p">Suspicious patterns — rapid enumeration, malformed payloads, repeated failed signatures — produce alerts that route to on-call. We'd rather investigate a false positive than miss a real one.</div>
+         <div className="pr-p">Public-facing API endpoints guest join, waiver submission, contact forms are rate-limited at the edge to slow automated abuse, guarded by a bot challenge where appropriate, and strictly schema-validated on the server side. No endpoint trusts client-supplied data as authoritative.</div>
+         <div className="pr-p">Suspicious patterns rapid enumeration, malformed payloads, repeated failed signatures produce alerts that route to on-call. We'd rather investigate a false positive than miss a real one.</div>
         </div>
       </div>
 
@@ -234,7 +234,7 @@ export default function SecurityPage() {
       <div className="vdp-card">
         <div className="vdp-lbl">In scope</div>
         <div className="vdp-h">What we want to hear about</div>
-        <div className="vdp-p">Anything that would let an unauthorized party read, modify, or destroy operator or guest data — or impersonate an operator, captain, or guest to do so.</div>
+       <div className="vdp-p">Anything that would let an unauthorized party read, modify, or destroy operator or guest data or impersonate an operator, captain, or guest to do so.</div>
         <ul className="vdp-list">
           <li>Authentication and session handling flaws</li>
           <li>Authorization bypass across operators or trips</li>
@@ -263,7 +263,7 @@ export default function SecurityPage() {
 
       <div className="vdp-card vdp-card-full">
         <div className="vdp-lbl">Safe harbor &amp; the rules</div>
-        <div className="vdp-h">Good-faith research is welcome — within these lines.</div>
+       <div className="vdp-h">Good-faith research is welcome within these lines.</div>
         <div className="vdp-p">We will not pursue legal action against security researchers who act in good faith: who report findings promptly, who do not access or exfiltrate more data than necessary to demonstrate the issue, who do not degrade service for operators or guests, and who do not publicly disclose the finding before we've had a reasonable opportunity to remediate.</div>
         <div className="vdp-p"><strong>Please do not</strong> test against real operator accounts or real guest trip links without permission. Use your own account and your own trips. <strong>Please do not</strong> run automated scans that generate load comparable to a real operator's traffic. <strong>Please do not</strong> ask for or access payment data, as our payment flow is handled by a PCI-DSS Level 1 processor that is out of scope for independent testing by our program.</div>
         <div className="vdp-p">We don't currently run a paid bounty program, but we acknowledge valid findings publicly (with your permission) and are happy to write meaningful references for researchers whose work helps us.</div>
@@ -287,19 +287,19 @@ export default function SecurityPage() {
     <div className="section-header">
       <span className="eyebrow">Our commitment after you report</span>
       <h2 className="section-title">What happens <em>after you hit send.</em></h2>
-      <p className="section-sub">These are operational targets we hold ourselves to when a report arrives at security@boatcheckin.com. Severity affects the remediation window — but acknowledgment and communication do not.</p>
+     <p className="section-sub">These are operational targets we hold ourselves to when a report arrives at security@boatcheckin.com. Severity affects the remediation window but acknowledgment and communication do not.</p>
     </div>
 
     <div className="tl-grid">
       <div className="tl-item">
         <div className="tl-label">Stage 01</div>
         <div className="tl-target">&lt; 2<span className="unit">business days</span></div>
-        <div className="tl-desc">Human acknowledgment with a tracking reference. Not a bot reply — a person confirming we have the report.</div>
+       <div className="tl-desc">Human acknowledgment with a tracking reference. Not a bot reply a person confirming we have the report.</div>
       </div>
       <div className="tl-item">
         <div className="tl-label">Stage 02</div>
         <div className="tl-target">&lt; 7<span className="unit">days</span></div>
-        <div className="tl-desc">Initial triage outcome — reproduced, scoped, or clarifying questions — with a target remediation timeline.</div>
+       <div className="tl-desc">Initial triage outcome reproduced, scoped, or clarifying questions with a target remediation timeline.</div>
       </div>
       <div className="tl-item">
         <div className="tl-label">Stage 03</div>
@@ -309,7 +309,7 @@ export default function SecurityPage() {
       <div className="tl-item">
         <div className="tl-label">Stage 04</div>
         <div className="tl-target">On<span className="unit">resolution</span></div>
-        <div className="tl-desc">Follow-up to the reporter, credit (with permission), and — where affected — notice to operators whose data was at risk.</div>
+       <div className="tl-desc">Follow-up to the reporter, credit (with permission), and where affected notice to operators whose data was at risk.</div>
       </div>
     </div>
   </div>
@@ -321,9 +321,9 @@ export default function SecurityPage() {
     <div style={{ maxWidth: '820px' }}>
       <span className="eyebrow brass">If something goes wrong</span>
       <h2 className="section-title">Incident communication,<br/>before we <em>need</em> it.</h2>
-      <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>Any platform in production for long enough eventually has an incident. Writing down our communication posture <strong>in advance</strong> — rather than when we're in the middle of one — is part of being a serious operator ourselves.</p>
-      <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>If a security incident occurs that affects operator or guest data, affected operators receive direct email notice without waiting for a public announcement. Where the statute in the operator's jurisdiction requires downstream notification to guests or to regulators, we support operators with the technical details they need to meet those obligations. Our timelines in each category are designed to meet or exceed applicable breach-notification windows — including US state laws, and where applicable, GDPR's 72-hour rule.</p>
-      <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>For service-availability incidents — downtime, degraded performance — we publish updates to a status page so operators don't need to file a ticket just to learn whether the issue is on our side.</p>
+     <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>Any platform in production for long enough eventually has an incident. Writing down our communication posture <strong>in advance</strong> rather than when we're in the middle of one is part of being a serious operator ourselves.</p>
+     <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>If a security incident occurs that affects operator or guest data, affected operators receive direct email notice without waiting for a public announcement. Where the statute in the operator's jurisdiction requires downstream notification to guests or to regulators, we support operators with the technical details they need to meet those obligations. Our timelines in each category are designed to meet or exceed applicable breach-notification windows including US state laws, and where applicable, GDPR's 72-hour rule.</p>
+     <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '20px' }}>For service-availability incidents downtime, degraded performance we publish updates to a status page so operators don't need to file a ticket just to learn whether the issue is on our side.</p>
       <p style={{ fontSize: '17px', lineHeight: '1.7', color: 'var(--ink-soft)', maxWidth: '720px', marginBottom: '0' }}>In every case, we prefer <strong>direct, specific, and early</strong> communication over polished marketing language after the fact.</p>
     </div>
   </div>

@@ -210,8 +210,7 @@ export function BoatQRSection({ boatId, boatName, publicSlug, shortBoardToken }:
           }}>
             Print at <strong style={{ color: "var(--color-ink)", fontWeight: 600 }}>4 × 4 inches</strong> minimum.
             Laminate for marine durability. This QR code{" "}
-            <strong style={{ color: "var(--color-ink)", fontWeight: 600 }}>never changes</strong> —
-            guests scan it for any current trip on this boat without a new QR each day.
+           <strong style={{ color: "var(--color-ink)", fontWeight: 600 }}>never changes</strong>             guests scan it for any current trip on this boat without a new QR each day.
           </p>
         </div>
       </div>

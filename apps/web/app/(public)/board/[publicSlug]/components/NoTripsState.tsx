@@ -154,7 +154,7 @@ export function NoTripsState({ boatName, marinaName }: Props) {
           lineHeight: 1.6,
         }}>
           You scanned a QR code affixed to <strong>{boatName}</strong>.
-          This code is permanently attached to the vessel — when a trip is scheduled
+          This code is permanently attached to the vessel when a trip is scheduled
           it appears here automatically, so guests can board without a daily printed QR.
         </p>
       </div>

@@ -49,7 +49,7 @@ export function BottomNav() {
             height: "52px",
             background: "var(--color-rust)",
             border: "var(--border-w) solid var(--color-rust)",
-            borderRadius: "var(--r-1)", /* sharp — not pill-shaped per R5 */
+            borderRadius: "var(--r-1)", /* sharp not pill-shaped per R5 */
             color: "var(--color-bone)",
             boxShadow: "var(--shadow-float)",
             transition: "background var(--dur-fast) var(--ease)",

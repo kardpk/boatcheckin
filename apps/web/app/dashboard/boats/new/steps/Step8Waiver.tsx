@@ -419,7 +419,7 @@ export function Step8Waiver({ data, onNext, template }: Step8Props) {
         onClick={handleSkip}
         className="text-label text-grey-text hover:text-dark-text transition-colors"
       >
-        Skip for now — I&apos;ll configure this later from Settings
+        Skip for now I&apos;ll configure this later from Settings
       </button>
 
       <ContinueButton onClick={handleContinue} />

@@ -66,7 +66,7 @@ export function BoardingPassState({ boat, trip, guest }: Props) {
           fontSize: "var(--t-body-sm)",
           color: "var(--color-ink-muted)",
         }}>
-          {boat.boatName} — {boat.marinaName}
+          {boat.boatName} {boat.marinaName}
         </p>
       </div>
 

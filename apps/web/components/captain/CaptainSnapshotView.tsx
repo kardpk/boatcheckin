@@ -163,7 +163,7 @@ export function CaptainSnapshotView({
           setLiveSnapshot(json.data)
         }
       } catch {}
-    }, 30000) // 30 seconds — fast fallback for flaky marina WiFi
+    }, 30000) // 30 seconds fast fallback for flaky marina WiFi
     return () => clearInterval(interval)
   }, [token])
 
@@ -382,7 +382,7 @@ export function CaptainSnapshotView({
             <div className="alert alert--ok">
               <CheckCircle2 size={18} strokeWidth={2} aria-hidden="true" />
               <div className="alert__body">
-                <strong style={{ fontSize: 'var(--t-body-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>All Clear — Ready for departure</strong>
+               <strong style={{ fontSize: 'var(--t-body-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>All Clear Ready for departure</strong>
                 <p className="mono" style={{ fontSize: 'var(--t-mono-sm)', color: 'var(--color-ink-muted)', margin: '2px 0 0' }}>
                   {mergedGuests.length} guest{mergedGuests.length !== 1 ? 's' : ''} · All waivers signed · Safety briefing complete
                 </p>
@@ -511,7 +511,7 @@ export function CaptainSnapshotView({
             right: 'var(--s-5)',
             width: '52px',
             height: '52px',
-            borderRadius: 'var(--r-1)', /* sharp — not rounded-full */
+            borderRadius: 'var(--r-1)', /* sharp not rounded-full */
             background: 'var(--color-ink)',
             border: 'var(--border-w) solid var(--color-ink)',
             color: 'var(--color-bone)',

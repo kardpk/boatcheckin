@@ -203,7 +203,7 @@ export function SingleTripJoinState({ boat, trip }: Props) {
         <p style={s.eyebrow}>{boat.boatName}</p>
         <h1 style={s.heading}>You are at the dock.</h1>
         <p style={s.subhead}>
-          {boat.marinaName}{boat.slipNumber ? ` — Slip ${boat.slipNumber}` : ""}
+          {boat.marinaName}{boat.slipNumber ? ` Slip ${boat.slipNumber}` : ""}
         </p>
       </div>
 

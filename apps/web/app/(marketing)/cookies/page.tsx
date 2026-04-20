@@ -15,7 +15,7 @@ export default function CookiesPage() {
           <div className="dateline-inner">
             <div><span className="dl-dot">●</span> COOKIE NOTICE</div>
             <div>ST. PETERSBURG · FLORIDA</div>
-            <div>CAPTAIN&apos;S LOG — TODAY</div>
+           <div>CAPTAIN&apos;S LOG TODAY</div>
           </div>
         </div>
       </div>
@@ -26,7 +26,7 @@ export default function CookiesPage() {
           <span className="eyebrow">Cookie Notice</span>
           <h1>
             What we store<br />
-            on your device —{' '}
+            on your device {' '}
             <em>and why.</em>
           </h1>
           <p style={{ fontSize: '17px', lineHeight: '1.65', color: 'var(--ink-soft)', maxWidth: '680px' }}>
@@ -72,7 +72,7 @@ export default function CookiesPage() {
             </div>
 
             <h2 id="s1"><span className="sec">§ 1</span>What cookies are</h2>
-            <p>A &quot;cookie&quot; is a small text file that a website stores on your device so the site can recognize your browser on subsequent requests — for example, to keep you signed in, remember your preferences, or carry a session across pages. &quot;Similar technologies&quot; include local storage, session storage, pixels, and device identifiers that serve comparable purposes. Throughout this Notice, we refer to all of these as &quot;cookies&quot; for simplicity.</p>
+           <p>A &quot;cookie&quot; is a small text file that a website stores on your device so the site can recognize your browser on subsequent requests for example, to keep you signed in, remember your preferences, or carry a session across pages. &quot;Similar technologies&quot; include local storage, session storage, pixels, and device identifiers that serve comparable purposes. Throughout this Notice, we refer to all of these as &quot;cookies&quot; for simplicity.</p>
 
             <h2 id="s2"><span className="sec">§ 2</span>Categories we use</h2>
             <p>We group cookies by purpose. The table below describes each category and whether you can turn it off without breaking the Services.</p>
@@ -91,19 +91,19 @@ export default function CookiesPage() {
                   <tr>
                     <td><strong>Strictly necessary</strong></td>
                     <td>Keeps you signed in, maintains your session, enforces rate limits, protects against abuse and bot traffic, and delivers the page to you. Required for the Services to function.</td>
-                    <td>No — disabling breaks login and core features.</td>
+                   <td>No disabling breaks login and core features.</td>
                     <td>Session to 30 days</td>
                   </tr>
                   <tr>
                     <td><strong>Functional</strong></td>
-                    <td>Remembers preferences you&apos;ve set — theme, language, timezone, UI state, last-used dashboard view, accepted cookie banner choice.</td>
-                    <td>Yes — via our cookie settings or your browser.</td>
+                   <td>Remembers preferences you&apos;ve set theme, language, timezone, UI state, last-used dashboard view, accepted cookie banner choice.</td>
+                   <td>Yes via our cookie settings or your browser.</td>
                     <td>Up to 12 months</td>
                   </tr>
                   <tr>
                     <td><strong>Analytics (privacy-preserving)</strong></td>
-                    <td>Aggregate, non-identifying usage signals — page views, load times, error rates — used to improve reliability and performance. We use privacy-preserving analytics that do not build cross-site profiles.</td>
-                    <td>Yes — GPC is honored; you can also decline via settings.</td>
+                   <td>Aggregate, non-identifying usage signals page views, load times, error rates used to improve reliability and performance. We use privacy-preserving analytics that do not build cross-site profiles.</td>
+                   <td>Yes GPC is honored; you can also decline via settings.</td>
                     <td>Up to 24 months</td>
                   </tr>
                   <tr>
@@ -117,29 +117,29 @@ export default function CookiesPage() {
             </div>
 
             <h2 id="s3"><span className="sec">§ 3</span>First-party and third-party</h2>
-            <p>Most cookies we use are <strong>first-party</strong>, set directly by boatcheckin.com. A limited number of <strong>third-party</strong> cookies are set by the service providers we use to run the platform — for example, providers that deliver bot-protection challenges on sign-in forms, or providers that monitor application errors. These are set for the operational purposes above, not for advertising or independent profiling. A current list of subprocessors is available on request — see <Link className="inline" href="/privacy#s8">§ 8 of our Privacy Policy</Link>.</p>
+           <p>Most cookies we use are <strong>first-party</strong>, set directly by boatcheckin.com. A limited number of <strong>third-party</strong> cookies are set by the service providers we use to run the platform for example, providers that deliver bot-protection challenges on sign-in forms, or providers that monitor application errors. These are set for the operational purposes above, not for advertising or independent profiling. A current list of subprocessors is available on request see <Link className="inline" href="/privacy#s8">§ 8 of our Privacy Policy</Link>.</p>
 
             <h2 id="s4"><span className="sec">§ 4</span>How to manage cookies</h2>
 
             <h3 id="s4-1"><span className="sec">4.1</span>Through your browser</h3>
             <p>All modern browsers allow you to view, block, or delete cookies. The exact steps vary by browser:</p>
             <ul>
-              <li><strong>Chrome</strong> — Settings → Privacy and security → Cookies and other site data</li>
-              <li><strong>Safari</strong> — Preferences → Privacy → Manage Website Data</li>
-              <li><strong>Firefox</strong> — Settings → Privacy &amp; Security → Cookies and Site Data</li>
-              <li><strong>Edge</strong> — Settings → Cookies and site permissions → Cookies and site data</li>
+             <li><strong>Chrome</strong> Settings → Privacy and security → Cookies and other site data</li>
+             <li><strong>Safari</strong> Preferences → Privacy → Manage Website Data</li>
+             <li><strong>Firefox</strong> Settings → Privacy &amp; Security → Cookies and Site Data</li>
+             <li><strong>Edge</strong> Settings → Cookies and site permissions → Cookies and site data</li>
             </ul>
             <p>Blocking all cookies will prevent sign-in and break most of the Services. Blocking only third-party cookies is generally compatible with normal use.</p>
 
             <h3 id="s4-2"><span className="sec">4.2</span>Through your device settings</h3>
-            <p>On mobile devices, operating system settings provide additional controls — including the ability to reset your advertising identifier (which we do not use, but which affects other apps you use).</p>
+           <p>On mobile devices, operating system settings provide additional controls including the ability to reset your advertising identifier (which we do not use, but which affects other apps you use).</p>
 
             <h3 id="s4-3"><span className="sec">4.3</span>Through privacy signals we honor</h3>
-            <p>We honor the <strong>Global Privacy Control (GPC)</strong> signal transmitted by browsers and extensions that support it — treating it as a valid opt-out for applicable personal information categories under US state privacy laws. If your browser or an installed extension sends GPC, no further action is needed to opt out of data uses covered by that law.</p>
+           <p>We honor the <strong>Global Privacy Control (GPC)</strong> signal transmitted by browsers and extensions that support it treating it as a valid opt-out for applicable personal information categories under US state privacy laws. If your browser or an installed extension sends GPC, no further action is needed to opt out of data uses covered by that law.</p>
             <p>We do not currently change behavior in response to legacy &quot;Do Not Track&quot; (DNT) headers, because no common industry standard for responding to DNT has emerged.</p>
 
             <h2 id="s5"><span className="sec">§ 5</span>What we don&apos;t do with cookies</h2>
-            <p>For clarity — because this is where cookie notices usually hedge:</p>
+           <p>For clarity because this is where cookie notices usually hedge:</p>
             <ul>
               <li>We do not sell cookie data. We do not share cookie data with advertising networks for cross-context behavioral advertising.</li>
               <li>We do not use cookies to build behavioral profiles of you across unrelated websites.</li>

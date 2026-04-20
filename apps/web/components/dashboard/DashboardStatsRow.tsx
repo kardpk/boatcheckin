@@ -37,7 +37,7 @@ export function DashboardStatsRow({ stats }: { stats: DashboardStats }) {
       // Show "—" instead of $0.00 when operator has never had a completed trip
       value:
         stats.addonRevenueThisMonthCents === 0 && !hasCompletedTrips
-          ? "—"
+          ? " "
           : formatCurrency(stats.addonRevenueThisMonthCents),
       icon: <TrendingUp size={14} strokeWidth={2} aria-hidden="true" />,
       microLabel:
@@ -47,7 +47,7 @@ export function DashboardStatsRow({ stats }: { stats: DashboardStats }) {
     },
     {
       label: "Avg rating",
-      value: stats.averageRating ? stats.averageRating.toString() : "—",
+      value: stats.averageRating ? stats.averageRating.toString() : " ",
       unit: stats.averageRating ? "/5" : undefined,
       icon: <Star size={14} strokeWidth={2} aria-hidden="true" />,
       microLabel: !stats.averageRating ? "Shown after first review" : undefined,

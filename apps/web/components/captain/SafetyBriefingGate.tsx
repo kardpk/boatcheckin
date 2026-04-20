@@ -214,7 +214,7 @@ export function SafetyBriefingGate({
         {/* Step 1: Briefing Type */}
         <div>
           <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
-            Step 1 — How did you brief?
+            Step 1 How did you brief?
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
             {BRIEFING_TYPES.map(bt => (
@@ -255,7 +255,7 @@ export function SafetyBriefingGate({
         {/* Step 2: Topic Checklist */}
         <div>
           <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
-            Step 2 — Topics Covered
+            Step 2 Topics Covered
           </h2>
           <div style={{ background: 'var(--color-bone)', borderRadius: 'var(--r-1)', border: '1px solid var(--color-line-soft)', padding: 'var(--s-4)' }}>
             {briefingTopics.map(topic => (
@@ -312,7 +312,7 @@ export function SafetyBriefingGate({
         {/* Step 3: Captain Attestation */}
         <div>
           <h2 className="mono" style={{ fontSize: 'var(--t-mono-sm)', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginBottom: 'var(--s-3)' }}>
-            Step 3 — Captain Attestation
+            Step 3 Captain Attestation
           </h2>
           <div style={{ background: 'var(--color-bone)', borderRadius: 'var(--r-1)', border: '1px solid var(--color-line-soft)', padding: 'var(--s-5)', display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
             <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink)', lineHeight: 1.7, fontStyle: 'italic' }}>

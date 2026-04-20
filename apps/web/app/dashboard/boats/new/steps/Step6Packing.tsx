@@ -432,7 +432,7 @@ export function Step6Packing({ data, onNext, saveLabel }: Step6Props) {
         className="mono"
         style={{ fontSize: 11, color: "var(--color-ink-muted)", textAlign: "center", letterSpacing: "0.02em" }}
       >
-        Optional — you can update this anytime from the boat settings
+        Optional you can update this anytime from the boat settings
       </p>
 
       <ContinueButton onClick={handleContinue}>{saveLabel}</ContinueButton>

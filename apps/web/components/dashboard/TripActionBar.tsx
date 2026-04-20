@@ -329,7 +329,7 @@ export function TripActionBar({
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          DOCUMENTS SECTION — contextual
+          DOCUMENTS SECTION contextual
           ══════════════════════════════════════════════════════ */}
       {showDocs && (
         <section>

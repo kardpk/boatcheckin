@@ -26,8 +26,8 @@ function parseHouseRulesBlob(raw: string): { rules: string[]; dos: string[]; don
   for (const line of lines) {
     // Detect section markers
     if (/^(house\s*rules)\s*:?\s*$/i.test(line)) { currentSection = 'rules'; continue }
-    if (/^(do'?s?)\s*:?\s*$/i.test(line) || /^(dos?\s*[-–—]\s*)/i.test(line)) { currentSection = 'dos'; continue }
-    if (/^(don'?t'?s?)\s*:?\s*$/i.test(line) || /^(don'?ts?\s*[-–—]\s*)/i.test(line)) { currentSection = 'donts'; continue }
+    if (/^(do'?s?)\s*:?\s*$/i.test(line) || /^(dos?\s*[-– ]\s*)/i.test(line)) { currentSection = 'dos'; continue }
+    if (/^(don'?t'?s?)\s*:?\s*$/i.test(line) || /^(don'?ts?\s*[-– ]\s*)/i.test(line)) { currentSection = 'donts'; continue }
 
     // Items starting with ✓/✔/√ → DOs
     if (/^[✓✔√]\s+/.test(line)) {
@@ -66,7 +66,7 @@ export function BoatRulesSection({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)', margin: '0 var(--s-4)', marginTop: 'var(--s-3)' }}>
 
       {/* ══════════════════════════════════════════════════
-          HOUSE RULES — Navy marine blue
+          HOUSE RULES Navy marine blue
           ══════════════════════════════════════════════════ */}
       {finalRules.length > 0 && (
         <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
@@ -129,7 +129,7 @@ export function BoatRulesSection({
       )}
 
       {/* ══════════════════════════════════════════════════
-          DOs — Green
+          DOs Green
           ══════════════════════════════════════════════════ */}
       {finalDos.length > 0 && (
         <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
@@ -190,7 +190,7 @@ export function BoatRulesSection({
       )}
 
       {/* ══════════════════════════════════════════════════
-          DON'Ts — Rusty Red
+          DON'Ts Rusty Red
           ══════════════════════════════════════════════════ */}
       {finalDonts.length > 0 && (
         <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>

@@ -636,7 +636,7 @@ export function Step7SafetyCards({ data, onNext, saveLabel }: Step7Props) {
         onClick={handleSkip}
         className="text-label text-grey-text hover:text-dark-text transition-colors"
       >
-        Skip for now — I&apos;ll add photos later
+        Skip for now I&apos;ll add photos later
       </button>
 
       <ContinueButton onClick={handleContinue}>{saveLabel}</ContinueButton>

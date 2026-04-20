@@ -118,7 +118,7 @@ export async function saveBoatProfile(data: {
       boat_type: data.boatType,
       max_capacity: parseInt(data.maxCapacity) || 1,
       marina_address: data.marinaAddress,
-      waiver_text: data.firmaTemplateId ? "[Firma PDF Waiver — template configured]" : "[No waiver configured]",
+      waiver_text: data.firmaTemplateId ? "[Firma PDF Waiver template configured]" : "[No waiver configured]",
       firma_template_id: data.firmaTemplateId || null,
       house_rules: houseRulesText,
       what_to_bring: data.whatToBring || null,

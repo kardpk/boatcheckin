@@ -72,7 +72,7 @@ export default function PrivacyPage() {
       <ul>
         <li>We collect only what we need to deliver the Services and meet the recordkeeping obligations Operators depend on.</li>
         <li>We do not sell personal information to advertisers, data brokers, or marketing networks.</li>
-        <li>Compliance records — signed waivers, attestations, manifests — are retained for the period statute and the Operator's retention settings require; marketing-linked information is cleared on a rolling schedule.</li>
+       <li>Compliance records signed waivers, attestations, manifests are retained for the period statute and the Operator's retention settings require; marketing-linked information is cleared on a rolling schedule.</li>
         <li>You have rights over your information. This Policy explains how to exercise them.</li>
       </ul>
 
@@ -89,10 +89,10 @@ export default function PrivacyPage() {
       <p>The role we occupy depends on whose data is being processed.</p>
 
       <h3><span className="sec">3.1</span>Operator account data</h3>
-      <p>When an Operator creates a Boatcheckin account, we act as the <strong>data controller</strong> (or "business" under US state privacy laws) for information about that Operator — the person signing up, their role, contact details, billing details, and how they use our Services.</p>
+     <p>When an Operator creates a Boatcheckin account, we act as the <strong>data controller</strong> (or "business" under US state privacy laws) for information about that Operator the person signing up, their role, contact details, billing details, and how they use our Services.</p>
 
       <h3><span className="sec">3.2</span>Guest and trip data</h3>
-      <p>When an Operator uses Boatcheckin to document a trip, we process Guest data and trip content <strong>on the Operator's behalf</strong> — as a <strong>data processor</strong> (or "service provider" under US state privacy laws). The Operator decides what waiver text to use, what safety briefing to deliver, what retention applies, and how long records are kept beyond the statutory minimum. Guests who want to exercise rights over their data should contact the Operator of record first; we support Operators in responding.</p>
+     <p>When an Operator uses Boatcheckin to document a trip, we process Guest data and trip content <strong>on the Operator's behalf</strong> as a <strong>data processor</strong> (or "service provider" under US state privacy laws). The Operator decides what waiver text to use, what safety briefing to deliver, what retention applies, and how long records are kept beyond the statutory minimum. Guests who want to exercise rights over their data should contact the Operator of record first; we support Operators in responding.</p>
 
       <h3><span className="sec">3.3</span>Visitors to our website</h3>
       <p>For visitors to boatcheckin.com who are not signed in, we act as the controller of the limited data described in <a className="inline" href="#s4">Section 4</a>.</p>
@@ -102,24 +102,24 @@ export default function PrivacyPage() {
 
       <h3><span className="sec">4.1</span>Information Operators provide</h3>
       <ul>
-        <li><strong>Account details</strong> — name, email, password (stored as a salted hash, never in clear text), phone number, operator role, and company name where provided.</li>
-        <li><strong>Business and vessel details</strong> — vessel name and identifier, home port, operating area, captain credentials, and any compliance documentation the Operator uploads.</li>
-        <li><strong>Trip configuration</strong> — waiver text, safety briefing content, and trip parameters the Operator chooses.</li>
-        <li><strong>Billing details</strong> — for paid plans, we collect billing contact information; payment card details are handled directly by our payment processor and we do not store full card numbers on our systems.</li>
+       <li><strong>Account details</strong> name, email, password (stored as a salted hash, never in clear text), phone number, operator role, and company name where provided.</li>
+       <li><strong>Business and vessel details</strong> vessel name and identifier, home port, operating area, captain credentials, and any compliance documentation the Operator uploads.</li>
+       <li><strong>Trip configuration</strong> waiver text, safety briefing content, and trip parameters the Operator chooses.</li>
+       <li><strong>Billing details</strong> for paid plans, we collect billing contact information; payment card details are handled directly by our payment processor and we do not store full card numbers on our systems.</li>
       </ul>
 
       <h3><span className="sec">4.2</span>Information Guests provide</h3>
       <ul>
-        <li><strong>Identity and contact</strong> — name, email, phone number, date of birth where required by law, and emergency contact where the Operator collects one.</li>
-        <li><strong>Trip-specific information</strong> — responses to safety questions, Boating Safety Identification Card details where applicable, and similar items collected through the trip link.</li>
-        <li><strong>Signatures and attestations</strong> — waiver signature, per-card safety acknowledgments, and any additional consents the Operator configures. Each is stored alongside timestamp, IP, user agent, and a cryptographic hash of the signed content.</li>
+       <li><strong>Identity and contact</strong> name, email, phone number, date of birth where required by law, and emergency contact where the Operator collects one.</li>
+       <li><strong>Trip-specific information</strong> responses to safety questions, Boating Safety Identification Card details where applicable, and similar items collected through the trip link.</li>
+       <li><strong>Signatures and attestations</strong> waiver signature, per-card safety acknowledgments, and any additional consents the Operator configures. Each is stored alongside timestamp, IP, user agent, and a cryptographic hash of the signed content.</li>
       </ul>
 
       <h3><span className="sec">4.3</span>Information we collect automatically</h3>
       <ul>
-        <li><strong>Device and connection</strong> — IP address, browser type and version, operating system, device type, screen size, timezone, and language preference.</li>
-        <li><strong>Usage</strong> — pages viewed, features used, timestamps of actions, trip identifiers, and diagnostic information generated when errors occur.</li>
-        <li><strong>Location</strong> — only at the granularity needed for the feature in use (for example, approximate location derived from IP for regional defaults, or precise location only where a Guest grants permission for a specific feature such as on-water check-in).</li>
+       <li><strong>Device and connection</strong> IP address, browser type and version, operating system, device type, screen size, timezone, and language preference.</li>
+       <li><strong>Usage</strong> pages viewed, features used, timestamps of actions, trip identifiers, and diagnostic information generated when errors occur.</li>
+       <li><strong>Location</strong> only at the granularity needed for the feature in use (for example, approximate location derived from IP for regional defaults, or precise location only where a Guest grants permission for a specific feature such as on-water check-in).</li>
       </ul>
       <p>We do <strong>not</strong> intentionally collect information about race, ethnicity, religion, political views, sexual orientation, union membership, or other categories treated as sensitive under GDPR Article 9 unless you specifically choose to provide it.</p>
 
@@ -145,24 +145,24 @@ export default function PrivacyPage() {
       <h2 id="s6"><span className="sec">§ 6</span>Legal bases (GDPR, UK GDPR)</h2>
       <p>If you are in the European Economic Area, the United Kingdom, or Switzerland, we rely on one or more of the following legal bases for each processing activity:</p>
       <ul>
-        <li><strong>Performance of a contract</strong> — to deliver the Services an Operator has signed up for, or to fulfill a Guest's registration for a specific trip.</li>
-        <li><strong>Legitimate interests</strong> — to secure our Services, prevent abuse, support Operators, and improve the product, balanced against your rights and expectations.</li>
-        <li><strong>Legal obligation</strong> — to meet recordkeeping, tax, and regulatory requirements.</li>
-        <li><strong>Consent</strong> — where we rely on consent (for example, optional Guest marketing communications, or non-essential cookies), we ask for it clearly and honor withdrawal at any time.</li>
+       <li><strong>Performance of a contract</strong> to deliver the Services an Operator has signed up for, or to fulfill a Guest's registration for a specific trip.</li>
+       <li><strong>Legitimate interests</strong> to secure our Services, prevent abuse, support Operators, and improve the product, balanced against your rights and expectations.</li>
+       <li><strong>Legal obligation</strong> to meet recordkeeping, tax, and regulatory requirements.</li>
+       <li><strong>Consent</strong> where we rely on consent (for example, optional Guest marketing communications, or non-essential cookies), we ask for it clearly and honor withdrawal at any time.</li>
       </ul>
 
       <h2 id="s7"><span className="sec">§ 7</span>How we share</h2>
       <p>We share personal information only in the specific situations below.</p>
       <h3><span className="sec">7.1</span>With the Operator of record</h3>
-      <p>Guest data is shared with the Operator of record for the trip. That is the point of the Services — the Operator needs the record. Operators are contractually required to handle Guest data in accordance with applicable law and their own privacy notices.</p>
+     <p>Guest data is shared with the Operator of record for the trip. That is the point of the Services the Operator needs the record. Operators are contractually required to handle Guest data in accordance with applicable law and their own privacy notices.</p>
       <h3><span className="sec">7.2</span>With service providers we engage</h3>
-      <p>We use vetted third-party providers to deliver the Services — hosting, database, email and SMS delivery, payment processing, error monitoring, and similar functions. These providers act as subprocessors, receive only the information needed for the task, and are contractually bound to handle it appropriately. See <a className="inline" href="#s8">Section 8</a>.</p>
+     <p>We use vetted third-party providers to deliver the Services hosting, database, email and SMS delivery, payment processing, error monitoring, and similar functions. These providers act as subprocessors, receive only the information needed for the task, and are contractually bound to handle it appropriately. See <a className="inline" href="#s8">Section 8</a>.</p>
       <h3><span className="sec">7.3</span>For legal reasons</h3>
       <p>We may disclose information where required by law, subpoena, court order, or valid governmental request; to enforce our Terms; to protect our rights, property, or safety, or those of our users or the public; or in connection with investigation of suspected abuse or fraud.</p>
       <h3><span className="sec">7.4</span>In a business transaction</h3>
       <p>If Boatcheckin is involved in a merger, acquisition, financing, or sale of assets, user information may be transferred as part of that transaction. We will notify affected users and give meaningful choices where the law requires them.</p>
       <h3><span className="sec">7.5</span>With your direction</h3>
-      <p>We share information at your direction — for example, when you link your account to another service, or when you explicitly authorize disclosure.</p>
+     <p>We share information at your direction for example, when you link your account to another service, or when you explicitly authorize disclosure.</p>
 
       <div className="callout warn">
         <div className="callout-tag">Not shared with</div>
@@ -170,12 +170,12 @@ export default function PrivacyPage() {
       </div>
 
       <h2 id="s8"><span className="sec">§ 8</span>Subprocessors</h2>
-      <p>We rely on a limited number of service providers to run the Services — categories include cloud hosting, managed database, email delivery, SMS delivery, payment processing, error monitoring, mapping, and bot/abuse protection. Each is bound by a written agreement that restricts their use of data to the Services we engage them for.</p>
+     <p>We rely on a limited number of service providers to run the Services categories include cloud hosting, managed database, email delivery, SMS delivery, payment processing, error monitoring, mapping, and bot/abuse protection. Each is bound by a written agreement that restricts their use of data to the Services we engage them for.</p>
       <p>Operators with a formal vendor-review process can request a current list of subprocessors, including identity, processing purpose, and location, by emailing <a className="inline" href="mailto:privacy@boatcheckin.com">privacy@boatcheckin.com</a>. We also make this list available through our Data Processing Addendum where one is in place.</p>
 
       <h2 id="s9"><span className="sec">§ 9</span>International transfers</h2>
       <p>Boatcheckin is based in the United States, and our primary systems operate from US data centers. If you access the Services from outside the United States, your information is transferred to, stored in, and processed in the United States and potentially other jurisdictions where our subprocessors operate.</p>
-      <p>For transfers of personal data originating in the European Economic Area, the United Kingdom, or Switzerland, we rely on lawful transfer mechanisms including the <strong>Standard Contractual Clauses (SCCs)</strong> adopted by the European Commission, and equivalent mechanisms under UK and Swiss data protection law. Additional safeguards — encryption in transit, encryption at rest, access controls, and contractual restrictions on subprocessor use — apply in every case.</p>
+     <p>For transfers of personal data originating in the European Economic Area, the United Kingdom, or Switzerland, we rely on lawful transfer mechanisms including the <strong>Standard Contractual Clauses (SCCs)</strong> adopted by the European Commission, and equivalent mechanisms under UK and Swiss data protection law. Additional safeguards encryption in transit, encryption at rest, access controls, and contractual restrictions on subprocessor use apply in every case.</p>
 
       <h2 id="s10"><span className="sec">§ 10</span>Retention</h2>
       <p>We retain personal information for no longer than necessary for the purposes set out in this Policy, with specific periods as follows.</p>
@@ -199,10 +199,10 @@ export default function PrivacyPage() {
 
       <h3><span className="sec">11.1</span>Rights we extend to everyone</h3>
       <ul>
-        <li><strong>Access</strong> — a copy of the personal information we hold about you.</li>
-        <li><strong>Correction</strong> — to correct inaccurate or incomplete information.</li>
-        <li><strong>Deletion</strong> — to request deletion, subject to legal or regulatory retention requirements described in <a className="inline" href="#s10">Section 10</a>.</li>
-        <li><strong>Complaint</strong> — to raise a concern with us and, where applicable, with a supervisory authority.</li>
+       <li><strong>Access</strong> a copy of the personal information we hold about you.</li>
+       <li><strong>Correction</strong> to correct inaccurate or incomplete information.</li>
+       <li><strong>Deletion</strong> to request deletion, subject to legal or regulatory retention requirements described in <a className="inline" href="#s10">Section 10</a>.</li>
+       <li><strong>Complaint</strong> to raise a concern with us and, where applicable, with a supervisory authority.</li>
       </ul>
 
       <h3><span className="sec">11.2</span>Rights for EEA, UK, and Swiss residents</h3>
@@ -221,7 +221,7 @@ export default function PrivacyPage() {
       <p>We verify requests before responding in order to protect the information from unauthorized disclosure. We respond to verified requests within the period required by applicable law, and in no event later than 45 days for US state privacy law requests, extended by 45 additional days where reasonably necessary with notice.</p>
 
       <h2 id="s12"><span className="sec">§ 12</span>Children</h2>
-      <p>Boatcheckin is designed for use by adults — Operators operating commercial vessels and Guests boarding those vessels. The Services are not directed to children under 13, and we do not knowingly collect personal information from children under 13 without verifiable parental consent.</p>
+     <p>Boatcheckin is designed for use by adults Operators operating commercial vessels and Guests boarding those vessels. The Services are not directed to children under 13, and we do not knowingly collect personal information from children under 13 without verifiable parental consent.</p>
       <p>Where Operators collect information about minor Guests (for example, a family charter that includes children) as part of the trip record, the information is collected from and entered by an adult responsible for the minor. Operators are responsible for obtaining any parental consent required by applicable law.</p>
       <p>If you believe we have inadvertently collected information from a child under 13 without appropriate consent, contact us at <a className="inline" href="mailto:privacy@boatcheckin.com">privacy@boatcheckin.com</a> and we will delete it.</p>
 

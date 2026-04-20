@@ -14,7 +14,7 @@ export function ReferralSection({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://boatcheckin.com'
   const referralUrl = `${appUrl}?ref=${tripSlug}&boat=${encodeURIComponent(boatName)}`
 
-  const shareMessage = `Just had an amazing charter on ${boatName} Book your own with BoatCheckin — digital check-in, no paperwork: ${referralUrl}`
+  const shareMessage = `Just had an amazing charter on ${boatName} Book your own with BoatCheckin digital check-in, no paperwork: ${referralUrl}`
 
   async function copyLink() {
     try {

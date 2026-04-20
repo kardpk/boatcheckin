@@ -49,7 +49,7 @@ const VARIANT_CONFIG: Record<
     addLabel: "Add house rule",
   },
   dos: {
-    heading: "DOs — What we encourage",
+    heading: "DOs What we encourage",
     subheading: "Positive guidance shown to guests.",
     pillClass: "pill pill--ok",
     pillLabel: "Encouraged",
@@ -58,7 +58,7 @@ const VARIANT_CONFIG: Record<
     addLabel: "Add a DO",
   },
   donts: {
-    heading: "DON'Ts — What's not allowed",
+    heading: "DON'Ts What's not allowed",
     subheading: "Prohibited behaviours shown to guests.",
     pillClass: "pill pill--warn",
     pillLabel: "Prohibited",

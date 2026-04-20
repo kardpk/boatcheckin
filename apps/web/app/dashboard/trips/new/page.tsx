@@ -122,7 +122,7 @@ export default async function CreateTripPage() {
           Plan your trip
         </h1>
         <p style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 'var(--s-2)' }}>
-          One link for your entire guest list — waivers, weather, and check-in.
+          One link for your entire guest list waivers, weather, and check-in.
         </p>
       </div>
 

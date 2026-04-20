@@ -215,7 +215,7 @@ export function BoatEditStepClient({ boatId, step, boatType, prefill }: BoatEdit
           }}
         >
           <Check size={14} strokeWidth={2.5} style={{ display: "inline", verticalAlign: "middle", marginRight: 6 }} />
-          Saved — redirecting…
+          Saved redirecting…
         </div>
       )}
     </div>

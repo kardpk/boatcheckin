@@ -177,7 +177,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ captainId: selectedCaptainId, role: 'captain' }),
-        }).catch(() => { /* silent — trip created, assignment is best-effort */ })
+        }).catch(() => { /* silent trip created, assignment is best-effort */ })
       }
 
       setResult(res.data)
@@ -207,7 +207,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
     <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)' }}>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SECTION 1 — TRIP TYPE
+          SECTION 1 TRIP TYPE
           ══════════════════════════════════════════════════════════════════ */}
       <section>
         <SectionKicker>Trip type</SectionKicker>
@@ -354,7 +354,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SECTION 2 — VESSEL + CAPTAIN
+          SECTION 2 VESSEL + CAPTAIN
           ══════════════════════════════════════════════════════════════════ */}
       <section>
         <SectionKicker>Vessel</SectionKicker>
@@ -484,7 +484,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
                       </p>
                       {isExpired ? (
                         <p className="font-mono bg-red-100/50 inline-block px-1 rounded-sm mt-1" style={{ fontSize: '10px', color: 'var(--color-status-err)', letterSpacing: '0.04em', fontWeight: 700, background: 'rgba(235,87,87,0.1)', padding: '2px 4px', borderRadius: '4px', display: 'inline-block' }}>
-                          BLOCKED — LICENSE EXPIRED
+                          BLOCKED LICENSE EXPIRED
                         </p>
                       ) : captain.licenseType ? (
                         <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', letterSpacing: '0.04em' }}>
@@ -506,7 +506,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SECTION 3 — SCHEDULE
+          SECTION 3 SCHEDULE
           ══════════════════════════════════════════════════════════════════ */}
       <section>
         <SectionKicker>Schedule</SectionKicker>
@@ -663,7 +663,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SECTION 4 — GUESTS + BOOKING
+          SECTION 4 GUESTS + BOOKING
           ══════════════════════════════════════════════════════════════════ */}
       <section>
         <SectionKicker>Guests</SectionKicker>
@@ -779,7 +779,7 @@ export function TripCreateForm({ boats, captains = [] }: TripCreateFormProps) {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          SECTION 5 — OPTIONS
+          SECTION 5 OPTIONS
           ══════════════════════════════════════════════════════════════════ */}
       <section>
         <SectionKicker>Options</SectionKicker>

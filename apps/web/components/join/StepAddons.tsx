@@ -213,7 +213,7 @@ export function StepAddons({
         onClick={onSkip}
         className="w-full text-[14px] text-text-mid underline py-2 min-h-[44px]"
       >
-        Skip — no add-ons
+        Skip no add-ons
       </button>
     </div>
   )

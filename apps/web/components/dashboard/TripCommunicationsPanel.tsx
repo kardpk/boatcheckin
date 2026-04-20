@@ -376,7 +376,7 @@ export function TripCommunicationsPanel({
                 value={notesText}
                 onChange={e => setNotesText(e.target.value)}
                 rows={4}
-                placeholder="Internal notes for the captain — not visible to guests."
+                placeholder="Internal notes for the captain not visible to guests."
                 className="field-input"
                 style={{
                   width: '100%',

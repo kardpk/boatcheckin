@@ -120,7 +120,7 @@ export function BoatDetailClient({ rules, dos, donts }: BoatDetailClientProps) {
 
       {/* ── DOs ──
           Section label pill: navy-filled (section anchor, needs weight)
-          Item pills: navy outline on paper — legible in direct marina sunlight */}
+          Item pills: navy outline on paper legible in direct marina sunlight */}
       {dos.length > 0 && (
         <>
           <div style={{ padding: "var(--s-3) var(--s-4)" }}>
@@ -170,7 +170,7 @@ export function BoatDetailClient({ rules, dos, donts }: BoatDetailClientProps) {
       )}
 
       {/* ── DON'Ts ──
-          Kept as rust-filled / white text — warning urgency requires contrast fill */}
+          Kept as rust-filled / white text warning urgency requires contrast fill */}
       {donts.length > 0 && (
         <>
           <div style={{ height: 1, background: "var(--color-line-soft)" }} />

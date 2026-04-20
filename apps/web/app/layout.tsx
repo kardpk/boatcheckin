@@ -30,7 +30,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "BoatCheckin — Your charter trip, all in one link",
   description:
-    "Check in, sign your waiver, and get your boarding pass — all from one link. No app download required.",
+    "Check in, sign your waiver, and get your boarding pass all from one link. No app download required.",
   icons: { icon: "/favicon.ico" },
   manifest: "/manifest.json",
 };

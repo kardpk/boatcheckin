@@ -39,7 +39,7 @@ export function SnapshotAlerts({ alerts }: { alerts: Alerts }) {
               <ShieldAlert size={24} className="text-white shrink-0 animate-bounce" />
               <div>
                 <p className="text-[15px] font-extrabold text-white uppercase tracking-[0.04em]">
-                  Compliance Alert — PFD Required
+                  Compliance Alert PFD Required
                 </p>
                 <p className="text-[13px] font-bold text-white/90 mt-[3px]">
                   {alerts.childrenUnder6} child{alerts.childrenUnder6 !== 1 ? 'ren' : ''} under 6 onboard
@@ -79,7 +79,7 @@ export function SnapshotAlerts({ alerts }: { alerts: Alerts }) {
               <LifeBuoy size={16} className="text-error shrink-0" />
               <span className="text-[14px] font-medium text-text">
                 {alerts.nonSwimmers} non-swimmer{alerts.nonSwimmers !== 1 ? 's' : ''}
-                {' '}— life jacket required at all times
+                {' '} life jacket required at all times
               </span>
             </div>
           )}

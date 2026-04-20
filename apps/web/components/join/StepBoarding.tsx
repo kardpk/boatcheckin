@@ -191,7 +191,7 @@ export function StepBoarding({ tripData, state, tripSlug, onClose }: StepBoardin
       </AnimatePresence>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          BOARDING PASS CARD — capturable as PNG
+          BOARDING PASS CARD capturable as PNG
           ══════════════════════════════════════════════════════════════════════ */}
       <div
         ref={cardRef}

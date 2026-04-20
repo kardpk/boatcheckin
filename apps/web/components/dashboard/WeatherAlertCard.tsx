@@ -37,7 +37,7 @@ export function WeatherAlertCard({
   // Default message operator can customise
   const defaultMessage = alert.severity === 'dangerous'
     ? `Important weather update for your charter: ${alert.detail} Please check your email for details.`
-    : `Weather update: ${alert.detail} Your trip is still on — we'll keep you posted.`
+    : `Weather update: ${alert.detail} Your trip is still on we'll keep you posted.`
 
   const messageToSend = customMessage.trim() || defaultMessage
 

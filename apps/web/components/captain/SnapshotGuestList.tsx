@@ -241,7 +241,7 @@ export function SnapshotGuestList({
                       )
                       if (age < 6) return (
                         <span className="pill pill--err" style={{ fontSize: 'var(--t-mono-xs)' }}>
-                          <Baby size={9} strokeWidth={2} aria-hidden="true" /> Age {age} — PFD Required
+                         <Baby size={9} strokeWidth={2} aria-hidden="true" /> Age {age} PFD Required
                         </span>
                       )
                       if (age < 18) return (

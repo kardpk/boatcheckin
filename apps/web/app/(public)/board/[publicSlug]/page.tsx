@@ -31,7 +31,7 @@ export async function generateMetadata({
   return {
     title: "Boarding Pass · BoatCheckin",
     description: "Scan or tap to check in for your boat trip.",
-    robots: { index: false, follow: false }, // no crawl — unique per-vessel
+    robots: { index: false, follow: false }, // no crawl unique per-vessel
   };
 }
 

@@ -172,7 +172,7 @@ export function Step3LinkCrew({ data, onNext }: Step3Props) {
           className="mono"
           style={{ fontSize: 11, color: "var(--color-ink-muted)", textAlign: "center", letterSpacing: "0.02em" }}
         >
-          Optional — you can link crew to this boat anytime from Crew settings
+          Optional you can link crew to this boat anytime from Crew settings
         </p>
 
         <ContinueButton onClick={handleContinue}>Skip for now →</ContinueButton>
@@ -196,7 +196,7 @@ export function Step3LinkCrew({ data, onNext }: Step3Props) {
           <Users size={16} strokeWidth={1.5} style={{ color: "var(--color-paper)" }} />
         </div>
         <p style={{ fontSize: 13, color: "var(--color-ink-muted)", lineHeight: 1.5, paddingTop: 6 }}>
-          Select which crew members operate this vessel. Multiple captains can be linked — each will appear on guest boarding passes.
+          Select which crew members operate this vessel. Multiple captains can be linked each will appear on guest boarding passes.
         </p>
       </div>
 
@@ -334,7 +334,7 @@ export function Step3LinkCrew({ data, onNext }: Step3Props) {
         className="mono"
         style={{ fontSize: 11, color: "var(--color-ink-muted)", textAlign: "center", letterSpacing: "0.02em" }}
       >
-        Optional — crew can be linked or unlinked anytime
+        Optional crew can be linked or unlinked anytime
       </p>
 
       <ContinueButton onClick={handleContinue} />

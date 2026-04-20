@@ -33,7 +33,7 @@ export function CookieBanner() {
         <div className="cookie-text">
           <span className="cookie-label">🍪 Cookies</span>
           <span>
-            We use essential cookies only — no tracking without your consent.{' '}
+            We use essential cookies only no tracking without your consent.{' '}
             <Link href="/cookies" className="cookie-link">Read our Cookie Policy</Link>
             {' '}to see exactly what we set and why.
           </span>

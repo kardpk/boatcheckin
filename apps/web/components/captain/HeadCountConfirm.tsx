@@ -135,7 +135,7 @@ export function HeadCountConfirm({
           <div className="alert alert--warn">
             <AlertTriangle size={16} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
             <p style={{ fontSize: 'var(--t-body-sm)', margin: 0 }}>
-              Mismatch: {numericCount} aboard vs {digitalGuestCount} registered. You can still confirm — the operator will be notified.
+              Mismatch: {numericCount} aboard vs {digitalGuestCount} registered. You can still confirm the operator will be notified.
             </p>
           </div>
         )}

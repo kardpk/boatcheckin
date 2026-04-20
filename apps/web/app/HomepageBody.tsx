@@ -95,7 +95,7 @@ export default function HomepageBody() {
               </p>
               <p className="hero-lede" style={{ marginBottom: 0, fontSize: 16 }}>
                 Aligned with <strong>SB 606</strong>, <strong>46 CFR §185.506</strong>, and{' '}
-                <strong>FWC Chapter 327</strong>. You direct — Boatcheckin records.{' '}
+               <strong>FWC Chapter 327</strong>. You direct Boatcheckin records.{' '}
                 <strong>Free for solo captains, forever.</strong>
               </p>
               <div className="hero-cta-row" style={{ marginTop: 32 }}>
@@ -132,9 +132,9 @@ export default function HomepageBody() {
                 </div>
                 <div className="dossier-title">Pre-Departure Checklist</div>
                 <div className="dossier-row"><CheckIcon /><span>6 of 6 guest waivers signed &amp; hashed <span className="d-mono">(SHA-256)</span></span></div>
-                <div className="dossier-row"><CheckIcon /><span>FWC Boater Safety ID verified — <span className="d-mono">2 bareboat renters</span></span></div>
-                <div className="dossier-row"><CheckIcon /><span>Safety briefing acknowledged — captain attestation logged</span></div>
-                <div className="dossier-row"><CheckIcon /><span>Head count confirmed — <span className="d-mono">6 / 6 aboard</span></span></div>
+               <div className="dossier-row"><CheckIcon /><span>FWC Boater Safety ID verified <span className="d-mono">2 bareboat renters</span></span></div>
+               <div className="dossier-row"><CheckIcon /><span>Safety briefing acknowledged captain attestation logged</span></div>
+               <div className="dossier-row"><CheckIcon /><span>Head count confirmed <span className="d-mono">6 / 6 aboard</span></span></div>
                 <div className="dossier-row"><CheckIcon /><span>Weather captured · <span className="d-mono">12kt ESE · 2ft · 82°F</span></span></div>
                 <div className="dossier-row"><CheckIcon /><span>USCG-format manifest PDF filed &amp; emailed</span></div>
                 <div className="dossier-footer">
@@ -158,7 +158,7 @@ export default function HomepageBody() {
             'Operator Directs · Boatcheckin Records',
             'Free for Solo Operators',
             'Per-Card Safety Acknowledgment',
-            'Captain Snapshot — No Login Required',
+            'Captain Snapshot No Login Required',
             '7 Guest Languages Including Audio',
             'Recordkeeping-First Software',
             'SHA-256 Signature Audit Trail',
@@ -167,7 +167,7 @@ export default function HomepageBody() {
             'Operator Directs · Boatcheckin Records',
             'Free for Solo Operators',
             'Per-Card Safety Acknowledgment',
-            'Captain Snapshot — No Login Required',
+            'Captain Snapshot No Login Required',
             '7 Guest Languages Including Audio',
           ].map((item, i) => (
             <span key={i} className="ticker-item">{item}</span>
@@ -181,15 +181,15 @@ export default function HomepageBody() {
           <div className="section-header">
             <span className="eyebrow">The old way · The new way</span>
             <h2 className="section-title">The morning chaos.<br /><em>On the record instead.</em></h2>
-            <p className="section-sub">Every charter morning, five failure modes show up at the dock. Each one is a gap in the trip record — and gaps are where problems hide when something goes wrong later.</p>
+           <p className="section-sub">Every charter morning, five failure modes show up at the dock. Each one is a gap in the trip record and gaps are where problems hide when something goes wrong later.</p>
           </div>
           <div className="compare-list">
             {[
               ['01', 'Paper waivers lost in a wet binder', 'Waiver text the operator chose, signed by the guest, SHA-256 hashed with timestamp, IP, and user agent. Stored indefinitely. Exportable on demand.'],
-              ['02', 'Verbal safety briefings with no proof', 'Captain attestation under 46 CFR §185.506 — per-card acknowledgment, delivery method, timestamp, digital signature. Per guest. Per trip. Logged forever.'],
+              ['02', 'Verbal safety briefings with no proof', 'Captain attestation under 46 CFR §185.506 per-card acknowledgment, delivery method, timestamp, digital signature. Per guest. Per trip. Logged forever.'],
               ['03', 'SMS chaos chasing guest details', 'One trip link. Guest enters details on their own phone, swipes 12 safety cards, signs waiver, gets QR boarding pass. No app download. Under 3 minutes.'],
-              ['04', 'English-only forms for international guests', 'Guest flow in English, Spanish, Portuguese, French, German, Italian, and Arabic — with audio safety briefings for non-readers.'],
-              ['05', 'Manual headcount at the dock', 'Captain snapshot — live manifest, non-swimmer alerts, children under 6, dietary flags, weather — on the captain\'s phone with no login and no account.'],
+              ['04', 'English-only forms for international guests', 'Guest flow in English, Spanish, Portuguese, French, German, Italian, and Arabic with audio safety briefings for non-readers.'],
+              ['05', 'Manual headcount at the dock', 'Captain snapshot live manifest, non-swimmer alerts, children under 6, dietary flags, weather on the captain\'s phone with no login and no account.'],
             ].map(([num, old, next]) => (
               <div className="compare-row" key={num}>
                 <div className="cmp-num">{num}</div>
@@ -215,7 +215,7 @@ export default function HomepageBody() {
               ['01', 'Operator · 60 seconds', 'Create the Trip', 'Pick a boat, set the date, add guest capacity. Get back a shareable link and a 4-character trip code for over-the-phone bookings.'],
               ['02', 'Guest · 3 minutes', 'Join on Their Phone', 'Enters trip code, fills emergency contact and dietary info, uploads FWC ID if bareboat, swipes through 12 vessel-specific safety cards, signs the operator\'s chosen waiver.'],
               ['03', 'Captain · 30 seconds', 'Review the Snapshot', 'HMAC-signed link sent via SMS shows live manifest, non-swimmer alerts, dietary flags, weather, and the compliance gate. Captain attests briefing and confirms head count.'],
-              ['04', 'System · Instant', 'Record Sealed', 'USCG-format manifest PDF generated and emailed. Signed waivers archived. Audit log locked. Weather snapshot stored. The trip record is on file — searchable, exportable, defensible.'],
+              ['04', 'System · Instant', 'Record Sealed', 'USCG-format manifest PDF generated and emailed. Signed waivers archived. Audit log locked. Weather snapshot stored. The trip record is on file searchable, exportable, defensible.'],
             ].map(([num, label, title, body]) => (
               <div className="flow-cell" key={num}>
                 <span className="fc-num">{num}</span>
@@ -238,8 +238,8 @@ export default function HomepageBody() {
           </div>
           <div className="statute-stack">
             {[
-              ['Florida Statute · 2022', 'SB 606\n/ §327.54', 'The Boating Safety Act requires Florida livery operators to hold a no-cost FWC permit, carry insurance of at least $500,000 per person and $1M per event, and deliver pre-rental instruction to every renter. Boatcheckin captures the renter-acknowledgment side of that obligation — the documentation your operation keeps on file.', 'Bareboat · Mandatory since 2023'],
-              ['Federal Regulation', '46 CFR\n§185.506', 'The USCG safety-orientation requirement. Boatcheckin records the captain\'s attestation — topics covered, delivery method, timestamp, digital signature — so when an incident is investigated, the record the statute calls for is already on file. Per card, per guest, per trip.', 'Captained & Bareboat'],
+              ['Florida Statute · 2022', 'SB 606\n/ §327.54', 'The Boating Safety Act requires Florida livery operators to hold a no-cost FWC permit, carry insurance of at least $500,000 per person and $1M per event, and deliver pre-rental instruction to every renter. Boatcheckin captures the renter-acknowledgment side of that obligation the documentation your operation keeps on file.', 'Bareboat · Mandatory since 2023'],
+              ['Federal Regulation', '46 CFR\n§185.506', 'The USCG safety-orientation requirement. Boatcheckin records the captain\'s attestation topics covered, delivery method, timestamp, digital signature so when an incident is investigated, the record the statute calls for is already on file. Per card, per guest, per trip.', 'Captained & Bareboat'],
               ['Florida Statute', 'FWC\nChapter 327', 'Florida\'s bareboat livery briefing obligation. Guests upload their Boater Safety ID; the captain delivers and attests the pre-ride briefing; both parties sign. Boatcheckin handles all three steps in one flow and keeps the signed record.', 'Bareboat · Verified & Logged'],
             ].map(([badge, name, body, tag]) => (
               <div className="statute-item" key={badge}>
@@ -342,7 +342,7 @@ export default function HomepageBody() {
               <h3 className="tc-heading">One boat, one captain,<br /><em>zero paper.</em></h3>
               <p className="tc-body">If you run a single boat, you probably wear every hat on the dock. Boatcheckin gives solo operators the same record-keeping backbone the big fleets use, at no cost.</p>
               <ul className="tc-list">
-                {['One boat, unlimited trips', 'Full boat wizard with 14 vessel types', 'Guest flow, waivers, QR boarding pass', 'Captain snapshot on mobile — no login required', 'USCG-format manifest PDF per trip'].map(li => <li key={li}>{li}</li>)}
+                {['One boat, unlimited trips', 'Full boat wizard with 14 vessel types', 'Guest flow, waivers, QR boarding pass', 'Captain snapshot on mobile no login required', 'USCG-format manifest PDF per trip'].map(li => <li key={li}>{li}</li>)}
               </ul>
               <Link href="/signup" className="btn btn-primary">Start Free →</Link>
             </div>
@@ -376,7 +376,7 @@ export default function HomepageBody() {
             <div className="coverage-card">
               <div className="cov-label">For your captains</div>
               <h3 className="cov-title">Annual Mariner Liability</h3>
-              <p className="cov-body">Captains using Boatcheckin have direct access to professional liability coverage through our licensed insurance partner — from $26/month, covering every trip they run during the policy year.</p>
+             <p className="cov-body">Captains using Boatcheckin have direct access to professional liability coverage through our licensed insurance partner from $26/month, covering every trip they run during the policy year.</p>
               {[['Coverage type', 'Professional Liability'], ['Starts from', '$26 / month'], ['License protection', 'Up to $2M'], ['Placed by', 'Licensed agent']].map(([lbl, val]) => (
                 <div className="cov-row" key={lbl}><span className="cov-row-lbl">{lbl}</span><span className="cov-row-val">{val}</span></div>
               ))}
@@ -440,7 +440,7 @@ export default function HomepageBody() {
           </div>
           <div className="pricing-note">
             <div className="pricing-note-tag">For operators</div>
-            <p><strong>How two free tiers pay for themselves.</strong> Boatcheckin earns a fixed referral fee when guests opt into optional insurance or add-on services at checkout, independent of whether they purchase. Your subscription bill is $0 on Solo and Charter — and it stays that way.</p>
+           <p><strong>How two free tiers pay for themselves.</strong> Boatcheckin earns a fixed referral fee when guests opt into optional insurance or add-on services at checkout, independent of whether they purchase. Your subscription bill is $0 on Solo and Charter and it stays that way.</p>
           </div>
         </div>
       </section>
@@ -452,7 +452,7 @@ export default function HomepageBody() {
             <div>
               <span className="eyebrow brass">Already using a booking platform?</span>
               <h2 className="section-title" style={{ fontSize: 'clamp(28px,3.5vw,42px)', marginBottom: 16 }}>Boatcheckin clips onto<br />your existing flow.</h2>
-              <p className="section-sub" style={{ fontSize: 16, marginBottom: 28 }}>Boatcheckin doesn&apos;t replace your booking system — it&apos;s the compliance layer that activates after the booking confirms. Keep FareHarbor, WaveRez, Boatsetter, or BookingCentral for reservations.</p>
+             <p className="section-sub" style={{ fontSize: 16, marginBottom: 28 }}>Boatcheckin doesn&apos;t replace your booking system it&apos;s the compliance layer that activates after the booking confirms. Keep FareHarbor, WaveRez, Boatsetter, or BookingCentral for reservations.</p>
               <p style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-muted)', letterSpacing: '0.08em' }}>API integrations with leading platforms coming Q4 2026.</p>
             </div>
             <div>
@@ -480,7 +480,7 @@ export default function HomepageBody() {
               <h2 className="early-h">First 100 operators get<br />the <em>founding package.</em></h2>
               <p className="early-body">We&apos;re in the middle of onboarding our first wave of Florida marina operators. Each one gets treated like a partner, not a user.</p>
               <ul className="early-perks">
-                {['Branded waterproof captain\'s logbook + marina swag pack', 'Lifetime grandfather pricing on all future paid tiers', 'Priority support line — direct line, not a ticket queue', '"Founding Operator" badge on your profile', 'Input on the product roadmap for Q3–Q4 2026'].map(li => <li key={li}>{li}</li>)}
+                {['Branded waterproof captain\'s logbook + marina swag pack', 'Lifetime grandfather pricing on all future paid tiers', 'Priority support line direct line, not a ticket queue', '"Founding Operator" badge on your profile', 'Input on the product roadmap for Q3–Q4 2026'].map(li => <li key={li}>{li}</li>)}
               </ul>
               <div style={{ marginTop: 32 }}>
                 <Link href="/signup" className="btn btn-primary btn-lg">Claim a Founding Spot →</Link>
@@ -506,13 +506,13 @@ export default function HomepageBody() {
             </div>
             <div className="faq-list">
               {[
-                ['Is Boatcheckin really free for Solo and Charter tiers?', 'Yes. Forever. No credit card, no trial clock, no feature gating. Boatcheckin earns fixed referral fees from licensed partners when guests opt into optional insurance or add-on services — those fees are paid regardless of whether a guest actually purchases anything.'],
+                ['Is Boatcheckin really free for Solo and Charter tiers?', 'Yes. Forever. No credit card, no trial clock, no feature gating. Boatcheckin earns fixed referral fees from licensed partners when guests opt into optional insurance or add-on services those fees are paid regardless of whether a guest actually purchases anything.'],
                 ['Are the digital waivers legally enforceable?', 'Boatcheckin is designed around the requirements of the federal ESIGN Act and Florida\'s UETA for enforceable electronic signatures: intent to sign, consent to an electronic process, association of the signature with the record, and long-term record retention. Each signature is captured with a SHA-256 hash linking it to the exact waiver text.'],
-                ['How does Boatcheckin relate to Florida SB 606?', 'SB 606 places obligations on livery operators: FWC permitting, minimum insurance, and pre-rental instruction documentation. Boatcheckin captures the documentation side — the renter\'s acknowledgment, the guest\'s FWC Boater Safety ID, the captain\'s attestation, and the signed record. Always consult your attorney for application to your specific operation.'],
-                ['Can my guests use this without installing an app?', 'Yes — that\'s the whole point. Boatcheckin is a web app that runs in the guest\'s mobile browser. They tap the link you send, fill out details, sign the waiver, and receive their QR boarding pass — all without downloading anything.'],
+                ['How does Boatcheckin relate to Florida SB 606?', 'SB 606 places obligations on livery operators: FWC permitting, minimum insurance, and pre-rental instruction documentation. Boatcheckin captures the documentation side the renter\'s acknowledgment, the guest\'s FWC Boater Safety ID, the captain\'s attestation, and the signed record. Always consult your attorney for application to your specific operation.'],
+                ['Can my guests use this without installing an app?', 'Yes that\'s the whole point. Boatcheckin is a web app that runs in the guest\'s mobile browser. They tap the link you send, fill out details, sign the waiver, and receive their QR boarding pass all without downloading anything.'],
                 ['What about languages? My guests aren\'t all English speakers.', 'The guest flow is available in English, Spanish, Portuguese, French, German, Italian, and Arabic. Safety cards include optional audio, so guests who don\'t read can still hear the briefing in their own language.'],
                 ['Does Boatcheckin give legal or insurance advice?', 'No. Boatcheckin is a software platform. We don\'t draft waivers for your specific operation, we don\'t interpret statutes on your behalf, and we don\'t sell, solicit, or negotiate insurance.'],
-                ['What happens to guest data after the trip?', 'Marketing-related information is cleaned up on a rolling 90-day schedule unless the guest has opted into operator communications. Compliance-related records — signed waivers, safety-briefing attestations, manifests — are retained for the period your operation and its statutes require.'],
+                ['What happens to guest data after the trip?', 'Marketing-related information is cleaned up on a rolling 90-day schedule unless the guest has opted into operator communications. Compliance-related records signed waivers, safety-briefing attestations, manifests are retained for the period your operation and its statutes require.'],
                 ['How is my data secured?', 'Data is encrypted in transit (TLS 1.3) and at rest. Guest PII is minimized, access-controlled, and retained in line with regulatory recordkeeping requirements. Waiver and attestation records are cryptographically hashed so any modification is detectable.'],
               ].map(([q, a]) => (
                 <details className="faq-item" key={q}>
@@ -534,7 +534,7 @@ export default function HomepageBody() {
               <p className="fca-sub">Set up your first boat in under 10 minutes. Send your first guest link by tonight. Start your operation&apos;s record on a clean page.</p>
             </div>
             <div className="fca-stack">
-              <Link href="/signup" className="btn">Start Free — 10-min Setup →</Link>
+             <Link href="/signup" className="btn">Start Free · 10-min Setup →</Link>
               <a href="/contact" className="btn btn-outline">Book a Pilot Call</a>
             </div>
           </div>

@@ -503,7 +503,7 @@ export function Step9Photos({ data, onNext, saving, template }: Step9Props) {
             onClick={handleContinue}
             style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            Skip for now — I&apos;ll add these later
+            Skip for now I&apos;ll add these later
           </button>
         </div>
       </div>

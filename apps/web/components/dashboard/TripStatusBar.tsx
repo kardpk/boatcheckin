@@ -81,7 +81,7 @@ export function TripStatusBar({
               type: 'full_verbal' as const,
               topicsCovered: ['emergency_exits', 'life_jacket_location', 'life_jacket_donning',
                               'instruction_placards', 'hazardous_conditions'],
-              signature: 'Operator — Dashboard Confirmation',
+              signature: 'Operator Dashboard Confirmation',
               confirmedAt: new Date().toISOString(),
             },
           } : {}),
@@ -236,7 +236,7 @@ export function TripStatusBar({
                   className="font-mono"
                   style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}
                 >
-                  46 CFR 185.506 — Safety briefing
+                  46 CFR 185.506 Safety briefing
                 </span>
 
                 <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--s-3)', cursor: 'pointer' }}>
@@ -330,7 +330,7 @@ export function TripStatusBar({
                 className="font-mono"
                 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}
               >
-                Confirm — End Trip
+                Confirm End Trip
               </span>
             </div>
 

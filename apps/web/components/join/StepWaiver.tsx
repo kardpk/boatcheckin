@@ -219,19 +219,19 @@ export function StepWaiver({
             onUpdate({
               waiverAgreed: true,
               waiverScrolled: true,
-              signatureText: 'Skipped — Private Trip',
+              signatureText: 'Skipped Private Trip',
             })
             handleSign({
               ...state,
               waiverAgreed: true,
               waiverScrolled: true,
-              signatureText: 'Skipped — Private Trip',
+              signatureText: 'Skipped Private Trip',
             })
           }}
           disabled={state.isSubmitting}
           className="w-full mb-4 py-3 px-4 rounded-[12px] border border-border bg-bg text-[14px] text-navy font-medium hover:bg-gold-dim transition-colors"
         >
-          Skip waiver — this is a private trip
+          Skip waiver this is a private trip
         </button>
       )}
 

@@ -55,7 +55,7 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
 
   const addTimestampedEntry = useCallback(() => {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    const prefix = notes.trim() ? `\n${time} — ` : `${time} — `
+    const prefix = notes.trim() ? `\n${time} ` : `${time} `
     setNotes(prev => prev + prefix)
     // Focus the textarea and move cursor to end
     setTimeout(() => {
@@ -109,7 +109,7 @@ export function TripNotesPanel({ token, initialNotes }: TripNotesPanelProps) {
             onChange={e => setNotes(e.target.value)}
             maxLength={5000}
             rows={5}
-            placeholder={"10:15 — Wind picked up to 15kt NE\n10:45 — Moved to lee side of island\n11:30 — Guest reported mild nausea"}
+            placeholder={"10:15 Wind picked up to 15kt NE\n10:45 Moved to lee side of island\n11:30 Guest reported mild nausea"}
             className="
               w-full px-[12px] py-[10px] rounded-[10px] text-[14px]
               border border-border bg-bg text-navy

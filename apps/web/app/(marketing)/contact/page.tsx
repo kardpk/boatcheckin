@@ -25,7 +25,7 @@ export default function ContactPage() {
   <div className="container">
     <span className="eyebrow">Contact</span>
     <h1>
-      Reach us —<br/>
+      Reach us<br/>
       and <em>reach the right<br/>
       place</em> the first time.
     </h1>
@@ -46,7 +46,7 @@ export default function ContactPage() {
         </div>
         <span className="ch-tag">Channel · General</span>
         <div className="ch-title">General <em>questions.</em></div>
-        <div className="ch-body">For everything that isn't an active support ticket, a security report, or a formal legal notice. Pilot programs, partnership inquiries, media, demo requests, and operators trying to figure out if Boatcheckin is the right fit — this is the inbox.</div>
+       <div className="ch-body">For everything that isn't an active support ticket, a security report, or a formal legal notice. Pilot programs, partnership inquiries, media, demo requests, and operators trying to figure out if Boatcheckin is the right fit this is the inbox.</div>
         <div className="ch-address">
           <a href="mailto:hello@boatcheckin.com" className="ch-email">hello@boatcheckin.com</a>
           <span className="ch-meta">Typical reply · 1 business day</span>
@@ -192,7 +192,7 @@ export default function ContactPage() {
       <div className="emg-card">
         <div className="emg-lbl">Immediate distress</div>
         <div className="emg-name">U.S. Coast Guard</div>
-        <div className="emg-detail">Marine VHF — <strong>Channel 16</strong><br/>Digital Selective Calling — <strong>DSC distress</strong><br/>By phone — <strong>dial 911</strong> and specify marine emergency</div>
+       <div className="emg-detail">Marine VHF <strong>Channel 16</strong><br/>Digital Selective Calling <strong>DSC distress</strong><br/>By phone <strong>dial 911</strong> and specify marine emergency</div>
       </div>
       <div className="emg-card">
         <div className="emg-lbl">Florida waters · non-emergency</div>
@@ -202,7 +202,7 @@ export default function ContactPage() {
       <div className="emg-card">
         <div className="emg-lbl">Vessel-assist &amp; tow</div>
         <div className="emg-name">Commercial tow services</div>
-        <div className="emg-detail">For a disabled vessel that is safe (no injury, no taking-on-water), contact your commercial tow service directly — TowBoatUS, Sea Tow, or equivalent — on Channel 16 or by phone.</div>
+       <div className="emg-detail">For a disabled vessel that is safe (no injury, no taking-on-water), contact your commercial tow service directly TowBoatUS, Sea Tow, or equivalent on Channel 16 or by phone.</div>
       </div>
     </div>
 
@@ -229,8 +229,8 @@ export default function ContactPage() {
           <div className="dd-title">What helps</div>
         </div>
         <ul className="dd-list">
-          <li><strong>Your operator type.</strong> Solo captain, small charter company, marina or fleet — the context changes the answer.</li>
-          <li><strong>Your vessel class.</strong> Six-pack, inspected small passenger vessel, bareboat livery, rental — relevant for almost any compliance question.</li>
+         <li><strong>Your operator type.</strong> Solo captain, small charter company, marina or fleet the context changes the answer.</li>
+         <li><strong>Your vessel class.</strong> Six-pack, inspected small passenger vessel, bareboat livery, rental relevant for almost any compliance question.</li>
           <li><strong>What you've already tried.</strong> Screenshots, the time of the event in Eastern Time, the trip or guest ID if applicable.</li>
           <li><strong>The channel that fits.</strong> Security reports to security@, legal notices to legal@, product questions to support@ or in-app. Saves routing time.</li>
           <li><strong>How to reach you back.</strong> Email is fine; phone if the situation is time-sensitive and you'd rather talk.</li>
@@ -243,11 +243,11 @@ export default function ContactPage() {
           <div className="dd-title">What slows things down</div>
         </div>
         <ul className="dd-list">
-          <li><strong>Sending the same message to every channel.</strong> It triggers duplicate-handling and delays all threads — pick one inbox and we'll route internally if needed.</li>
+         <li><strong>Sending the same message to every channel.</strong> It triggers duplicate-handling and delays all threads pick one inbox and we'll route internally if needed.</li>
           <li><strong>Emergencies on the water.</strong> We can't help; the USCG, FWC, or a commercial tow can. Please see the emergency section above.</li>
           <li><strong>Requests for legal interpretation.</strong> We cannot tell you whether your operation complies with a particular statute. That's what your attorney is for.</li>
           <li><strong>Requests to customize a waiver.</strong> Waiver language is yours to author with your attorney. We store and hash the text you provide; we do not draft it.</li>
-          <li><strong>"Can you make an exception."</strong> For security-critical features — audit logs, consent capture, retention windows — the answer is no, by design. We'll explain why, happily.</li>
+         <li><strong>"Can you make an exception."</strong> For security-critical features audit logs, consent capture, retention windows the answer is no, by design. We'll explain why, happily.</li>
         </ul>
       </div>
 

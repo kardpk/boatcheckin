@@ -31,7 +31,7 @@ export function PostTripHero({ data }: { data: PostTripPageData }) {
         {data.weather && (
           <div className="mt-4 flex items-center justify-center gap-2 text-[14px] font-medium opacity-90">
             <span>{data.weather.icon}</span>
-            <span>{data.weather.temperature}°F — {data.weather.label}</span>
+           <span>{data.weather.temperature}°F {data.weather.label}</span>
           </div>
         )}
       </div>

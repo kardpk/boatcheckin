@@ -207,7 +207,7 @@ function TopicEditor({ topicKey, langRow, activeLang, onFeedback }: {
     <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
       {!langRow && (
         <div className="bg-gold-dim rounded-[8px] px-3 py-2 text-[12px] text-navy font-medium">
-          No {LANG_LABELS[activeLang]} translation yet — fill in below to create one.
+          No {LANG_LABELS[activeLang]} translation yet fill in below to create one.
         </div>
       )}
 

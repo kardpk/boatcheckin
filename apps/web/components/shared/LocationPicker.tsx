@@ -138,7 +138,7 @@ export function LocationPicker({
         )}
         {geocodeStatus === "manual" && (
           <p className="text-caption text-success-text">
-            Location set — guests will navigate here
+            Location set guests will navigate here
           </p>
         )}
         {lat && lng && (

@@ -50,7 +50,7 @@ export default function DmcaPage() {
     <div className="doc-content">
 
       <h2 id="s1"><span className="sec">§ 1</span>About this Policy</h2>
-      <p>The Services enable Operators and Guests to upload content — waiver text, vessel photos, operator logos, and similar materials. We do not pre-screen this content; Operators are responsible for the content they submit under our <a className="inline" href="/terms">Terms of Service</a> and <a className="inline" href="/acceptable-use">Acceptable Use Policy</a>.</p>
+     <p>The Services enable Operators and Guests to upload content waiver text, vessel photos, operator logos, and similar materials. We do not pre-screen this content; Operators are responsible for the content they submit under our <a className="inline" href="/terms">Terms of Service</a> and <a className="inline" href="/acceptable-use">Acceptable Use Policy</a>.</p>
       <p>If you are a copyright owner (or an agent authorized to act on behalf of one) and you believe content on the Services infringes your copyright, you can submit a notice as described below. We will respond to properly submitted notices in accordance with the DMCA.</p>
 
       <h2 id="s2"><span className="sec">§ 2</span>Designated Agent</h2>
@@ -69,9 +69,9 @@ export default function DmcaPage() {
 
       <ul className="checklist">
         <li><span className="num">01</span><div><strong>A physical or electronic signature</strong> of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.</div></li>
-        <li><span className="num">02</span><div><strong>Identification of the copyrighted work</strong> claimed to have been infringed, or — if multiple works are covered by a single notice — a representative list.</div></li>
-        <li><span className="num">03</span><div><strong>Identification of the allegedly infringing material</strong> and information reasonably sufficient to permit us to locate it — typically, the specific URL(s) on the Services where the material appears.</div></li>
-        <li><span className="num">04</span><div><strong>Your contact information</strong> — name, address, telephone number, and email address — so we can respond and, if appropriate, share it with the user who posted the content.</div></li>
+       <li><span className="num">02</span><div><strong>Identification of the copyrighted work</strong> claimed to have been infringed, or if multiple works are covered by a single notice a representative list.</div></li>
+       <li><span className="num">03</span><div><strong>Identification of the allegedly infringing material</strong> and information reasonably sufficient to permit us to locate it typically, the specific URL(s) on the Services where the material appears.</div></li>
+       <li><span className="num">04</span><div><strong>Your contact information</strong> name, address, telephone number, and email address so we can respond and, if appropriate, share it with the user who posted the content.</div></li>
         <li><span className="num">05</span><div><strong>A statement</strong> that you have a good-faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.</div></li>
         <li><span className="num">06</span><div><strong>A statement, under penalty of perjury</strong>, that the information in the notice is accurate and that you are the copyright owner or authorized to act on the owner's behalf.</div></li>
       </ul>
@@ -91,14 +91,14 @@ export default function DmcaPage() {
       <p>We are not obligated to evaluate the merits of a claim of infringement; removal or disabling access is our protective response under the DMCA.</p>
 
       <h2 id="s5"><span className="sec">§ 5</span>Submitting a Counter-Notice</h2>
-      <p>If you are a user whose content was removed or disabled and you believe it was removed in error — for example, because the content is your own, is licensed, is used with permission, or qualifies as fair use — you may submit a counter-notice.</p>
+     <p>If you are a user whose content was removed or disabled and you believe it was removed in error for example, because the content is your own, is licensed, is used with permission, or qualifies as fair use you may submit a counter-notice.</p>
       <p>To be effective under 17 U.S.C. § 512(g)(3), your counter-notice must include each of the following:</p>
 
       <ul className="checklist">
         <li><span className="num">01</span><div><strong>Your physical or electronic signature.</strong></div></li>
         <li><span className="num">02</span><div><strong>Identification of the material</strong> that was removed or disabled and the location where it appeared before removal.</div></li>
         <li><span className="num">03</span><div><strong>A statement, under penalty of perjury</strong>, that you have a good-faith belief that the material was removed or disabled as a result of mistake or misidentification.</div></li>
-        <li><span className="num">04</span><div><strong>Your name, address, and telephone number</strong>, and a statement that you consent to the jurisdiction of the federal district court for the judicial district in which your address is located — or, if your address is outside the United States, any judicial district in which Boatcheckin may be found — and that you will accept service of process from the party who submitted the original notice or an agent of that party.</div></li>
+       <li><span className="num">04</span><div><strong>Your name, address, and telephone number</strong>, and a statement that you consent to the jurisdiction of the federal district court for the judicial district in which your address is located or, if your address is outside the United States, any judicial district in which Boatcheckin may be found and that you will accept service of process from the party who submitted the original notice or an agent of that party.</div></li>
       </ul>
 
       <h2 id="s6"><span className="sec">§ 6</span>What happens after a Counter-Notice</h2>
@@ -117,7 +117,7 @@ export default function DmcaPage() {
       <p>This Policy applies specifically to copyright. If you believe your trademark, publicity right, or other intellectual property right is being infringed on the Services, contact us at <a className="inline" href="mailto:legal@boatcheckin.com">legal@boatcheckin.com</a>. We evaluate each notice on its merits; non-copyright IP matters are not subject to the statutory DMCA timelines but receive a good-faith response.</p>
 
       <h2 id="s9"><span className="sec">§ 9</span>Good faith and sworn statements</h2>
-      <p>Both a notice under § 3 and a counter-notice under § 5 include a statement made under penalty of perjury. Treat the required statements accordingly. If you are unsure whether your concern rises to the level of infringement — for example, whether a use qualifies as fair use, or whether a license you signed permits the use — we recommend consulting an attorney before submitting a notice.</p>
+     <p>Both a notice under § 3 and a counter-notice under § 5 include a statement made under penalty of perjury. Treat the required statements accordingly. If you are unsure whether your concern rises to the level of infringement for example, whether a use qualifies as fair use, or whether a license you signed permits the use we recommend consulting an attorney before submitting a notice.</p>
 
       <h2 id="s10"><span className="sec">§ 10</span>Contact</h2>
       <p>All DMCA notices and counter-notices should be directed to the Designated Agent above. For general copyright questions, contact us.</p>

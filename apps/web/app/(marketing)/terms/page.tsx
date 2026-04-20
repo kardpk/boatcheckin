@@ -15,7 +15,7 @@ export default function TermsPage() {
   <div className="container-doc">
     <span className="eyebrow">Terms of Service</span>
     <h1>The terms that govern use of <em>Boatcheckin.</em></h1>
-    <p style={{ fontSize: '17px', lineHeight: '1.65', color: 'var(--ink-soft)', maxWidth: '680px' }}>These Terms form a binding agreement between you and Boatcheckin. They cover what the Services are, what we expect from you, what you can expect from us, the disclaimers that apply, and how disputes are resolved. Please read them carefully — <strong>particularly §10 (Disclaimers), §11 (Limitation of Liability), and §14 (Dispute Resolution)</strong>, which affect your legal rights.</p>
+   <p style={{ fontSize: '17px', lineHeight: '1.65', color: 'var(--ink-soft)', maxWidth: '680px' }}>These Terms form a binding agreement between you and Boatcheckin. They cover what the Services are, what we expect from you, what you can expect from us, the disclaimers that apply, and how disputes are resolved. Please read them carefully <strong>particularly §10 (Disclaimers), §11 (Limitation of Liability), and §14 (Dispute Resolution)</strong>, which affect your legal rights.</p>
     <div className="doc-meta">
       <div className="doc-meta-item"><span className="dm-label">Version</span><span className="dm-value">1.0</span></div>
       <div className="doc-meta-item"><span className="dm-label">Effective date</span><span className="dm-value">April 20, 2026</span></div>
@@ -159,11 +159,11 @@ export default function TermsPage() {
       <p>"Boatcheckin" and the Boatcheckin logo are trademarks of Oakmont Logic LLC. You may not use them without our prior written consent, except to accurately identify the Services in compliance with applicable law.</p>
 
       <h2 id="s8"><span className="sec">§ 8</span>Third-party services</h2>
-      <p>The Services may integrate with, link to, or rely on services provided by third parties — including booking platforms, payment processors, SMS and email delivery networks, mapping providers, identity verification services, and insurance agents or brokers. Third-party services are provided by those third parties under their own terms and privacy notices. We are not responsible for, and make no representations about, the availability, security, content, or practices of third-party services. Your use of third-party services is at your own risk.</p>
+     <p>The Services may integrate with, link to, or rely on services provided by third parties including booking platforms, payment processors, SMS and email delivery networks, mapping providers, identity verification services, and insurance agents or brokers. Third-party services are provided by those third parties under their own terms and privacy notices. We are not responsible for, and make no representations about, the availability, security, content, or practices of third-party services. Your use of third-party services is at your own risk.</p>
 
       <div className="callout info">
         <div className="callout-tag info">Insurance partners</div>
-        <p>Where the Services reference insurance products, those products are offered, underwritten, and serviced by licensed insurance agents and carriers — not by Boatcheckin. Boatcheckin does not sell, solicit, negotiate, bind, or service insurance. Where a referral relationship exists, Boatcheckin receives a fixed fee regardless of whether a policy is purchased. Any insurance relationship is between you and the licensed agent or carrier.</p>
+       <p>Where the Services reference insurance products, those products are offered, underwritten, and serviced by licensed insurance agents and carriers not by Boatcheckin. Boatcheckin does not sell, solicit, negotiate, bind, or service insurance. Where a referral relationship exists, Boatcheckin receives a fixed fee regardless of whether a policy is purchased. Any insurance relationship is between you and the licensed agent or carrier.</p>
       </div>
 
       <h2 id="s9"><span className="sec">§ 9</span>Maritime context</h2>

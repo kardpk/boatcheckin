@@ -52,7 +52,7 @@ export function TodayWeatherBar({
             whiteSpace: "nowrap",
           }}
         >
-          {alert.headline} — {boatName}
+          {alert.headline} {boatName}
         </p>
         <p
           className="mono"
