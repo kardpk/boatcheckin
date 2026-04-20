@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 
 const COMPLIANCE_LINKS: [string, string][] = [
@@ -28,6 +28,16 @@ function ChevronIcon() {
 export function MarketingNav() {
   const [navOpen, setNavOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function openDropdown() {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setDropdownOpen(true)
+  }
+
+  function scheduleClose() {
+    closeTimer.current = setTimeout(() => setDropdownOpen(false), 150)
+  }
 
   return (
     <nav className="hp-nav">
@@ -50,14 +60,18 @@ export function MarketingNav() {
           {/* Compliance dropdown */}
           <div
             className="nav-dropdown-wrap"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
+            onMouseEnter={openDropdown}
+            onMouseLeave={scheduleClose}
           >
             <Link href="/#compliance" className="nav-dropdown-trigger" onClick={() => setDropdownOpen(o => !o)}>
               Compliance<ChevronIcon />
             </Link>
             {dropdownOpen && (
-              <div className="nav-dropdown">
+              <div
+                className="nav-dropdown"
+                onMouseEnter={openDropdown}
+                onMouseLeave={scheduleClose}
+              >
                 {COMPLIANCE_LINKS.map(([href, label]) => (
                   <Link key={href} href={href} className="nav-dropdown-item" onClick={() => { setDropdownOpen(false); setNavOpen(false) }}>
                     {label}
