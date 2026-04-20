@@ -26,7 +26,7 @@ export function MarketingScripts() {
 
     const animElements = document.querySelectorAll(
       '.flow-cell, .aud-card, .principle-item, .not-row, .ad-card, ' +
-      '.ts-step, .v-step, .seal-cell, .fca-item, .gap-row'
+      '.ts-step, .v-step, .seal-cell, .fca-item'
     )
     animElements.forEach(item => {
       const hEl = item as HTMLElement
