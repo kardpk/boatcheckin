@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * DashTile — Universal Dashboard Tile Component
  *
