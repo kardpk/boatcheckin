@@ -1,7 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { CheckCircle, AlertTriangle, Clock } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { CheckCircle, AlertTriangle, Clock, Camera, X, ImagePlus } from 'lucide-react'
+
+interface PhotoRecord {
+  url:  string
+  path: string
+}
 
 interface RentalDayRecord {
   id: string
@@ -15,6 +20,8 @@ interface RentalDayRecord {
   issues_reported: string | null
   check_in_at: string | null
   check_out_at: string | null
+  photos_in?: PhotoRecord[]
+  photos_out?: PhotoRecord[]
 }
 
 interface Props {
@@ -32,6 +39,27 @@ interface Props {
 }
 
 const FUEL_LEVELS = ['full', '3/4', '1/2', '1/4', 'empty'] as const
+const MAX_PHOTOS = 3
+
+// ── Client-side image compression ────────────────────────────────────────────
+async function compressImage(file: File, maxPx = 1200, quality = 0.85): Promise<Blob> {
+  if (typeof window === 'undefined' || !window.createImageBitmap) {
+    return file  // SSR or unsupported — pass through
+  }
+  try {
+    const img    = await createImageBitmap(file)
+    const scale  = Math.min(1, maxPx / Math.max(img.width, img.height))
+    const canvas = document.createElement('canvas')
+    canvas.width  = Math.round(img.width  * scale)
+    canvas.height = Math.round(img.height * scale)
+    canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height)
+    return new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b ?? file), 'image/jpeg', quality)
+    )
+  } catch {
+    return file  // compression failed — pass original
+  }
+}
 
 function formatDate(iso: string) {
   return new Date(iso + 'T12:00:00').toLocaleDateString('en-US', {
@@ -55,15 +83,157 @@ export function DayConditionClient(props: Props) {
   const [error, setError]         = useState('')
   const [sealedRecord, setSealedRecord] = useState<RentalDayRecord | null>(rentalDay)
 
+  // Photo state — separate for check-in vs check-out
+  const [photos, setPhotos]           = useState<PhotoRecord[]>([])
+  const [uploading, setUploading]     = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const dayDate = rentalDay?.day_date ?? ''
 
+  // ── Photo upload handler ──────────────────────────────────────────────────
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Reset input so same file can be re-selected
+    e.target.value = ''
+
+    if (photos.length >= MAX_PHOTOS) {
+      setUploadError(`Maximum ${MAX_PHOTOS} photos allowed`)
+      return
+    }
+
+    setUploadError('')
+    setUploading(true)
+
+    const phase   = status === 'active' ? 'out' : 'in'
+    const compressed = await compressImage(file)
+    const formData   = new FormData()
+    formData.append('file',    new File([compressed], file.name, { type: 'image/jpeg' }))
+    formData.append('guestId', guestId)
+    formData.append('phase',   phase)
+
+    const res  = await fetch(`/api/trips/${slug}/rental-days/${dayNumber}/upload-photo`, {
+      method: 'POST',
+      body: formData,
+    })
+    const json = await res.json()
+
+    setUploading(false)
+
+    if (!res.ok) {
+      setUploadError(json.error ?? 'Upload failed')
+      return
+    }
+
+    setPhotos(prev => [...prev, { url: json.data.url, path: json.data.path }])
+  }
+
+  function removePhoto(idx: number) {
+    setPhotos(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  // ── Photo widget UI ───────────────────────────────────────────────────────
+  function PhotoWidget() {
+    return (
+      <div style={sty.card}>
+        <label style={sty.label}>Condition photos (optional · max {MAX_PHOTOS})</label>
+
+        {/* Thumbnails */}
+        {photos.length > 0 && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+            {photos.map((p, i) => (
+              <div key={i} style={{ position: 'relative', width: 64, height: 64 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={p.url}
+                  alt={`Photo ${i + 1}`}
+                  style={{ width: 64, height: 64, objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                />
+                <button
+                  onClick={() => removePhoto(i)}
+                  style={{
+                    position: 'absolute', top: -6, right: -6,
+                    background: 'var(--color-ink)', border: 'none',
+                    borderRadius: '50%', width: 18, height: 18,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', padding: 0,
+                  }}
+                  aria-label="Remove photo"
+                >
+                  <X size={10} color="#fff" />
+                </button>
+              </div>
+            ))}
+
+            {/* Uploading placeholder */}
+            {uploading && (
+              <div style={{
+                width: 64, height: 64,
+                background: 'var(--color-ink-faint)',
+                border: '1px solid var(--color-border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: 'pulse 1.4s ease-in-out infinite',
+              }}>
+                <Camera size={20} color="var(--color-ink-secondary)" />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Add button */}
+        {photos.length < MAX_PHOTOS && !uploading && (
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 14px',
+              border: '1px dashed var(--color-border)',
+              background: 'var(--color-bone)',
+              color: 'var(--color-ink-secondary)',
+              fontSize: 13, cursor: 'pointer', width: '100%',
+            }}
+          >
+            <ImagePlus size={14} strokeWidth={1.5} />
+            {photos.length === 0 ? 'Add condition photos' : `Add another (${photos.length}/${MAX_PHOTOS})`}
+          </button>
+        )}
+
+        {uploading && photos.length === 0 && (
+          <p style={{ fontSize: 12, color: 'var(--color-ink-secondary)' }}>Uploading…</p>
+        )}
+
+        {uploadError && (
+          <p style={{ fontSize: 12, color: '#b42814', marginTop: 6 }}>{uploadError}</p>
+        )}
+
+        {/* Hidden file input — camera capture on mobile */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+      </div>
+    )
+  }
+
+  // ── Check-in submit ───────────────────────────────────────────────────────
   async function submitCheckIn() {
     setSubmitting(true)
     setError('')
     const res = await fetch(`/api/trips/${slug}/rental-days/${dayNumber}/check-in`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ guestId, notes: notes || undefined, fuelLevel: fuelLevel || undefined }),
+      body: JSON.stringify({
+        guestId,
+        notes:     notes || undefined,
+        fuelLevel: fuelLevel || undefined,
+        photoUrls: photos.length > 0 ? photos.map(p => p.url) : undefined,
+      }),
     })
     const json = await res.json()
     if (!res.ok) { setError(json.error ?? 'Failed'); setSubmitting(false); return }
@@ -71,9 +241,11 @@ export function DayConditionClient(props: Props) {
     setStatus('active')
     setNotes('')
     setFuelLevel('')
+    setPhotos([])
     setSubmitting(false)
   }
 
+  // ── Check-out submit ──────────────────────────────────────────────────────
   async function submitCheckOut() {
     setSubmitting(true)
     setError('')
@@ -82,9 +254,10 @@ export function DayConditionClient(props: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         guestId,
-        notes: notes || undefined,
-        fuelLevel: fuelLevel || undefined,
+        notes:          notes || undefined,
+        fuelLevel:      fuelLevel || undefined,
         issuesReported: hasIssues ? issues : undefined,
+        photoUrls:      photos.length > 0 ? photos.map(p => p.url) : undefined,
       }),
     })
     const json = await res.json()
@@ -94,6 +267,7 @@ export function DayConditionClient(props: Props) {
     setSubmitting(false)
   }
 
+  // ── Styles ────────────────────────────────────────────────────────────────
   const sty = {
     page: {
       minHeight: '100dvh',
@@ -191,7 +365,7 @@ export function DayConditionClient(props: Props) {
     }),
   }
 
-  // ── Header ────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div style={sty.page}>
       <p style={sty.kicker}>{boatName} · {marinaName}{slipNumber ? ` · Slip ${slipNumber}` : ''}</p>
@@ -226,6 +400,16 @@ export function DayConditionClient(props: Props) {
                 {sealedRecord.notes_in}
               </div>
             )}
+            {/* Check-in photos */}
+            {(sealedRecord.photos_in ?? []).length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', paddingTop: 8 }}>
+                {(sealedRecord.photos_in ?? []).map((p, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={i} src={p.url} alt={`Check-in photo ${i + 1}`}
+                    style={{ width: 56, height: 56, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                ))}
+              </div>
+            )}
           </div>
 
           <div style={sty.card}>
@@ -242,6 +426,16 @@ export function DayConditionClient(props: Props) {
             {sealedRecord.issues_reported && (
               <div style={{ padding: '8px 0', fontSize: 13, color: 'var(--color-amber)', borderTop: '1px solid var(--color-border)', marginTop: 4 }}>
                 Issue: {sealedRecord.issues_reported}
+              </div>
+            )}
+            {/* Check-out photos */}
+            {(sealedRecord.photos_out ?? []).length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', paddingTop: 8 }}>
+                {(sealedRecord.photos_out ?? []).map((p, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={i} src={p.url} alt={`Check-out photo ${i + 1}`}
+                    style={{ width: 56, height: 56, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                ))}
               </div>
             )}
           </div>
@@ -271,6 +465,8 @@ export function DayConditionClient(props: Props) {
             <label style={sty.label}>Notes (optional)</label>
             <textarea style={sty.textarea} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Condition, observations..." />
           </div>
+
+          <PhotoWidget />
 
           <div style={sty.card}>
             <label style={{ ...sty.label, marginBottom: 10 }}>Any issues to report?</label>
@@ -325,6 +521,8 @@ export function DayConditionClient(props: Props) {
             <label style={sty.label}>Notes (optional)</label>
             <textarea style={sty.textarea} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any observations at start of day..." />
           </div>
+
+          <PhotoWidget />
 
           {error && <div style={sty.errorBox}>{error}</div>}
           <button disabled={submitting} style={sty.btn(submitting)} onClick={submitCheckIn}>

@@ -652,12 +652,32 @@ export interface PostcardData {
   style: PostcardStyle
 }
 
+// ─── Rental day summary item (post-trip) ────
+export interface RentalDaySummaryItem {
+  dayNumber:  number
+  dayDate:    string
+  status:     'pending' | 'active' | 'complete' | 'issue'
+  photosIn:   string[]
+  photosOut:  string[]
+  hasIssues:  boolean
+}
+
+// ─── Add-on order summary item (post-trip) ──
+export interface PostTripAddonSummaryItem {
+  name:           string
+  quantity:       number
+  totalCents:     number
+  fulfillmentStatus: string
+}
+
 export interface PostTripPageData {
   tripId: string
   slug: string
   tripDate: string
   departureTime: string
   durationHours: number
+  durationDays:  number | null   // null = single day trip
+  isMultiDay:    boolean
   boatName: string
   captainName: string | null
   marinaName: string
@@ -672,6 +692,21 @@ export interface PostTripPageData {
   } | null
   guestName: string | null
   existingRating: number | null
+  // Multi-day rental summary (Phase 4E)
+  rentalDaySummary: RentalDaySummaryItem[] | null
+  returnCondition: {
+    inspectedAt: string
+    hasIssues:   boolean
+    fuelLevel:   string | null
+  } | null
+  // Add-on order summary
+  addonOrderSummary: PostTripAddonSummaryItem[] | null
+  // Seasonal promo from operator (Phase 4E)
+  seasonalPromo: {
+    label: string
+    dates: string
+    url:   string | null
+  } | null
 }
 
 // ═══════════════════════════════════════════

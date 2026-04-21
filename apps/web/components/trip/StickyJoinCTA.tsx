@@ -41,6 +41,9 @@ interface TripDataForJoin {
   hasPropertyCodes:  boolean
   operatorId:        string
   tripDepartureIso:  string
+  // Multi-day rental (Phase 4E)
+  durationDays:     number | null
+  returnDate:       string | null
 }
 
 interface StickyJoinCTAProps {

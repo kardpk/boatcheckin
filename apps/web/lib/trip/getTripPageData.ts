@@ -43,6 +43,9 @@ export interface TripPageData {
   routeStops: RouteStop[]
   startedAt: string | null
   endedAt: string | null
+  // Multi-day rental fields (Phase 4E)
+  durationDays: number | null   // null = single day
+  returnDate:   string | null   // ISO date of final day
   // Self-drive qualification settings
   requiresQualification: boolean
   requiresBoaterCard: boolean
@@ -169,6 +172,7 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
       duration_hours, max_guests, status, charter_type, trip_purpose,
       special_notes, requires_approval, route_description,
       route_stops, started_at, ended_at,
+      duration_days, return_date,
       trip_type, requires_qualification,
       operators ( id, company_name ),
       boats (
@@ -245,6 +249,9 @@ export async function getTripPageData(slug: string): Promise<GetTripResult> {
     routeStops: (trip.route_stops as RouteStop[]) ?? [],
     startedAt: trip.started_at ?? null,
     endedAt: trip.ended_at ?? null,
+    // Multi-day rental (Phase 4E)
+    durationDays: (trip as Record<string, unknown>).duration_days as number | null ?? null,
+    returnDate:   (trip as Record<string, unknown>).return_date   as string | null ?? null,
     // Self-drive qualification — trip-level OR boat-level (trip overrides)
     requiresQualification:
       (trip as Record<string, unknown>).requires_qualification === true ||

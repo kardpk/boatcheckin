@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
-import { Download, Lock, PartyPopper, Anchor, Shield, Check, Bell } from 'lucide-react'
+import { Download, Lock, PartyPopper, Anchor, Shield, Check, Bell, CalendarDays, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import html2canvas from 'html2canvas'
 import { formatTripDate, formatTime, formatDuration } from '@/lib/utils/format'
@@ -20,6 +20,9 @@ interface StepBoardingProps {
     departureTime: string
     durationHours: number
     charterType: string
+    // Multi-day rental (Phase 4E)
+    durationDays:  number | null
+    returnDate:    string | null
   }
   state: JoinFlowState
   tripSlug: string
@@ -413,6 +416,69 @@ export function StepBoarding({ tripData, state, tripSlug, onClose }: StepBoardin
         <Download size={16} strokeWidth={2} />
         {isSaving ? 'Generating…' : 'Save boarding pass'}
       </button>
+
+      {/* ── Multi-day rental: day links ─────────────────────────────────── */}
+      {tripData.durationDays && tripData.durationDays > 1 && state.guestId && (
+        <div
+          className="tile"
+          style={{ padding: 'var(--s-4)', marginTop: 16, marginBottom: 4 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <CalendarDays size={14} strokeWidth={1.5} style={{ color: 'var(--color-rust)' }} />
+            <p className="font-mono" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink)', margin: 0 }}>
+              {tripData.durationDays}-day rental — daily check-in
+            </p>
+          </div>
+          <p style={{ fontSize: 12, color: 'var(--color-ink-muted)', marginBottom: 14, lineHeight: 1.5 }}>
+            Each morning and evening, document the vessel condition on your daily check-in link.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {Array.from({ length: tripData.durationDays }, (_, i) => {
+              const dayNum = i + 1
+              const dayDate = (() => {
+                try {
+                  const d = new Date(tripData.tripDate + 'T12:00:00')
+                  d.setDate(d.getDate() + i)
+                  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase()
+                } catch { return `Day ${dayNum}` }
+              })()
+              const isFinalDay = dayNum === tripData.durationDays
+              const href = isFinalDay
+                ? `/trip/${tripSlug}/return?guestId=${state.guestId}`
+                : `/trip/${tripSlug}/day/${dayNum}?guestId=${state.guestId}`
+              return (
+                <a
+                  key={dayNum}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'space-between',
+                    padding:        '8px 10px',
+                    border:         '1px solid var(--color-line-soft)',
+                    background:     isFinalDay ? 'var(--color-bone)' : 'var(--color-paper)',
+                    textDecoration: 'none',
+                    color:          'var(--color-ink)',
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <span className="font-mono" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--color-ink-muted)', minWidth: 36 }}>
+                      Day {dayNum}
+                    </span>
+                    <span style={{ fontSize: 12 }}>{dayDate}</span>
+                    {isFinalDay && (
+                      <span className="font-mono" style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--color-rust)', textTransform: 'uppercase' }}>Return</span>
+                    )}
+                  </div>
+                  <ChevronRight size={13} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} />
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Secondary actions ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>

@@ -220,7 +220,9 @@ export default async function TripPage({
           hasPropertyCodes:      trip.hasPropertyCodes,
           operatorId:            trip.operator.id,
           tripDepartureIso:      trip.tripDepartureIso,
-
+          // Multi-day rental (Phase 4E)
+          durationDays:          trip.durationDays,
+          returnDate:            trip.returnDate,
         }}
       />
 

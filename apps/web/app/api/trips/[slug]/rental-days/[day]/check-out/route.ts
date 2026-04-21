@@ -11,6 +11,7 @@ const checkOutSchema = z.object({
   notes:           z.string().max(500).optional(),
   fuelLevel:       z.enum(['full', '3/4', '1/2', '1/4', 'empty']).optional(),
   issuesReported:  z.string().max(500).optional(),
+  photoUrls:       z.array(z.string().url()).max(3).optional(),  // up to 3 uploaded photo URLs
 })
 
 /**
@@ -40,7 +41,7 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid body', fieldErrors: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
 
-  const { guestId, notes, fuelLevel, issuesReported } = parsed.data
+  const { guestId, notes, fuelLevel, issuesReported, photoUrls } = parsed.data
   const supabase = createServiceClient()
 
   // Verify guest belongs to this trip
@@ -89,15 +90,17 @@ export async function POST(
       fuel_level_out:  fuelLevel ?? null,
       issues_reported: issuesReported?.trim() || null,
       status:          hasIssue ? 'issue' : 'complete',
+      photos_out: (photoUrls ?? []).map(url => ({ url, uploadedAt: now })),
       condition_out: {
         submittedAt:    now,
         notes:          notes ?? null,
         fuelLevel:      fuelLevel ?? null,
         issuesReported: issuesReported ?? null,
+        photoCount:     (photoUrls ?? []).length,
       },
     })
     .eq('id', rentalDay.id)
-    .select('id, day_number, status, check_out_at, notes_out, fuel_level_out, issues_reported')
+    .select('id, day_number, status, check_out_at, notes_out, fuel_level_out, issues_reported, photos_out')
     .single()
 
   if (error || !updated) return NextResponse.json({ error: 'Check-out failed' }, { status: 500 })

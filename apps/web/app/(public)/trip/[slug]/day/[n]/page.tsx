@@ -61,7 +61,7 @@ export default async function DayConditionPage({ params, searchParams }: Props) 
   // Fetch the rental day record
   const { data: rentalDay } = await supabase
     .from('rental_days')
-    .select('id, day_number, day_date, status, notes_in, notes_out, fuel_level_in, fuel_level_out, issues_reported, check_in_at, check_out_at')
+    .select('id, day_number, day_date, status, notes_in, notes_out, fuel_level_in, fuel_level_out, issues_reported, check_in_at, check_out_at, photos_in, photos_out')
     .eq('trip_id', trip.id)
     .eq('day_number', dayNumber)
     .maybeSingle()

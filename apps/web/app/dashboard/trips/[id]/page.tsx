@@ -31,9 +31,10 @@ export default async function TripDetailPage({
     .from('trips')
     .select(`
       id, slug, trip_code, trip_date, departure_time,
-      duration_hours, max_guests, status, charter_type,
+      duration_hours, duration_days, max_guests, status, charter_type,
       requires_approval, special_notes,
       started_at, trip_type, requires_qualification,
+      return_inspected_at, return_has_issues, return_fuel_level, return_condition_notes,
       bookings ( id, organiser_name, organiser_email,
         max_guests, booking_code, notes ),
       boats (
@@ -106,6 +107,75 @@ export default async function TripDetailPage({
     captainName: (a.captains as unknown as { full_name: string })?.full_name ?? 'Unknown',
     role: a.role as string,
   }))
+
+  // ── Multi-day rental days (Phase 4E) ──────────────────────────────────────
+  const rawDurationDays = (raw as Record<string, unknown>).duration_days as number | null ?? 1
+  const isMultiDay = rawDurationDays > 1
+
+  type RentalDayRow = {
+    id: string
+    day_number: number
+    day_date: string
+    status: string
+    notes_in: string | null
+    notes_out: string | null
+    fuel_level_in: string | null
+    fuel_level_out: string | null
+    issues_reported: string | null
+    check_in_at: string | null
+    check_out_at: string | null
+    photos_in: { url: string; path: string }[] | null
+    photos_out: { url: string; path: string }[] | null
+  }
+
+  let rentalDays: RentalDayRow[] = []
+  if (isMultiDay) {
+    try {
+      const { data: rd } = await supabase
+        .from('rental_days')
+        .select('id, day_number, day_date, status, notes_in, notes_out, fuel_level_in, fuel_level_out, issues_reported, check_in_at, check_out_at, photos_in, photos_out')
+        .eq('trip_id', id)
+        .order('day_number')
+      rentalDays = (rd ?? []) as RentalDayRow[]
+
+      // Generate signed URLs for private photos (1h TTL)
+      for (const day of rentalDays) {
+        // photos_in paths
+        if (day.photos_in && day.photos_in.length > 0) {
+          day.photos_in = await Promise.all(
+            day.photos_in.map(async (p) => {
+              try {
+                const { data: signed } = await supabase.storage
+                  .from('condition-photos')
+                  .createSignedUrl(p.path, 3600)
+                return { ...p, url: signed?.signedUrl ?? p.url }
+              } catch { return p }
+            })
+          )
+        }
+        // photos_out paths
+        if (day.photos_out && day.photos_out.length > 0) {
+          day.photos_out = await Promise.all(
+            day.photos_out.map(async (p) => {
+              try {
+                const { data: signed } = await supabase.storage
+                  .from('condition-photos')
+                  .createSignedUrl(p.path, 3600)
+                return { ...p, url: signed?.signedUrl ?? p.url }
+              } catch { return p }
+            })
+          )
+        }
+      }
+    } catch { /* non-fatal */ }
+  }
+
+  const returnRecord = (raw as Record<string, unknown>).return_inspected_at ? {
+    inspectedAt:  (raw as Record<string, unknown>).return_inspected_at as string,
+    hasIssues:    (raw as Record<string, unknown>).return_has_issues as boolean,
+    fuelLevel:    (raw as Record<string, unknown>).return_fuel_level as string | null,
+    notes:        (raw as Record<string, unknown>).return_condition_notes as string | null,
+  } : null
 
   // Compute whether this is a qualification trip
   type RawTrip = typeof raw
@@ -228,6 +298,79 @@ export default async function TripDetailPage({
           tripId={trip.id}
           operatorId={operator.id}
         />
+      )}
+
+      {/* ── Rental Days (multi-day only · Phase 4E) ────── */}
+      {isMultiDay && (
+        <div style={{ marginTop: 'var(--s-6)' }}>
+          <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--color-ink-secondary)', fontWeight: 600, marginBottom: 12 }}>
+            Rental Days — {rawDurationDays}-day
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {rentalDays.length === 0 ? (
+              <p style={{ fontSize: 13, color: 'var(--color-ink-secondary)' }}>No day records yet — guest has not started check-in.</p>
+            ) : rentalDays.map(day => {
+              const statusColors: Record<string, string> = {
+                complete: 'var(--color-green)',
+                issue:    'var(--color-amber)',
+                active:   'var(--color-rust)',
+                pending:  'var(--color-ink-faint)',
+              }
+              const statusColor = statusColors[day.status] ?? statusColors.pending
+              const dayDate = (() => {
+                try { return new Date(day.day_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) } catch { return day.day_date }
+              })()
+              const photos = [...(day.photos_in ?? []), ...(day.photos_out ?? [])]
+
+              return (
+                <div key={day.id} style={{ border: '1px solid var(--color-border)', padding: '12px 14px', background: 'var(--color-surface)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: photos.length > 0 || day.issues_reported ? 8 : 0 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--color-ink)', margin: 0, letterSpacing: '.06em' }}>
+                      Day {day.day_number} <span style={{ fontWeight: 400, color: 'var(--color-ink-secondary)' }}>· {dayDate}</span>
+                    </p>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: statusColor, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', marginLeft: 'auto' }}>
+                      {day.status}
+                    </span>
+                  </div>
+
+                  {day.issues_reported && (
+                    <p style={{ fontSize: 12, color: 'var(--color-amber)', fontWeight: 600, marginBottom: 8, paddingLeft: 18 }}>
+                      Issue: {day.issues_reported}
+                    </p>
+                  )}
+
+                  {photos.length > 0 && (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', paddingLeft: 18 }}>
+                      {photos.map((p, idx) => (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img key={idx} src={p.url} alt={`Day ${day.day_number} photo ${idx + 1}`}
+                          style={{ width: 52, height: 52, objectFit: 'cover', border: '1px solid var(--color-border)' }} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Return condition */}
+          {returnRecord && (
+            <div style={{ marginTop: 12, border: '1px solid var(--color-border)', padding: '12px 14px', background: returnRecord.hasIssues ? 'rgba(245,158,11,.06)' : 'var(--color-surface)' }}>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--color-ink)', margin: '0 0 4px', letterSpacing: '.06em', textTransform: 'uppercase' }}>Return inspection</p>
+              <p style={{ fontSize: 13, color: 'var(--color-ink-secondary)', margin: 0 }}>
+                {returnRecord.fuelLevel && <span>Fuel: {returnRecord.fuelLevel} · </span>}
+                {returnRecord.hasIssues
+                  ? <span style={{ color: 'var(--color-amber)', fontWeight: 600 }}>Issues reported</span>
+                  : <span style={{ color: 'var(--color-green)', fontWeight: 600 }}>All clear</span>}
+              </p>
+              {returnRecord.notes && (
+                <p style={{ fontSize: 12, color: 'var(--color-ink-secondary)', marginTop: 4 }}>{returnRecord.notes}</p>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* ── Share + Documents ────────────────────────── */}

@@ -10,13 +10,14 @@ const checkInSchema = z.object({
   guestId:    z.string().uuid(),
   notes:      z.string().max(500).optional(),
   fuelLevel:  z.enum(['full', '3/4', '1/2', '1/4', 'empty']).optional(),
+  photoUrls:  z.array(z.string().url()).max(3).optional(),  // up to 3 uploaded photo URLs
 })
 
 /**
  * POST /api/trips/[slug]/rental-days/[day]/check-in
  *
  * Guest confirms vessel condition at start of day.
- * Text-only in Phase 4C (photos in Phase 4E).
+ * Accepts optional photoUrls from upload-photo pre-upload step (Phase 4E).
  *
  * Validates:
  *   - Guest belongs to trip
@@ -43,7 +44,7 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid body', fieldErrors: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
 
-  const { guestId, notes, fuelLevel } = parsed.data
+  const { guestId, notes, fuelLevel, photoUrls } = parsed.data
   const supabase = createServiceClient()
 
   // Verify guest belongs to this trip
@@ -89,14 +90,16 @@ export async function POST(
       fuel_level_in:         fuelLevel ?? null,
       status:                'active',
       submitted_by_guest_id: guestId,
+      photos_in: (photoUrls ?? []).map(url => ({ url, uploadedAt: now })),
       condition_in: {
         submittedAt: now,
         notes:       notes ?? null,
         fuelLevel:   fuelLevel ?? null,
+        photoCount:  (photoUrls ?? []).length,
       },
     })
     .eq('id', rentalDay.id)
-    .select('id, day_number, status, check_in_at, notes_in, fuel_level_in')
+    .select('id, day_number, status, check_in_at, notes_in, fuel_level_in, photos_in')
     .single()
 
   if (error || !updated) return NextResponse.json({ error: 'Check-in failed' }, { status: 500 })
@@ -107,7 +110,7 @@ export async function POST(
     actorIdentifier: guestId,
     entityType: 'rental_day',
     entityId: rentalDay.id,
-    changes: { dayNumber, fuelLevel, notes, tripId: trip.id },
+    changes: { dayNumber, fuelLevel, notes, photoCount: (photoUrls ?? []).length, tripId: trip.id },
   })
 
   return NextResponse.json({ data: updated })
