@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight, Briefcase } from 'lucide-react'
+import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight } from 'lucide-react'
 import { CaptainFormSheet } from '@/components/dashboard/CaptainFormSheet'
 import { CaptainCard } from '@/components/dashboard/CaptainCard'
 import { DashTile, type TileStatus } from '@/components/ui/DashTile'
@@ -105,18 +105,12 @@ export function CrewRosterClient({
   return (
     <>
       {/* ── Page header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-5)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--s-3)', marginBottom: 'var(--s-4)' }}>
         <div>
-          <h1
-            className="font-display"
-            style={{ fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1, margin: 0 }}
-          >
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-ink)', margin: 0, lineHeight: 1.2 }}>
             Crew roster
           </h1>
-          <p
-            className="font-mono"
-            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 5 }}
-          >
+          <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 4, letterSpacing: '0.05em' }}>
             {captains.length} member{captains.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -157,7 +151,7 @@ export function CrewRosterClient({
               }}>
                 <div className="font-mono" style={{
                   fontSize: 'var(--t-mono-xs)', fontWeight: 700,
-                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  letterSpacing: '0.05em', textTransform: 'uppercase',
                   color: 'var(--color-ink-muted)',
                   display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
                 }}>

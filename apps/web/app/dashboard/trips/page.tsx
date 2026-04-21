@@ -116,20 +116,13 @@ export default async function TripsPage() {
 
   return (
     <div style={{ padding: 'var(--s-4) var(--s-4) 120px' }}>
-
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-6)' }}>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--s-4)' }}>
         <div>
-          <h1
-            className="font-display"
-            style={{ fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1 }}
-          >
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-ink)', margin: 0, lineHeight: 1.2 }}>
             Trips
           </h1>
-          <p
-            className="font-mono"
-            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 6 }}
-          >
+          <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', color: 'var(--color-ink-muted)', marginTop: 4, letterSpacing: '0.05em' }}>
             {upcomingTrips.length} upcoming
           </p>
         </div>

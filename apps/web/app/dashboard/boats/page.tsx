@@ -48,42 +48,34 @@ export default async function BoatsPage() {
   const boatsWithTrips = activeBoats.filter(b => (tripsByBoat[b.id] ?? 0) > 0).length;
 
   return (
-    <div style={{ padding: "var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-5)" }}>
+    <div style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-4)' }}>
 
       {/* ── Page header ── */}
       <div style={{
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        gap: "var(--s-4)",
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        gap: 'var(--s-3)',
       }}>
         <div>
-          <h1
-            className="font-display"
-            style={{
-              fontSize: "clamp(22px, 4vw, 30px)",
-              fontWeight: 500,
-              letterSpacing: "-0.03em",
-              color: "var(--color-ink)",
-              lineHeight: 1.0,
-              margin: 0,
-            }}
-          >
-            Your fleet
+          <h1 style={{
+            fontSize: 20,
+            fontWeight: 700,
+            color: 'var(--color-ink)',
+            margin: 0,
+            lineHeight: 1.2,
+          }}>
+            Fleet
           </h1>
           {activeBoats.length > 0 && (
-            <p
-              className="font-mono"
-              style={{
-                fontSize: "var(--t-mono-xs)",
-                fontWeight: 600,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: "var(--color-ink-muted)",
-                marginTop: 5,
-              }}
-            >
-              {activeBoats.length} {activeBoats.length === 1 ? "vessel" : "vessels"}
+            <p className="font-mono" style={{
+              fontSize: 'var(--t-mono-xs)',
+              color: 'var(--color-ink-muted)',
+              marginTop: 4,
+              letterSpacing: '0.05em',
+            }}>
+              {activeBoats.length} vessel{activeBoats.length !== 1 ? 's' : ''}
+              {boatsWithTrips > 0 && ` · ${boatsWithTrips} active`}
             </p>
           )}
         </div>

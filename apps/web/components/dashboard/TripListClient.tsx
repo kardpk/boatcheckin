@@ -119,7 +119,7 @@ export function TripListClient({ groups, defaultCompact }: Props) {
               style={{
                 fontSize:      'var(--t-mono-xs)',
                 fontWeight:    700,
-                letterSpacing: '0.12em',
+                letterSpacing: '0.05em',
                 textTransform: 'uppercase',
                 color:         'var(--color-ink-muted)',
                 paddingBottom: 'var(--s-2)',

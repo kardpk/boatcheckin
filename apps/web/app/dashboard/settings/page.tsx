@@ -217,6 +217,13 @@ export default async function SettingsPage() {
           label="Property Codes"
           desc="Hotel & marina guest discounts"
         />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/fulfillment"
+          icon={Package}
+          label="Fulfillment Board"
+          desc="Add-on prep & loading by departure"
+        />
       </section>
 
       <section style={{ marginBottom: "var(--s-6)" }}>
