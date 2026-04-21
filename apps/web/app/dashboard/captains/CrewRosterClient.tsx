@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight } from 'lucide-react'
-import { CaptainCard } from '@/components/dashboard/CaptainCard'
+import { Shield, Anchor, Users, HardHat, UserPlus, AlertTriangle, Ship, ArrowRight, Briefcase } from 'lucide-react'
 import { CaptainFormSheet } from '@/components/dashboard/CaptainFormSheet'
+import { CaptainCard } from '@/components/dashboard/CaptainCard'
+import { DashTile, type TileStatus } from '@/components/ui/DashTile'
 import { markDirty } from '@/lib/utils/markDirty'
+import { useRouter } from 'next/navigation'
 import type { CaptainProfile, CrewRole } from '@/types'
 
 interface BoatOption { id: string; name: string }
@@ -24,17 +25,34 @@ const ROLE_SECTION: Record<CrewRole, { label: string; Icon: typeof Shield }> = {
   deckhand:   { label: 'Deckhands',   Icon: HardHat },
 }
 
+function getLicenseStatus(captain: CaptainProfile): {
+  status: TileStatus
+  pill:   string
+} {
+  if (!captain.licenseExpiry) return { status: 'ok', pill: 'ACTIVE' }
+  const daysLeft = Math.ceil(
+    (new Date(captain.licenseExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  )
+  if (daysLeft <= 0)  return { status: 'err',  pill: 'EXPIRED'  }
+  if (daysLeft <= 30) return { status: 'err',  pill: `${daysLeft}D LEFT` }
+  if (daysLeft <= 60) return { status: 'warn', pill: `${daysLeft}D LEFT` }
+  return { status: 'ok', pill: 'VALID' }
+}
+
 export function CrewRosterClient({
   initialCaptains,
   expiringCaptains,
   operatorBoats,
 }: CrewRosterClientProps) {
   const router = useRouter()
-  const [captains, setCaptains] = useState(initialCaptains)
-  const [showForm, setShowForm] = useState(false)
+  const [captains, setCaptains]         = useState(initialCaptains)
+  const [showForm, setShowForm]         = useState(false)
   const [editingCaptain, setEditingCaptain] = useState<CaptainProfile | null>(null)
+  // Selected captain for detail slide-sheet (edit/deactivate/link boats)
+  const [detailCaptain, setDetailCaptain] = useState<CaptainProfile | null>(null)
 
   const handleEdit = useCallback((captain: CaptainProfile) => {
+    setDetailCaptain(null)
     setEditingCaptain(captain)
     setShowForm(true)
   }, [])
@@ -45,7 +63,8 @@ export function CrewRosterClient({
       const res = await fetch(`/api/dashboard/captains/${captain.id}`, { method: 'DELETE' })
       if (res.ok) {
         setCaptains(prev => prev.filter(c => c.id !== captain.id))
-        markDirty()  // boat detail pages need to refresh
+        setDetailCaptain(null)
+        markDirty()
       }
     } catch { /* silent fail */ }
   }, [])
@@ -61,7 +80,7 @@ export function CrewRosterClient({
     })
     setShowForm(false)
     setEditingCaptain(null)
-    markDirty()  // boat detail / dashboard pages need to refresh
+    markDirty()
     router.refresh()
   }, [router])
 
@@ -69,14 +88,14 @@ export function CrewRosterClient({
     setCaptains(prev => prev.map(c =>
       c.id !== captainId ? c : { ...c, linkedBoats: [...c.linkedBoats, { boatId, boatName }] }
     ))
-    markDirty()  // boat detail page should refresh when navigated back to
+    markDirty()
   }, [])
 
   const handleBoatUnlinked = useCallback((captainId: string, boatId: string) => {
     setCaptains(prev => prev.map(c =>
       c.id !== captainId ? c : { ...c, linkedBoats: c.linkedBoats.filter(lb => lb.boatId !== boatId) }
     ))
-    markDirty()  // boat detail page should refresh when navigated back to
+    markDirty()
   }, [])
 
   const grouped = ROLE_ORDER
@@ -85,20 +104,20 @@ export function CrewRosterClient({
 
   return (
     <>
-      {/* ── Page header ─────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-6)' }}>
+      {/* ── Page header ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--s-5)' }}>
         <div>
           <h1
             className="font-display"
-            style={{ fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1 }}
+            style={{ fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1, margin: 0 }}
           >
             Crew roster
           </h1>
           <p
             className="font-mono"
-            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 6 }}
+            style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 5 }}
           >
-            {captains.length} member{captains.length !== 1 ? 's' : ''} in your roster
+            {captains.length} member{captains.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
@@ -110,67 +129,80 @@ export function CrewRosterClient({
         </button>
       </div>
 
-      {/* ── License expiry alert ─────────────────────────── */}
+      {/* ── License expiry alert ── */}
       {expiringCaptains.length > 0 && (
-        <div className="alert alert--warn" style={{ marginBottom: 'var(--s-5)' }}>
+        <div className="alert alert--warn" style={{ marginBottom: 'var(--s-4)' }}>
           <AlertTriangle size={16} strokeWidth={2} />
           <div>
             <strong>License alert</strong>
             <div style={{ fontSize: 'var(--t-body-sm)', color: 'var(--color-ink-muted)', marginTop: 2 }}>
-              {expiringCaptains.length} crew member{expiringCaptains.length !== 1 ? 's have' : ' has a'} license{expiringCaptains.length !== 1 ? 's' : ''}{' '}
-              expiring within 60 days (or already expired): {expiringCaptains.map(c => c.fullName).join(', ')}
+              {expiringCaptains.map(c => c.fullName).join(', ')} —{' '}
+              {expiringCaptains.length === 1 ? 'license' : 'licenses'} expiring within 60 days.
             </div>
           </div>
         </div>
       )}
 
-      {/* ── Crew cards or empty state ───────────────────── */}
+      {/* ── Crew grid or empty state ── */}
       {captains.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-6)' }}>
           {grouped.map(group => (
             <section key={group.role}>
               {/* Section kicker */}
-              <div
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  paddingBottom: 'var(--s-3)',
-                  borderBottom: '1px solid var(--color-line-soft)',
-                  marginBottom: 'var(--s-3)',
-                }}
-              >
-                <div
-                  className="font-mono"
-                  style={{
-                    fontSize: 'var(--t-mono-xs)', fontWeight: 600,
-                    letterSpacing: '0.12em', textTransform: 'uppercase',
-                    color: 'var(--color-ink-muted)',
-                    display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
-                  }}
-                >
-                  <group.config.Icon size={12} strokeWidth={2} />
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                paddingBottom: 'var(--s-2)',
+                borderBottom: '1px solid var(--color-line-soft)',
+                marginBottom: 'var(--s-3)',
+              }}>
+                <div className="font-mono" style={{
+                  fontSize: 'var(--t-mono-xs)', fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  color: 'var(--color-ink-muted)',
+                  display: 'flex', alignItems: 'center', gap: 'var(--s-2)',
+                }}>
+                  <group.config.Icon size={11} strokeWidth={2} />
                   {group.config.label}
                 </div>
-                <span className="pill pill--ghost">{group.members.length}</span>
+                <span className="pill pill--ghost" style={{ fontSize: 10, padding: '2px 8px' }}>
+                  {group.members.length}
+                </span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
-                {group.members.map(captain => (
-                  <CaptainCard
-                    key={captain.id}
-                    captain={captain}
-                    operatorBoats={operatorBoats}
-                    onEdit={handleEdit}
-                    onDeactivate={handleDeactivate}
-                    onBoatLinked={handleBoatLinked}
-                    onBoatUnlinked={handleBoatUnlinked}
-                  />
-                ))}
+              {/* Crew tile grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(195px, 1fr))',
+                gap: 'var(--s-3)',
+              }}>
+                {group.members.map(captain => {
+                  const { status, pill } = getLicenseStatus(captain)
+
+                  const metaParts: string[] = []
+                  if (captain.phone) metaParts.push(captain.phone)
+                  if (captain.linkedBoats.length > 0) {
+                    metaParts.push(`${captain.linkedBoats.length} boat${captain.linkedBoats.length !== 1 ? 's' : ''}`)
+                  }
+
+                  return (
+                    <DashTile
+                      key={captain.id}
+                      variant="vessel"
+                      status={status}
+                      eyebrow={group.config.label.slice(0, -1)} // 'Captains' → 'Captain'
+                      title={captain.fullName}
+                      meta={metaParts.join(' · ') || (captain.licenseType ?? undefined)}
+                      pill={{ label: pill }}
+                      onClick={() => setDetailCaptain(captain)}
+                    />
+                  )
+                })}
               </div>
             </section>
           ))}
         </div>
       ) : (
-        /* ── Empty state ─────────────────────────────────── */
+        /* ── Empty state ── */
         <div
           className="tile text-center"
           style={{
@@ -201,7 +233,58 @@ export function CrewRosterClient({
         </div>
       )}
 
-      {/* ── Form sheet overlay ───────────────────────────── */}
+      {/* ── Detail slide sheet — full CaptainCard in overlay ── */}
+      {detailCaptain && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          display: 'flex', alignItems: 'flex-end',
+          background: 'rgba(11, 30, 45, 0.4)',
+        }}
+          onClick={() => setDetailCaptain(null)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxHeight: '85vh',
+              overflowY: 'auto',
+              background: 'var(--color-paper)',
+              borderTop: '2px solid var(--color-ink)',
+              borderRadius: 'var(--r-1) var(--r-1) 0 0',
+              padding: 'var(--s-4)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Sheet handle */}
+            <div style={{
+              width: 40, height: 4, background: 'var(--color-line-soft)',
+              borderRadius: 'var(--r-pill)', margin: '0 auto var(--s-4)',
+            }} />
+
+            <CaptainCard
+              captain={detailCaptain}
+              operatorBoats={operatorBoats}
+              onEdit={c => { handleEdit(c); }}
+              onDeactivate={handleDeactivate}
+              onBoatLinked={(cid, bid, bname) => {
+                handleBoatLinked(cid, bid, bname)
+                setDetailCaptain(prev => prev ? {
+                  ...prev,
+                  linkedBoats: [...prev.linkedBoats, { boatId: bid, boatName: bname }],
+                } : null)
+              }}
+              onBoatUnlinked={(cid, bid) => {
+                handleBoatUnlinked(cid, bid)
+                setDetailCaptain(prev => prev ? {
+                  ...prev,
+                  linkedBoats: prev.linkedBoats.filter(lb => lb.boatId !== bid),
+                } : null)
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Add/edit form sheet ── */}
       {showForm && (
         <CaptainFormSheet
           key={editingCaptain?.id ?? 'new'}

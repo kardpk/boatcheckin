@@ -1,6 +1,7 @@
 import { requireOperator } from '@/lib/security/auth'
 import { createServiceClient } from '@/lib/supabase/service'
 import { BarChart2, TrendingUp, ShoppingBag, DollarSign } from 'lucide-react'
+import { DashTile } from '@/components/ui/DashTile'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Add-On Revenue — BoatCheckin' }
@@ -91,46 +92,55 @@ export default async function RevenuePage() {
   const maxCat = Math.max(...categoryRows.map(r => r.gmv_cents), 1)
 
   return (
-    <div style={{ maxWidth: 660, margin: '0 auto', padding: 'var(--s-6) var(--s-5) 120px' }}>
+    <div style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 'var(--s-5)' }}>
 
-      {/* Header */}
-      <div style={{ marginBottom: 'var(--s-6)' }}>
+      {/* ── Header ── */}
+      <div>
         <h1
           className="font-display"
-          style={{ fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1 }}
+          style={{ fontSize: 'clamp(22px, 4vw, 30px)', fontWeight: 500, letterSpacing: '-0.025em', color: 'var(--color-ink)', lineHeight: 1.1, margin: 0 }}
         >
           Add-On Revenue
         </h1>
-        <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 6 }}>
+        <p className="font-mono" style={{ fontSize: 'var(--t-mono-xs)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-ink-muted)', marginTop: 5 }}>
           Monthly GMV and transaction report
         </p>
       </div>
 
-      {/* This month summary cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 'var(--s-6)' }}>
-        {[
-          { icon: DollarSign, label: 'Add-on revenue', value: formatMoney(thisMonthGmv), sub: 'this month' },
-          { icon: ShoppingBag, label: 'Orders placed', value: thisMonthOrders.toString(), sub: 'this month' },
-          { icon: TrendingUp, label: 'Avg order value', value: formatMoney(avgOrderValue), sub: 'per order' },
-          { icon: BarChart2,  label: 'Platform fee', value: formatMoney(thisMonthFee), sub: '3% of GMV' },
-        ].map(({ icon: Icon, label, value, sub }) => (
-          <div
-            key={label}
-            className="tile"
-            style={{ padding: 'var(--s-4)', display: 'flex', flexDirection: 'column', gap: 4 }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <Icon size={14} strokeWidth={1.5} style={{ color: 'var(--color-ink-muted)' }} />
-              <span className="font-mono" style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-ink-muted)' }}>
-                {label}
-              </span>
-            </div>
-            <span className="font-display" style={{ fontSize: 22, fontWeight: 500, color: 'var(--color-ink)', letterSpacing: '-0.02em' }}>
-              {value}
-            </span>
-            <span style={{ fontSize: 11, color: 'var(--color-ink-muted)' }}>{sub}</span>
-          </div>
-        ))}
+      {/* ── KPI tile strip (2×2 grid) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--s-3)' }}>
+        <DashTile
+          variant="kpi"
+          status="ok"
+          label="Add-on revenue"
+          value={formatMoney(thisMonthGmv)}
+          sub="this month"
+          icon={<DollarSign size={14} strokeWidth={1.5} />}
+        />
+        <DashTile
+          variant="kpi"
+          status="brass"
+          label="Orders placed"
+          value={thisMonthOrders.toString()}
+          sub="this month"
+          icon={<ShoppingBag size={14} strokeWidth={1.5} />}
+        />
+        <DashTile
+          variant="kpi"
+          status="info"
+          label="Avg order value"
+          value={formatMoney(avgOrderValue)}
+          sub="per order"
+          icon={<TrendingUp size={14} strokeWidth={1.5} />}
+        />
+        <DashTile
+          variant="kpi"
+          status="grey"
+          label="Platform fee"
+          value={formatMoney(thisMonthFee)}
+          sub="3% of GMV"
+          icon={<BarChart2 size={14} strokeWidth={1.5} />}
+        />
       </div>
 
       {/* 6-month bar chart */}
@@ -141,23 +151,24 @@ export default async function RevenuePage() {
           </p>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 100 }}>
             {[...monthlyRows].reverse().map(row => {
-              const pct = Math.round((row.gmv_cents / maxGmv) * 100)
+              const pct     = Math.round((row.gmv_cents / maxGmv) * 100)
               const current = row.month?.startsWith(currentMonthIsoKey)
               return (
                 <div key={row.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
-                  <span style={{ fontSize: 9, color: 'var(--color-ink-muted)', fontWeight: 600 }}>
-                    {formatMoney(row.gmv_cents).replace('$', '$').split('.')[0]}
+                  <span style={{ fontSize: 9, color: current ? 'var(--color-ink)' : 'var(--color-ink-muted)', fontWeight: 700 }}>
+                    {formatMoney(row.gmv_cents).split('.')[0]}
                   </span>
                   <div
                     style={{
-                      width:        '100%',
-                      height:       `${Math.max(4, pct)}%`,
-                      background:   current ? 'var(--color-rust)' : 'var(--color-ink-muted)',
-                      opacity:      current ? 1 : 0.4,
-                      transition:   'height 500ms',
+                      width:      '100%',
+                      height:     `${Math.max(4, pct)}%`,
+                      background: current ? 'var(--color-rust)' : 'var(--color-ink)',
+                      opacity:    current ? 1 : 0.18,
+                      borderRadius: '2px 2px 0 0',
+                      transition: 'height 500ms',
                     }}
                   />
-                  <span className="font-mono" style={{ fontSize: 9, color: 'var(--color-ink-muted)', letterSpacing: '0.06em' }}>
+                  <span className="font-mono" style={{ fontSize: 9, color: current ? 'var(--color-ink)' : 'var(--color-ink-muted)', letterSpacing: '0.06em', fontWeight: current ? 700 : 400 }}>
                     {monthLabel(row.month ?? '').split(' ')[0]}
                   </span>
                 </div>

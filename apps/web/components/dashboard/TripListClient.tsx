@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { LayoutList, AlignJustify } from 'lucide-react'
-import { TripCard } from '@/components/dashboard/TripCard'
-import { CompactTripRow } from '@/components/dashboard/CompactTripRow'
+import { LayoutGrid, AlignJustify, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { DashTile, type TileStatus } from '@/components/ui/DashTile'
 
 const PREF_KEY = 'dockpass:trip-list-mode'
 
@@ -25,133 +25,180 @@ interface TripData {
 }
 
 interface GroupedDate {
-  dateKey:      string
-  dateLabel:    string
-  trips:        TripData[]
+  dateKey:   string
+  dateLabel: string
+  trips:     TripData[]
 }
 
 interface Props {
-  groups:        GroupedDate[]
-  defaultCompact: boolean   // true if operator has 5+ boats
+  groups:         GroupedDate[]
+  defaultCompact: boolean
+}
+
+function getTripTileStatus(trip: TripData): TileStatus {
+  if (trip.status === 'active') return 'ok'
+  if (trip.waivers_signed < trip.guest_count) return 'warn'
+  return 'brass'
+}
+
+function getTripPill(trip: TripData): string {
+  if (trip.status === 'active') return 'ACTIVE'
+  if (trip.waivers_signed < trip.guest_count) return 'PENDING'
+  return 'UPCOMING'
+}
+
+function formatTime(t: string) {
+  // "09:00:00" → "09:00"
+  return t?.slice(0, 5) ?? ''
+}
+
+function formatDuration(h: number) {
+  if (!h) return ''
+  if (h >= 24) return `${Math.round(h / 24)}d`
+  return `${h}h`
 }
 
 export function TripListClient({ groups, defaultCompact }: Props) {
-  // Read localStorage preference, fallback to prop default
-  const [compact, setCompact] = useState(defaultCompact)
+  const [compact, setCompact]   = useState(defaultCompact)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem(PREF_KEY)
-    if (saved !== null) {
-      setCompact(saved === 'compact')
-    }
+    if (saved !== null) setCompact(saved === 'compact')
     setHydrated(true)
   }, [])
 
   function toggle() {
     const next = !compact
     setCompact(next)
-    localStorage.setItem(PREF_KEY, next ? 'compact' : 'full')
+    localStorage.setItem(PREF_KEY, next ? 'compact' : 'grid')
   }
 
-  // Avoid flash before hydration
   if (!hydrated) return null
 
   return (
     <div>
-      {/* ── View toggle ───────────────────────────────────────── */}
-      <div style={{
-        display:        'flex',
-        justifyContent: 'flex-end',
-        marginBottom:   12,
-      }}>
+      {/* ── View toggle ── */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         <button
           onClick={toggle}
-          title={compact ? 'Switch to card view' : 'Switch to compact view'}
+          title={compact ? 'Switch to tile grid' : 'Switch to compact list'}
+          className="font-mono"
           style={{
             display:    'flex',
             alignItems: 'center',
-            gap:        6,
+            gap:        5,
             padding:    '6px 12px',
-            fontSize:   11,
-            fontWeight: 600,
-            letterSpacing: '.06em',
+            fontSize:   10,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            border:     '1px solid var(--color-border)',
-            background: 'var(--color-bone)',
-            color:      'var(--color-ink-secondary)',
+            border:     '1px solid var(--color-line-soft)',
+            borderRadius: 'var(--r-1)',
+            background: 'var(--color-paper)',
+            color:      'var(--color-ink-muted)',
             cursor:     'pointer',
+            transition: 'background 140ms ease',
           }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bone)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-paper)')}
         >
           {compact
-            ? <><LayoutList size={13} /> Cards</>
-            : <><AlignJustify size={13} /> Compact</>}
+            ? <><LayoutGrid size={12} strokeWidth={2} /> Grid</>
+            : <><AlignJustify size={12} strokeWidth={2} /> List</>}
         </button>
       </div>
 
-      {/* ── Date groups ───────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 0 : 'var(--s-8)' }}>
+      {/* ── Date groups ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 'var(--s-3)' : 'var(--s-6)' }}>
         {groups.map(({ dateKey, dateLabel, trips }) => (
-          <section key={dateKey} style={{ marginBottom: compact ? 20 : 0 }}>
-            {/* Date group kicker */}
+          <section key={dateKey}>
+            {/* Date kicker */}
             <div
               className="font-mono"
               style={{
                 fontSize:      'var(--t-mono-xs)',
-                fontWeight:    600,
+                fontWeight:    700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color:         'var(--color-ink-muted)',
-                paddingBottom: compact ? 6 : 'var(--s-3)',
+                paddingBottom: 'var(--s-2)',
                 borderBottom:  '1px solid var(--color-line-soft)',
                 marginBottom:  compact ? 0 : 'var(--s-3)',
               }}
             >
-              {dateLabel}
+              {dateLabel} · {trips.length} trip{trips.length !== 1 ? 's' : ''}
             </div>
 
-            {/* Trips */}
-            {compact ? (
-              /* ── Compact rows ── */
-              <div>
-                {trips.map(trip => (
-                  <CompactTripRow
-                    key={trip.id}
-                    id={trip.id}
-                    slug={trip.slug}
-                    tripCode={trip.trip_code}
-                    tripDate={trip.trip_date}
-                    departureTime={trip.departure_time}
-                    boatName={trip.boat_name}
-                    slipNumber={trip.slip_number}
-                    guestCount={trip.guest_count}
-                    maxGuests={trip.max_guests}
-                    status={trip.status}
-                  />
-                ))}
+            {/* ── GRID mode ── */}
+            {!compact && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+                gap: 'var(--s-3)',
+                marginTop: 'var(--s-3)',
+              }}>
+                {trips.map(trip => {
+                  const status = getTripTileStatus(trip)
+                  const metaParts = [
+                    formatTime(trip.departure_time),
+                    formatDuration(trip.duration_hours),
+                    `${trip.guest_count}/${trip.max_guests} guests`,
+                    trip.slip_number ? `Slip ${trip.slip_number}` : null,
+                  ].filter(Boolean).join(' · ')
+
+                  return (
+                    <DashTile
+                      key={trip.id}
+                      variant="vessel"
+                      status={status}
+                      eyebrow={trip.trip_code}
+                      title={trip.boat_name}
+                      meta={metaParts}
+                      pill={{ label: getTripPill(trip) }}
+                      bars={[
+                        {
+                          label: 'Waivers',
+                          value: trip.waivers_signed,
+                          max:   trip.max_guests,
+                          color: trip.waivers_signed === trip.max_guests ? '#059669' : '#D97706',
+                        },
+                      ]}
+                      href={`/dashboard/trips/${trip.id}`}
+                    />
+                  )
+                })}
               </div>
-            ) : (
-              /* ── Full TripCards ── */
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)' }}>
-                {trips.map(trip => (
-                  <TripCard
-                    key={trip.id}
-                    tripId={trip.id}
-                    slug={trip.slug}
-                    tripCode={trip.trip_code}
-                    tripDate={trip.trip_date}
-                    departureTime={trip.departure_time}
-                    durationHours={trip.duration_hours}
-                    maxGuests={trip.max_guests}
-                    status={trip.status as 'upcoming' | 'active' | 'completed' | 'cancelled'}
-                    boatName={trip.boat_name}
-                    marinaName={trip.marina_name}
-                    slipNumber={trip.slip_number}
-                    guestCount={trip.guest_count}
-                    waiversSigned={trip.waivers_signed}
-                    requiresApproval={trip.requires_approval}
-                  />
-                ))}
+            )}
+
+            {/* ── COMPACT LIST mode ── */}
+            {compact && (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {trips.map(trip => {
+                  const status = getTripTileStatus(trip)
+                  const metaParts = [
+                    formatTime(trip.departure_time),
+                    formatDuration(trip.duration_hours),
+                    `${trip.guest_count}/${trip.max_guests}`,
+                    trip.slip_number ? `Slip ${trip.slip_number}` : null,
+                  ].filter(Boolean).join(' · ')
+
+                  return (
+                    <DashTile
+                      key={trip.id}
+                      variant="row"
+                      status={status}
+                      eyebrow={trip.trip_code}
+                      title={trip.boat_name}
+                      meta={metaParts}
+                      pill={{ label: getTripPill(trip) }}
+                      rightSlot={
+                        <ChevronRight size={15} strokeWidth={2} style={{ color: 'var(--color-ink-muted)' }} />
+                      }
+                      href={`/dashboard/trips/${trip.id}`}
+                    />
+                  )
+                })}
               </div>
             )}
           </section>

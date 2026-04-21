@@ -1226,6 +1226,102 @@ A **4px solid left border** on `.tile` cards that communicates entity status or 
 
 ---
 
+### 9.8 DashTile Component System
+
+**The canonical reusable tile primitive across all dashboard pages.** All main dashboard surfaces — Today board, Boats, Crew, Trips, Revenue, Fulfillment — use `<DashTile>` as their primary data display unit. Raw `<div className="tile">` is still used for static content and marketing pages; `DashTile` is the interactive, status-driven version.
+
+**File:** `apps/web/components/ui/DashTile.tsx`
+
+#### Three Variants
+
+| Variant | Layout | Used on |
+|---|---|---|
+| `vessel` | Square grid cell — 3px top bar, eyebrow, title, meta, progress bars | Today board, Boats grid, Crew grid, Trips grid |
+| `row` | Horizontal list row — 4px left stripe, icon, content, right badge | Trips compact list, Fulfillment boat headers |
+| `kpi` | Metric cell — label + large Fraunces value + delta | Revenue KPIs, Boats KPI strip |
+
+#### Status → Color Table
+
+One `status` prop drives all color-coding. Never hard-code colors on individual tiles.
+
+| Status | Bar / stripe color | Soft background | Text color | Semantic meaning |
+|---|---|---|---|---|
+| `ok` | `#059669` Green | `#ECFDF5` | `#059669` | Active, ready, valid, all good |
+| `warn` | `#D97706` Amber | `#FFFBEB` | `#D97706` | Pending, partial, expiring soon |
+| `err` | `#DC2626` Red | `#FEF2F2` | `#DC2626` | Error, flagged, expired, critical |
+| `grey` | `#9CA3AF` Grey | `#F9FAFB` | `#9CA3AF` | No trip, inactive, quiet, no data |
+| `brass` | `#C8A14A` Brass | `#FDF8EE` | `#C8A14A` | Upcoming, scheduled, new |
+| `info` | `#2D5D6E` Sea | `#EBF2F4` | `#2D5D6E` | Data, informational, fleet |
+
+#### Usage Examples
+
+```tsx
+// Vessel tile (fleet grid, crew grid, trip grid)
+<DashTile
+  variant="vessel"
+  status="ok"
+  eyebrow="CAPTAINED · MOTORBOAT"
+  title="White Rose"
+  meta="Slip 16A · 09:00 · 6 guests"
+  pill={{ label: 'READY' }}
+  bars={[
+    { label: 'Waivers', value: 6, max: 6, color: '#059669' },
+    { label: 'Boarded', value: 4, max: 6 },
+  ]}
+  href="/dashboard/trips/abc123"
+/>
+
+// Row tile (compact trip list, fulfillment boat header)
+<DashTile
+  variant="row"
+  status="warn"
+  eyebrow="A4FR · APR 22"
+  title="White Rose"
+  meta="09:00 · 4h · 3/6 guests · Slip 16A"
+  pill={{ label: 'PENDING' }}
+  rightSlot={<ChevronRight size={15} strokeWidth={2} />}
+  href="/dashboard/trips/abc123"
+/>
+
+// KPI tile (revenue stats, fleet header strip)
+<DashTile
+  variant="kpi"
+  status="ok"
+  label="Add-on revenue"
+  value="$1,240"
+  sub="this month"
+  delta="↑ 18% vs last month"
+  deltaPositive={true}
+  icon={<DollarSign size={14} />}
+/>
+```
+
+#### Grid Layout Rules
+
+| Context | Grid template | Min tile width |
+|---|---|---|
+| Today board (fleet) | `repeat(auto-fill, minmax(160px, 1fr))` | 160px |
+| Boats page | `repeat(auto-fill, minmax(180px, 1fr))` | 180px |
+| Crew page | `repeat(auto-fill, minmax(195px, 1fr))` | 195px |
+| Trips page | `repeat(auto-fill, minmax(190px, 1fr))` | 190px |
+| KPI strip (3-col) | `repeat(3, 1fr)` | — |
+| KPI strip (2-col) | `repeat(2, 1fr)` | — |
+
+Always use `gap: var(--s-3)` (12px) between tiles. On mobile, `auto-fill` naturally collapses to 2-col.
+
+#### Rules
+
+- **One `status` prop controls everything** — bar color, soft background, pill class, text color. Do not override individual colors.
+- **`vessel` tiles never exceed ~220px wide** in their minimum — they are deliberately compact.
+- **`row` tiles are always full-width** within their container.
+- **`kpi` tiles always appear in a grid strip** above page content — never inline with `vessel` or `row` tiles.
+- **Progress bars on `vessel` tiles**: use `bar.color` override only for waivers/check-in (where green vs amber matters). Otherwise inherit status color.
+- **Never nest DashTile inside DashTile.** Inner expandable content uses standard `div.tile` nesting.
+- **All click/navigation uses `href` prop** (renders as `<Link>`) not wrapper elements. Never wrap `DashTile` in an `<a>` or `<Link>`.
+- **Hover states are built into the component.** Do not add external hover overrides.
+
+---
+
 ## 10. Data Display
 
 ### 10.1 Tables

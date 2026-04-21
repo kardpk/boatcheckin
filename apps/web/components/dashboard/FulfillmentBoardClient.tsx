@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { AddonFulfillmentCard } from '@/components/dashboard/AddonFulfillmentCard'
 import { ChevronLeft, ChevronRight, CheckCircle2, PackageCheck } from 'lucide-react'
+import { DashTile, type TileStatus } from '@/components/ui/DashTile'
 import type { FulfillmentOrderRow, FulfillmentStatus } from '@/lib/webhooks/types'
 
 interface FulfillmentBoardClientProps {
@@ -270,24 +271,19 @@ export function FulfillmentBoardClient({ initialDate, grouped }: FulfillmentBoar
                     className="tile"
                     style={{ padding: 0, overflow: 'hidden' }}
                   >
-                    {/* Boat header */}
-                    <div style={{
-                      padding: '10px 14px',
-                      background: 'var(--color-bg)',
-                      borderBottom: '1px solid var(--color-line-soft)',
-                    }}>
-                      <p className="font-mono" style={{
-                        margin: 0, fontSize: 'var(--t-mono-xs)',
-                        fontWeight: 700, color: 'var(--color-ink)',
-                        letterSpacing: '0.06em',
-                      }}>
-                        {firstOrder.boatName}
-                        {firstOrder.slipNumber && ` · Slip ${firstOrder.slipNumber}`}
-                        <span style={{ color: 'var(--color-ink-muted)', fontWeight: 400 }}>
-                          {' '}· {boatOrders.length} order{boatOrders.length !== 1 ? 's' : ''}
-                        </span>
-                      </p>
-                    </div>
+                  {/* ── Boat tile header ── */}
+                  <DashTile
+                    variant="row"
+                    status={(allLoaded ? 'ok' : justConfirmed ? 'ok' : 'warn') as TileStatus}
+                    title={firstOrder.boatName}
+                    eyebrow={`${time} Departure`}
+                    meta={[
+                      firstOrder.slipNumber ? `Slip ${firstOrder.slipNumber}` : null,
+                      `${boatOrders.length} order${boatOrders.length !== 1 ? 's' : ''}`,
+                      allLoaded ? 'All loaded' : `${boatOrders.filter(o => STATUS_ORDER.indexOf(o.fulfillmentStatus) < STATUS_ORDER.indexOf('loaded')).length} pending`,
+                    ].filter(Boolean).join(' · ')}
+                    pill={{ label: allLoaded ? 'LOADED' : 'PENDING' }}
+                  />
 
                     {/* Order cards */}
                     <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
