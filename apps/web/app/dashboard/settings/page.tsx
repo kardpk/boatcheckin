@@ -3,8 +3,9 @@ import Link from "next/link";
 import {
   ScrollText, CreditCard, FileText, Star, Users,
   Lock, Scale, ShieldCheck, BookOpen, Info,
-  Mail, ChevronRight, LogOut,
+  Mail, ChevronRight, LogOut, Plug2,
 } from "lucide-react";
+
 import { signOutAction } from "@/app/dashboard/actions";
 
 // ── Shared row tile component ──────────────────────────────
@@ -194,9 +195,15 @@ export default async function SettingsPage() {
           label="Reviews"
           desc="Guest ratings & feedback"
         />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/settings/integrations"
+          icon={Plug2}
+          label="Booking Integrations"
+          desc="FareHarbor, Rezdy, Bookeo"
+        />
       </section>
 
-      {/* ── SECTION: ACCOUNT ────────────────────────────────── */}
       <section style={{ marginBottom: "var(--s-6)" }}>
         <SectionKicker label="Account" />
         <SettingsRow

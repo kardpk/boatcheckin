@@ -38,7 +38,18 @@ type AuditAction =
   | "head_count_confirmed"
   | "trip_reclassified"
   | "safety_briefing_confirmed"
-  | "boat_qr_downloaded";
+  | "boat_qr_downloaded"
+  // Phase 4B: FareHarbor integration + fleet operations
+  | "webhook_received"
+  | "trip_auto_created"
+  | "integration_created"
+  | "integration_updated"
+  | "property_code_applied"
+  | "fulfillment_advanced"
+  // Phase 4A: qualification
+  | "qualification_submitted"
+  | "qualification_reviewed";
+
 
 
 interface AuditParams {

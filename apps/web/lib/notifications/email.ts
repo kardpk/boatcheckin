@@ -453,3 +453,127 @@ function getReminderEmailTranslation(lang: string): ReminderT {
   }
   return map[lang] ?? map.en!
 }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Booking auto-link email (to guest/booker)
+// Sent when a FareHarbor/Rezdy/Bookeo booking is confirmed.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export async function sendBookingAutoLinkEmail(params: {
+  to: string
+  bookerName: string
+  boatName: string
+  tripDate: string
+  departureTime: string
+  marinaName: string
+  slipNumber: string | null
+  tripSlug: string
+  tripCode: string
+  tripLink: string
+  requiresQualification: boolean
+  linkDelayHours?: number
+}) {
+  const firstName  = params.bookerName.split(' ')[0] || 'there'
+  const appUrl     = process.env.NEXT_PUBLIC_APP_URL
+
+  // Format date nicely: "Friday, June 20"
+  const tripDateFormatted = (() => {
+    try {
+      return new Date(params.tripDate + 'T12:00:00').toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric',
+      })
+    } catch { return params.tripDate }
+  })()
+
+  const qualCta = params.requiresQualification
+    ? `<div style="background:#FEF9EC;border-left:4px solid #D4A017;padding:16px 20px;margin-top:16px;border-radius:0 8px 8px 0;">
+        <p style="margin:0;font-size:14px;font-weight:600;color:#7A5C0A;">Experience verification required</p>
+        <p style="margin:6px 0 0;font-size:13px;color:#7A5C0A;line-height:1.5;">This rental requires a quick boating experience attestation. It takes 2 minutes and ensures your rental goes smoothly.</p>
+      </div>`
+    : ''
+
+  return sendEmail({
+    to: params.to,
+    subject: `You're confirmed on ${params.boatName} — complete your check-in`,
+    html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;font-family:Inter,Arial,sans-serif;background:#F5F8FC;">
+<div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
+
+  <!-- Header -->
+  <div style="background:#0C447C;padding:40px 32px;text-align:center;">
+    <div style="font-size:40px;margin-bottom:12px;">⚓</div>
+    <h1 style="color:white;margin:0;font-size:22px;font-weight:700;">You're booked!</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">${params.boatName}</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:32px;">
+    <p style="color:#0D1B2A;font-size:16px;margin:0 0 16px;">Hi ${firstName},</p>
+    <p style="color:#6B7C93;font-size:15px;line-height:1.6;margin:0 0 24px;">
+      Your rental on <strong>${params.boatName}</strong> is confirmed.
+      Sign your waiver, complete safety acknowledgements, and get your check-in
+      code — all before you arrive. No office visit needed.
+    </p>
+
+    <!-- Trip details -->
+    <div style="background:#F5F8FC;border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="padding:6px 0;font-size:13px;color:#6B7C93;width:30%;">Date</td>
+          <td style="padding:6px 0;font-size:15px;font-weight:600;color:#0D1B2A;">${tripDateFormatted}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:13px;color:#6B7C93;">Time</td>
+          <td style="padding:6px 0;font-size:15px;font-weight:600;color:#0D1B2A;">${params.departureTime}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:13px;color:#6B7C93;">Marina</td>
+          <td style="padding:6px 0;font-size:15px;font-weight:600;color:#0D1B2A;">
+            ${params.marinaName}${params.slipNumber ? `, Slip ${params.slipNumber}` : ''}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Access code display -->
+    <div style="text-align:center;margin-bottom:24px;">
+      <p style="font-size:12px;color:#6B7C93;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin:0 0 8px;">Your access code</p>
+      <div style="display:inline-block;background:#0D1B2A;color:#F5F8FC;font-family:'Courier New',monospace;font-size:28px;font-weight:700;letter-spacing:0.15em;padding:14px 32px;border-radius:8px;">
+        ${params.tripCode}
+      </div>
+    </div>
+
+    ${qualCta}
+
+    <!-- CTA -->
+    <div style="text-align:center;margin-top:28px;">
+      <a href="${params.tripLink}"
+         style="display:inline-block;background:#C44B21;color:white;
+                padding:16px 40px;border-radius:10px;text-decoration:none;
+                font-weight:700;font-size:16px;">
+        Complete my check-in →
+      </a>
+    </div>
+
+    <p style="color:#6B7C93;font-size:13px;text-align:center;margin-top:20px;">
+      Takes about 3 minutes. Skip the clipboard when you arrive.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="background:#F5F8FC;padding:16px 32px;text-align:center;border-top:1px solid #D0E2F3;">
+    <p style="color:#6B7C93;font-size:11px;margin:0;">
+      BoatCheckin — Powered by Oakmont Logic LLC ·
+      <a href="${appUrl}/privacy" style="color:#6B7C93;">Privacy</a> ·
+      <a href="${appUrl}/unsubscribe" style="color:#6B7C93;">Unsubscribe</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>`,
+    text: `You're confirmed on ${params.boatName} — ${tripDateFormatted} at ${params.departureTime}. Your access code: ${params.tripCode}. Complete check-in: ${params.tripLink}`,
+  })
+}
+

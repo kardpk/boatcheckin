@@ -3,15 +3,15 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Ship, Anchor, Users, Settings, Plus } from "lucide-react";
+import { Home, Ship, Anchor, Users, Settings, Plus, LayoutGrid, Package } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const tabs = [
-  { href: "/dashboard", icon: Home, label: "Home" },
-  { href: "/dashboard/boats", icon: Ship, label: "Boats" },
-  { href: "/dashboard/trips", icon: Anchor, label: "Trips" },
-  { href: "/dashboard/captains", icon: Users, label: "Crew" },
-  { href: "/dashboard/settings", icon: Settings, label: "More" },
+  { href: "/dashboard",             icon: LayoutGrid, label: "Today"   },
+  { href: "/dashboard/trips",        icon: Anchor,      label: "Trips"   },
+  { href: "/dashboard/fulfillment",  icon: Package,     label: "Fulfill" },
+  { href: "/dashboard/captains",     icon: Users,       label: "Crew"    },
+  { href: "/dashboard/settings",     icon: Settings,    label: "More"    },
 ] as const;
 
 export function BottomNav() {
