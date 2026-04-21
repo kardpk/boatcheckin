@@ -230,27 +230,20 @@ ALTER TABLE rental_days     ENABLE ROW LEVEL SECURITY;
 -- integrations: full CRUD for own operator
 CREATE POLICY "integrations_operator_all" ON integrations
   FOR ALL
-  USING (operator_id IN (
-    SELECT id FROM operators WHERE auth_user_id = auth.uid()
-  ));
+  USING (auth.uid() = operator_id);
 
--- webhook_events: read-only for own operator (events are written by service role only)
+-- webhook_events: read-only for own operator (events written by service role only)
 CREATE POLICY "webhook_events_operator_select" ON webhook_events
   FOR SELECT
-  USING (operator_id IN (
-    SELECT id FROM operators WHERE auth_user_id = auth.uid()
-  ));
+  USING (auth.uid() = operator_id);
 
 -- property_codes: full CRUD for own operator
 CREATE POLICY "property_codes_operator_all" ON property_codes
   FOR ALL
-  USING (operator_id IN (
-    SELECT id FROM operators WHERE auth_user_id = auth.uid()
-  ));
+  USING (auth.uid() = operator_id);
 
 -- rental_days: full CRUD for own operator
 CREATE POLICY "rental_days_operator_all" ON rental_days
   FOR ALL
-  USING (operator_id IN (
-    SELECT id FROM operators WHERE auth_user_id = auth.uid()
-  ));
+  USING (auth.uid() = operator_id);
+
