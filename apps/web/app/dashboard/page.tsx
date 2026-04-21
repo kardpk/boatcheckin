@@ -66,7 +66,30 @@ export default async function DashboardPage() {
 
   const activeCount = rows.filter(r => r.tripId !== null).length
 
-  // Format today's date
+  // Tomorrow's fleet grid (lazy-loaded in client, but SSR the data)
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowIso = tomorrow.toISOString().slice(0, 10)
+
+  // We can't filter v_fleet_today by date (it uses CURRENT_DATE) — query trips directly
+  const { data: tomorrowTrips } = await supabase
+    .from('trips')
+    .select(`
+      id, slug, trip_code, trip_date, departure_time,
+      duration_hours, max_guests, status, trip_type,
+      boats ( id, boat_name, slip_number ),
+      guests ( id, waiver_signed )
+    `)
+    .eq('operator_id', operator.id)
+    .eq('trip_date', tomorrowIso)
+    .neq('status', 'cancelled')
+    .is('guests.deleted_at', null)
+    .order('departure_time')
+
+  const tomorrowFormatted = tomorrow.toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric',
+  }).toUpperCase()
+
   const todayFormatted = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
   })
@@ -168,6 +191,62 @@ export default async function DashboardPage() {
             All trips →
           </Link>
         </div>
+      )}
+      {/* Tomorrow section — collapsed expand */}
+      {(tomorrowTrips ?? []).length > 0 && (
+        <details style={{ marginTop: 8 }}>
+          <summary style={{
+            cursor:       'pointer',
+            fontSize:     12,
+            fontWeight:   700,
+            color:        'var(--color-ink-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '.06em',
+            padding:      '8px 0',
+            listStyle:    'none',
+            display:      'flex',
+            alignItems:   'center',
+            gap:          6,
+            userSelect:   'none',
+          }}>
+            Tomorrow — {tomorrowFormatted} · {tomorrowTrips!.length} trip{tomorrowTrips!.length !== 1 ? 's' : ''}
+          </summary>
+          <div style={{
+            display:             'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+            gap:                 'var(--s-3)',
+            marginTop:           12,
+          }}>
+            {tomorrowTrips!.map(t => {
+              const boat = t.boats as { id: string; boat_name: string; slip_number: string | null } | null
+              const guestArr = (t.guests as { id: string; waiver_signed: boolean }[] | null) ?? []
+              const waivers  = guestArr.filter(g => g.waiver_signed).length
+              // Construct a minimal FleetTodayRow for VesselCard
+              const miniRow: FleetTodayRow = {
+                boatId:                boat?.id ?? t.id,
+                operatorId:            operator.id,
+                boatName:              boat?.boat_name ?? '',
+                slipNumber:            boat?.slip_number ?? null,
+                tripId:                t.id,
+                tripType:              (t.trip_type as FleetTodayRow['tripType']) ?? 'captained',
+                departureTime:         t.departure_time as string | null,
+                durationHours:         t.duration_hours as number | null,
+                durationDays:          null,
+                tripStatus:            t.status as FleetTodayRow['tripStatus'],
+                tripCode:              t.trip_code as string | null,
+                tripSlug:              t.slug as string | null,
+                requiresQualification: null,
+                totalGuests:           guestArr.length,
+                waiversSigned:         waivers,
+                checkedIn:             0,
+                flags:                 0,
+                addonsPendingPrep:     0,
+                addonRevenueCents:     null,
+              }
+              return <VesselCard key={t.id} row={miniRow} />
+            })}
+          </div>
+        </details>
       )}
     </div>
   )

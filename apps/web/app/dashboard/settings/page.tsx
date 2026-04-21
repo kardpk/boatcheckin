@@ -3,8 +3,9 @@ import Link from "next/link";
 import {
   ScrollText, CreditCard, FileText, Star, Users,
   Lock, Scale, ShieldCheck, BookOpen, Info,
-  Mail, ChevronRight, LogOut, Plug2,
+  Mail, ChevronRight, LogOut, Plug2, Package, Tag,
 } from "lucide-react";
+
 
 import { signOutAction } from "@/app/dashboard/actions";
 
@@ -201,6 +202,20 @@ export default async function SettingsPage() {
           icon={Plug2}
           label="Booking Integrations"
           desc="FareHarbor, Rezdy, Bookeo"
+        />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/settings/addons"
+          icon={Package}
+          label="Add-On Menu"
+          desc="Categories, pricing, cutoff times"
+        />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/settings/property-codes"
+          icon={Tag}
+          label="Property Codes"
+          desc="Hotel & marina guest discounts"
         />
       </section>
 

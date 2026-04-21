@@ -11,11 +11,115 @@ const validateCodeSchema = z.object({
   code: z.string().regex(/^[A-Z0-9]{4}$/),
 })
 
+// Property codes: alphanumeric, up to 20 chars (hotel codes like "HOTEL2026", "MARINA-MEMBER")
+const validatePropertyCodeSchema = z.object({
+  code: z.string().min(1).max(20).regex(/^[A-Z0-9_-]+$/),
+})
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
+  const type = new URL(req.url).searchParams.get('type') // 'property' or null (trip code)
+
+  if (type === 'property') {
+    return handlePropertyCode(req, slug)
+  }
+  return handleTripCode(req, slug)
+}
+
+// ── Property code validation ──────────────────────────────────────────────────
+
+async function handlePropertyCode(req: NextRequest, slug: string) {
+  const ip =
+    req.headers.get('cf-connecting-ip') ??
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    'unknown'
+
+  // Lighter rate limit for property codes — not security-critical like trip codes
+  const limited = await rateLimit(req, {
+    max: 10, window: 1800,
+    key: `propcode:${slug}:${ip}`,
+  })
+  if (limited.blocked) {
+    return NextResponse.json({ error: 'Too many attempts', lockSeconds: 1800 }, { status: 429 })
+  }
+
+  const body = await req.json().catch(() => null)
+  const parsed = validatePropertyCodeSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid code format' }, { status: 400 })
+  }
+
+  const supabase = createServiceClient()
+
+  // Get trip to find operator_id and boat_id
+  const { data: trip } = await supabase
+    .from('trips')
+    .select('id, operator_id, boat_id, external_booking_ref, trip_code')
+    .eq('slug', slug)
+    .neq('status', 'cancelled')
+    .single()
+
+  if (!trip) {
+    return NextResponse.json({ error: 'Trip not found' }, { status: 404 })
+  }
+
+  const today = new Date().toISOString().slice(0, 10)
+
+  // Look up property code — must belong to operator, be active, and match scope
+  const { data: code } = await supabase
+    .from('property_codes')
+    .select('id, code, description, discount_type, discount_value, applicable_categories, valid_from, valid_until, max_uses, use_count, boat_id')
+    .eq('operator_id', trip.operator_id)
+    .eq('code', parsed.data.code.toUpperCase())
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (!code) {
+    return NextResponse.json({ valid: false, reason: 'invalid' })
+  }
+
+  // Date range validation
+  if (code.valid_from && today < code.valid_from) {
+    return NextResponse.json({ valid: false, reason: 'not_yet_valid' })
+  }
+  if (code.valid_until && today > code.valid_until) {
+    return NextResponse.json({ valid: false, reason: 'expired' })
+  }
+
+  // Use limit validation
+  if (code.max_uses !== null && (code.use_count ?? 0) >= code.max_uses) {
+    return NextResponse.json({ valid: false, reason: 'limit_reached' })
+  }
+
+  // Boat scope validation (boat_id null = all boats for operator)
+  if (code.boat_id !== null && code.boat_id !== trip.boat_id) {
+    return NextResponse.json({ valid: false, reason: 'invalid' }) // Don't leak scope details
+  }
+
+  // Increment use_count
+  await supabase
+    .from('property_codes')
+    .update({ use_count: (code.use_count ?? 0) + 1 })
+    .eq('id', code.id)
+
+  return NextResponse.json({
+    valid: true,
+    codeId:               code.id,
+    discountType:         code.discount_type as string,
+    discountValue:        code.discount_value as number,
+    description:          (code.description as string | null) ?? null,
+    // null = all categories. Array = apply discount only to these categories.
+    applicableCategories: (code.applicable_categories as string[] | null) ?? null,
+  })
+}
+
+// ── Trip code validation (original logic, extracted to named function) ─────────
+
+async function handleTripCode(req: NextRequest, slug: string) {
+
   const ip =
     req.headers.get('cf-connecting-ip') ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??

@@ -48,8 +48,15 @@ type AuditAction =
   | "fulfillment_advanced"
   // Phase 4A: qualification
   | "qualification_submitted"
-  | "qualification_reviewed";
-
+  | "qualification_reviewed"
+  // Phase 4C: addon revenue, multi-day, property codes
+  | "addon_order_payment_captured"
+  | "addon_created"
+  | "addon_updated"
+  | "multi_day_check_in"
+  | "multi_day_check_out"
+  | "stripe_connect_linked"
+  | "property_code_created";
 
 
 interface AuditParams {

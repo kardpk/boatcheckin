@@ -577,3 +577,53 @@ export async function sendBookingAutoLinkEmail(params: {
   })
 }
 
+// ── sendAddonOrderNotification ────────────────────────────────────────────────
+// Dispatched when addon_payment_mode = 'external'.
+// Gives the resort everything needed to bill via their own PMS.
+
+export async function sendAddonOrderNotification(params: {
+  operatorId:   string
+  operatorName: string
+  externalRef:  string
+  guestId:      string
+  orderSummary: string
+  totalCents:   number
+}): Promise<void> {
+  const { createServiceClient } = await import('@/lib/supabase/service')
+  const supabase = createServiceClient()
+
+  const { data: operator } = await supabase
+    .from('operators')
+    .select('email')
+    .eq('id', params.operatorId)
+    .single()
+
+  if (!operator?.email) return
+
+  const total = `$${(params.totalCents / 100).toFixed(2)}`
+
+  await sendEmail({
+    to:      operator.email,
+    subject: `New add-on order — Ref: ${params.externalRef}`,
+    html: `
+<div style="font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:24px;">
+  <p style="font-size:13px;color:#6B7C93;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">
+    Add-On Order — ${params.operatorName}
+  </p>
+  <h2 style="margin:0 0 20px;font-size:20px;">New add-on order received</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <tr><td style="padding:6px 0;color:#6B7C93;width:130px;">Booking Ref</td><td style="padding:6px 0;font-weight:600;">${params.externalRef}</td></tr>
+    <tr><td style="padding:6px 0;color:#6B7C93;">Items ordered</td><td style="padding:6px 0;">${params.orderSummary}</td></tr>
+    <tr><td style="padding:6px 0;color:#6B7C93;">Order total</td><td style="padding:6px 0;font-weight:600;">${total}</td></tr>
+    <tr><td style="padding:6px 0;color:#6B7C93;">Payment</td><td style="padding:6px 0;">Handled by your billing system</td></tr>
+  </table>
+  <p style="margin-top:24px;font-size:12px;color:#6B7C93;">
+    This order is confirmed in your Fulfillment Board. No payment was collected by Boatcheckin —
+    billing is handled through your property management system.
+  </p>
+</div>`,
+    text: `New add-on order — Ref: ${params.externalRef} — ${params.orderSummary} — Total: ${total}. Handle billing via your PMS.`,
+  })
+}
+
+
