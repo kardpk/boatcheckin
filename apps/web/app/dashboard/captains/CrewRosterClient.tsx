@@ -269,44 +269,42 @@ export function CrewRosterClient({
           >
             {/* ── Handle + close row ── */}
             <div style={{
-              display: 'flex',
+              display: 'grid',
+              gridTemplateColumns: '1fr auto 1fr',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '12px 16px 0',
+              padding: '12px 14px 4px',
               flexShrink: 0,
             }}>
-              {/* Drag handle — centered */}
+              {/* spacer left */}
+              <div />
+              {/* Drag handle — centre */}
               <div style={{
-                flex: 1,
-                display: 'flex',
-                justifyContent: 'center',
-              }}>
-                <div style={{
-                  width: 36, height: 4,
-                  background: 'var(--color-line-soft)',
-                  borderRadius: 'var(--r-pill)',
-                }} />
+                width: 36, height: 4,
+                background: 'var(--color-line-soft)',
+                borderRadius: 'var(--r-pill)',
+              }} />
+              {/* Close button — right */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setDetailCaptain(null)}
+                  style={{
+                    width: 30, height: 30,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'var(--color-bone)',
+                    border: '1px solid var(--color-line-soft)',
+                    borderRadius: 'var(--r-1)',
+                    cursor: 'pointer',
+                    fontSize: 17,
+                    color: 'var(--color-ink-muted)',
+                    lineHeight: 1,
+                  }}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
               </div>
-              {/* Close button */}
-              <button
-                onClick={() => setDetailCaptain(null)}
-                style={{
-                  position: 'absolute', right: 14, top: 10,
-                  width: 32, height: 32,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'var(--color-bone)',
-                  border: '1px solid var(--color-line-soft)',
-                  borderRadius: 'var(--r-1)',
-                  cursor: 'pointer',
-                  fontSize: 18,
-                  color: 'var(--color-ink-muted)',
-                  lineHeight: 1,
-                }}
-                aria-label="Close"
-              >
-                ×
-              </button>
             </div>
+
 
             {/* ── Scrollable content — padding-bottom clears bottom nav ── */}
             <div style={{
