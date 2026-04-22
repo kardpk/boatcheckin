@@ -5,7 +5,8 @@ import { requireOperator } from '@/lib/security/auth'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase/service'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-01-27.acacia' })
+// Force dynamic — this route uses auth cookies and env vars at runtime
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/dashboard/stripe/connect
@@ -18,6 +19,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-01
  * with a ?stripe_result=success or ?stripe_result=cancelled param.
  */
 export async function GET(req: NextRequest) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY
+  if (!stripeKey) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
+  }
+
+  // Initialise inside the handler — never at module level — so builds
+  // don't fail when STRIPE_SECRET_KEY is absent in CI / preview envs
+  const stripe = new Stripe(stripeKey, { apiVersion: '2025-01-27.acacia' })
+
   const { operator } = await requireOperator()
   const supabase = createServiceClient()
 
@@ -51,7 +61,7 @@ export async function GET(req: NextRequest) {
   // Generate an Account Link for the onboarding flow
   const accountLink = await stripe.accountLinks.create({
     account:     stripeAccountId,
-    refresh_url: `${appUrl}/api/dashboard/stripe/connect`,     // retry
+    refresh_url: `${appUrl}/api/dashboard/stripe/connect`,
     return_url:  `${appUrl}/dashboard/settings/addons?stripe_result=success`,
     type:        'account_onboarding',
   })
