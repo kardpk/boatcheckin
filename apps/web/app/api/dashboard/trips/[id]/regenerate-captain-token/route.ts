@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireOperator } from '@/lib/security/auth'
-import { generateCaptainToken, calculateSnapshotExpiry } from '@/lib/security/tokens'
+import { generateCaptainToken } from '@/lib/security/tokens'
 import { createServiceClient } from '@/lib/supabase/service'
 
 export async function POST(
@@ -14,7 +14,7 @@ export async function POST(
   // Fetch current version — verify operator owns this trip
   const { data: trip } = await supabase
     .from('trips')
-    .select('id, operator_id, captain_token_version, trip_date, departure_time')
+    .select('id, operator_id, captain_token_version')
     .eq('id', id)
     .eq('operator_id', operator.id)
     .single()
@@ -24,7 +24,10 @@ export async function POST(
   }
 
   const newVersion = (trip.captain_token_version ?? 1) + 1
-  const expiresAt = calculateSnapshotExpiry(trip.trip_date, trip.departure_time, 3)
+  // Use a fixed 24h window from now — calculateSnapshotExpiry caps at
+  // departure+2h which may have already passed, producing an immediately-
+  // expired token. The captain should be able to use this link all day.
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
   const { token } = generateCaptainToken(trip.id, newVersion, expiresAt)
 
   const { error } = await supabase
