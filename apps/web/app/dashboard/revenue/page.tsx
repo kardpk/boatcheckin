@@ -52,19 +52,19 @@ export default async function RevenuePage() {
 
   let catRaw: { total_cents: unknown; addons: unknown }[] | null = null
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('guest_addon_orders')
       .select(`
         total_cents,
-        addons ( category ),
-        trips!inner ( boats!inner ( operator_id ) )
+        addons ( category )
       `)
-      .eq('trips.boats.operator_id', operator.id)
+      .eq('operator_id', operator.id)   // direct column — no join needed
       .eq('status', 'confirmed')
-      .gte('payment_captured_at', thisMonthIso)
+      .gte('created_at', thisMonthIso)  // use created_at (always present) instead of payment_captured_at
       .limit(500)
-    catRaw = data as typeof catRaw
+    if (!error) catRaw = data as typeof catRaw
   } catch { /* non-fatal */ }
+
 
 
   // Group by category
