@@ -4,7 +4,9 @@ import {
   ScrollText, CreditCard, FileText, Star, Users,
   Lock, Scale, ShieldCheck, BookOpen, Info,
   Mail, ChevronRight, LogOut, Plug2, Package, Tag,
+  Bell, SlidersHorizontal,
 } from "lucide-react";
+import { AccountProfileForm } from "@/components/dashboard/AccountProfileForm";
 
 
 import { signOutAction } from "@/app/dashboard/actions";
@@ -166,6 +168,18 @@ export default async function SettingsPage() {
         </span>
       </div>
 
+      {/* ── SECTION: PROFILE ────────────────────────────────── */}
+      <section style={{ marginBottom: "var(--s-6)" }}>
+        <SectionKicker label="Profile" />
+        <AccountProfileForm
+          initialName={(operator as any).full_name ?? ''}
+          initialCompany={(operator as any).company_name ?? null}
+          initialPhone={(operator as any).phone ?? null}
+          referralCode={(operator as any).referral_code ?? null}
+          email={(operator as any).email ?? ''}
+        />
+      </section>
+
       {/* ── SECTION: MANAGE ─────────────────────────────────── */}
       <section style={{ marginBottom: "var(--s-6)" }}>
         <SectionKicker label="Manage" />
@@ -224,6 +238,20 @@ export default async function SettingsPage() {
           label="Fulfillment Board"
           desc="Add-on prep & loading by departure"
         />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/notifications"
+          icon={Bell}
+          label="Notifications"
+          desc="Trip events, weather & activity"
+        />
+        <RowDivider />
+        <SettingsRow
+          href="/dashboard/settings/preferences"
+          icon={SlidersHorizontal}
+          label="Platform Preferences"
+          desc="Defaults, review settings & notification toggles"
+        />
       </section>
 
       <section style={{ marginBottom: "var(--s-6)" }}>
@@ -274,7 +302,7 @@ export default async function SettingsPage() {
               Boatcheckin
             </p>
             <p className="font-mono" style={{ fontSize: "var(--t-mono-xs)", color: "var(--color-ink-muted)", marginTop: 2, letterSpacing: "0.02em" }}>
-              v1.0 · Built in Miami 🌊
+              v1.0 · Miami, FL
             </p>
           </div>
         </div>

@@ -17,10 +17,65 @@ import {
  * GET /api/dashboard/guests
  * Guest list endpoint — not yet implemented (reserved for operator CRM).
  */
+/**
+ * GET /api/dashboard/guests
+ * Operator-wide guest CRM — search, filter by date and waiver status.
+ *
+ * Query params:
+ *   q       — full_name ilike search
+ *   date    — trip_date YYYY-MM-DD filter
+ *   waiver  — 'signed' | 'unsigned'
+ *   limit   — default 50, max 200
+ *   offset  — pagination offset
+ */
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  void req;
-  return NextResponse.json({ data: null, error: "Not implemented" }, { status: 501 });
+  const { operator } = await requireOperator()
+  const { searchParams } = new URL(req.url)
+
+  const search   = searchParams.get('q')?.trim() ?? ''
+  const tripDate = searchParams.get('date') ?? ''
+  const waiver   = searchParams.get('waiver') ?? ''
+  const limit    = Math.min(parseInt(searchParams.get('limit') ?? '50', 10), 200)
+  const offset   = Math.max(parseInt(searchParams.get('offset') ?? '0', 10), 0)
+
+  const supabase = createServiceClient()
+
+  let query = supabase
+    .from('guests')
+    .select(`
+      id, full_name, dietary_requirements, language_preference,
+      waiver_signed, waiver_signed_at, approval_status,
+      checked_in_at, created_at,
+      trips!inner (
+        id, slug, trip_date, departure_time, status,
+        boats ( boat_name )
+      )
+    `, { count: 'exact' })
+    .eq('operator_id', operator.id)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  if (search) {
+    query = query.ilike('full_name', `%${search}%`)
+  }
+  if (tripDate) {
+    query = query.eq('trips.trip_date', tripDate)
+  }
+  if (waiver === 'signed') {
+    query = query.eq('waiver_signed', true)
+  } else if (waiver === 'unsigned') {
+    query = query.eq('waiver_signed', false)
+  }
+
+  const { data, count, error } = await query
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ data, total: count ?? 0 })
 }
+
 
 /**
  * POST /api/dashboard/guests
