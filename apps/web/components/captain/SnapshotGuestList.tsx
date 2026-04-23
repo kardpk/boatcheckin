@@ -27,11 +27,12 @@ interface GuestRow {
 }
 
 export function SnapshotGuestList({
-  guests, maxGuests, captainToken,
+  guests, maxGuests, captainToken, allSigned,
 }: {
   guests: GuestRow[]
   maxGuests: number
   captainToken?: string
+  allSigned?: boolean
 }) {
   const signed = guests.filter(g => g.waiverSigned).length
   const pendingLivery = guests.filter(g => g.approvalStatus === 'pending_livery_briefing').length
@@ -83,7 +84,18 @@ export function SnapshotGuestList({
   }
 
   return (
-    <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
+    <div
+      className="tile"
+      style={{
+        padding: 0,
+        overflow: 'hidden',
+        borderLeft: guests.length > 0
+          ? allSigned
+            ? '4px solid var(--color-status-ok)'
+            : '4px solid var(--color-status-warn)'
+          : undefined,
+      }}
+    >
       {/* Header */}
       <div
         className="flex items-center justify-between"
@@ -287,7 +299,7 @@ export function SnapshotGuestList({
                           className="btn btn--rust flex-1 btn--sm"
                           style={{ height: 32, justifyContent: 'center' }}
                         >
-                          ✓ Confirm
+                          <Check size={12} strokeWidth={2.5} aria-hidden="true" /> Confirm
                         </button>
                         <button
                           onClick={() => setLiveryVerifyId(null)}

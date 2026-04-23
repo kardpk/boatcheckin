@@ -74,7 +74,7 @@ export function HeadCountConfirm({
   }
 
   return (
-    <div className="tile" style={{ padding: 0, overflow: 'hidden' }}>
+    <div className="tile" style={{ padding: 0, overflow: 'hidden', borderLeft: '4px solid var(--color-brass)' }}>
       {/* Header row */}
       <div
         className="flex items-center"
